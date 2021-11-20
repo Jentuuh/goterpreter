@@ -1,0 +1,3 @@
+struct Literal{
+    Literal();
+};
