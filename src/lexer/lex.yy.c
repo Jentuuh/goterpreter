@@ -362,16 +362,16 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[98] =
     {   0,
-        0,    0,   45,   43,   42,    1,   29,   43,   15,   16,
-       21,   19,   41,   20,   22,   38,   38,   43,    2,   34,
-       39,   32,   14,   43,   14,   14,   14,   14,   14,   14,
-       14,   14,   17,   43,   18,   37,   27,   25,   30,   23,
-       31,   38,   24,    0,   26,   38,    0,   40,   35,   36,
-       33,   14,   14,   14,   14,   14,   14,   14,   10,   14,
-       14,   14,   14,   14,   14,   28,    0,   42,   38,   14,
-       14,   14,   14,   12,   14,   14,    3,   14,   14,   14,
-        9,    4,   11,   14,    5,   14,   14,   14,   13,   14,
-       14,   14,    8,   14,    7,    6,    0
+        0,    0,   45,   43,   42,    1,   30,   43,   16,   17,
+       22,   20,   41,   21,   23,   13,   13,   43,    2,   35,
+       39,   33,   15,   43,   15,   15,   15,   15,   15,   15,
+       15,   15,   18,   43,   19,   38,   28,   26,   31,   24,
+       32,   13,   25,    0,   27,   13,    0,   40,   36,   37,
+       34,   15,   15,   15,   15,   15,   15,   15,   10,   15,
+       15,   15,   15,   15,   15,   29,    0,   42,   13,   15,
+       15,   15,   15,   12,   15,   15,    3,   15,   15,   15,
+        9,    4,   11,   15,    5,   15,   15,   15,   14,   15,
+       15,   15,    8,   15,    7,    6,    0
 
     } ;
 
@@ -864,161 +864,178 @@ YY_RULE_SETUP
 case 13:
 YY_RULE_SETUP
 #line 74 "go.lex"
-{ ADJUST(); return BOOLLITERAL; }
+{ ADJUST(); 
+            char *s = (char*) malloc(yyleng+1);
+            strcpy(s, yytext);
+            long int value = strtol(s, NULL, 10);
+            yylval.intlit = value;
+            return INTLITERAL;
+          }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 75 "go.lex"
+#line 81 "go.lex"
+{ ADJUST(); 
+               char *s = (char*) malloc(yyleng+1);
+               strcpy(s, yytext);
+               if(strcmp(s, "true") == 0){
+                 yylval.boollit = true;
+               }
+               else{
+                 yylval.boollit = false;
+               }
+              return BOOLLITERAL; 
+              }
+	YY_BREAK
+case 15:
+YY_RULE_SETUP
+#line 92 "go.lex"
 { ADJUST(); 
                char *s = (char*) malloc(yyleng+1);
                strcpy(s, yytext);
                yylval.id = s; 
-               return IDENTIFIER; }
-	YY_BREAK
-case 15:
-YY_RULE_SETUP
-#line 80 "go.lex"
-{ ADJUST(); return LPAREN; }
+               return IDENTIFIER; 
+              }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 81 "go.lex"
-{ ADJUST(); return RPAREN; }
+#line 98 "go.lex"
+{ ADJUST(); return LPAREN; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 82 "go.lex"
-{ ADJUST(); return LBRACE; }
+#line 99 "go.lex"
+{ ADJUST(); return RPAREN; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 83 "go.lex"
-{ ADJUST(); return RBRACE; }
+#line 100 "go.lex"
+{ ADJUST(); return LBRACE; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 84 "go.lex"
-{ ADJUST(); return PLUS; }
+#line 101 "go.lex"
+{ ADJUST(); return RBRACE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 85 "go.lex"
-{ ADJUST(); return MIN; }
+#line 102 "go.lex"
+{ ADJUST(); return PLUS; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 86 "go.lex"
-{ ADJUST(); return MUL; }
+#line 103 "go.lex"
+{ ADJUST(); return MIN; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 87 "go.lex"
-{ ADJUST(); return DIV; }
+#line 104 "go.lex"
+{ ADJUST(); return MUL; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 88 "go.lex"
-{ ADJUST(); return PLUSASSIGN; }
+#line 105 "go.lex"
+{ ADJUST(); return DIV; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 89 "go.lex"
-{ ADJUST(); return MINASSIGN; }
+#line 106 "go.lex"
+{ ADJUST(); return PLUSASSIGN; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 90 "go.lex"
-{ ADJUST(); return MULASSIGN; }
+#line 107 "go.lex"
+{ ADJUST(); return MINASSIGN; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 91 "go.lex"
-{ ADJUST(); return DIVASSIGN; }
+#line 108 "go.lex"
+{ ADJUST(); return MULASSIGN; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 92 "go.lex"
-{ ADJUST(); return AND; }
+#line 109 "go.lex"
+{ ADJUST(); return DIVASSIGN; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 93 "go.lex"
-{ ADJUST(); return OR; }
+#line 110 "go.lex"
+{ ADJUST(); return AND; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 94 "go.lex"
-{ ADJUST(); return NOT; }
+#line 111 "go.lex"
+{ ADJUST(); return OR; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 95 "go.lex"
-{ ADJUST(); return INC; }
+#line 112 "go.lex"
+{ ADJUST(); return NOT; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 96 "go.lex"
-{ ADJUST(); return DEC; }
+#line 113 "go.lex"
+{ ADJUST(); return INC; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 97 "go.lex"
-{ ADJUST(); return GT; }
+#line 114 "go.lex"
+{ ADJUST(); return DEC; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 98 "go.lex"
-{ ADJUST(); return GE; }
+#line 115 "go.lex"
+{ ADJUST(); return GT; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 99 "go.lex"
-{ ADJUST(); return LT; }
+#line 116 "go.lex"
+{ ADJUST(); return GE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 100 "go.lex"
-{ ADJUST(); return LE; }
+#line 117 "go.lex"
+{ ADJUST(); return LT; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 101 "go.lex"
-{ ADJUST(); return EQ; }
+#line 118 "go.lex"
+{ ADJUST(); return LE; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 102 "go.lex"
-{ ADJUST(); return NE; }
+#line 119 "go.lex"
+{ ADJUST(); return EQ; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 103 "go.lex"
-{ ADJUST(); return INTLITERAL; }
+#line 120 "go.lex"
+{ ADJUST(); return NE; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 104 "go.lex"
+#line 121 "go.lex"
 { ADJUST(); return ASSIGN; } 
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 105 "go.lex"
+#line 122 "go.lex"
 {ADJUST(); return SHORTVARASSIGN; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 106 "go.lex"
+#line 123 "go.lex"
 { ADJUST(); return COMMA; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 109 "go.lex"
+#line 126 "go.lex"
 {/* Do nothing */}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 110 "go.lex"
+#line 127 "go.lex"
 {
   if (yytext[0] < ' '){ /* non-printable char */
     /*yyerror*/ fprintf(stderr,"illegal character: ^%c",yytext[0] + '@'); 
@@ -1038,10 +1055,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 126 "go.lex"
+#line 143 "go.lex"
 ECHO;
 	YY_BREAK
-#line 1045 "lex.yy.c"
+#line 1062 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2046,7 +2063,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 126 "go.lex"
+#line 143 "go.lex"
 
 
 /* Function called by (f)lex when EOF is read. If yywrap returns a

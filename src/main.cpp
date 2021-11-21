@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "lexer/lexer.h"
 #include "parser/grammar.tab.h"
+#include "ast/srcfile/srcfile.h"
+#include "ast/symboltable.h"
+extern SrcFile* ast;
 
 /* Array with tokens such that index = tokenid - 250*/
 char *tokens[] = {
@@ -40,5 +43,8 @@ int main(int argc, char* argv[])
   //   printf("\n");
 
   yyparse();
+  SymbolTable symbols{};
+
+  ast->interp(symbols);
   return 0;
 }

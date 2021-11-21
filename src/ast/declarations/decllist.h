@@ -1,6 +1,5 @@
-#include <memory>
-#include "../symboltable.h"
 #include "decl.h"
+#include <memory>
 
 struct DeclList{
     virtual int length() = 0;
@@ -30,4 +29,9 @@ struct LastDeclList:DeclList{
     std::shared_ptr<TopLevelDecl> last;
 
     LastDeclList(TopLevelDecl* l): last{l}{};
+
+    SymbolTable* interp(SymbolTable& table)
+    {
+
+    };
 };

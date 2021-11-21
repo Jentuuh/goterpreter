@@ -1,4 +1,5 @@
 #include "result.h"
+#include "../parameters/paramlist.h"
 #include <memory>
 
 struct Signature{
@@ -6,4 +7,10 @@ struct Signature{
     std::shared_ptr<Result> result;
 
     Signature(ParameterList* params, Result* res):parameters{params}, result{res}{};
-}
+
+    SymbolTable* interp(SymbolTable& table)
+    {
+        // TODO: implement
+    };
+
+};

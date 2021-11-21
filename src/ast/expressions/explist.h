@@ -1,11 +1,12 @@
 #include "exp.h"
-#include "../symboltable.h"
 #include <memory>
 
 /**
  * Abstract ExpressionList class.
  * Jente Vandersanden - Compilers 2021-2022 - Hasselt University
  */
+
+struct SymbolTable;
 
 struct ExpList{
     virtual int length() = 0;

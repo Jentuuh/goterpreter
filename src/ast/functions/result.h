@@ -1,10 +1,11 @@
-#include "../types/type.h"
 #include <memory>
 
+struct Type;
+struct ParameterList;
 
 struct Result{
     
-}
+};
 
 struct ParametersResult:Result{
     std::shared_ptr<ParameterList> parameters;
@@ -16,5 +17,4 @@ struct TypeResult:Result{
     std::shared_ptr<Type> type;
 
     TypeResult(Type* type): type{type}{};
-
 };

@@ -1,4 +1,5 @@
 #include <map>
+#include <string>
 
 struct SymbolTable{
     std::map<std::string, int> entries;

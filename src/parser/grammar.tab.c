@@ -71,10 +71,42 @@
 
  // C-DECLARATIONS
  #include <stdio.h>
+ #include "../ast/srcfile/srcfile.h"
+
+ #include "../ast/block/block.h"
+ 
+ #include "../ast/expressions/explist.h"
+ #include "../ast/expressions/exp.h"
+
+ #include "../ast/identifiers/identifier.h"
+
+ #include "../ast/declarations/decllist.h"
+ #include "../ast/declarations/decl.h"
+ #include "../ast/declarations/varspec.h"
+
+ #include "../ast/functions/signature.h"
+ #include "../ast/functions/result.h"
+
+ #include "../ast/literals/literal.h"
+
+ #include "../ast/statements/stmlist.h"
+ #include "../ast/statements/stm.h"
+ #include "../ast/statements/forclause.h"
+
+ #include "../ast/packages/packageclause.h"
+
+ #include "../ast/types/type.h"
+
+ #include "../ast/literals/literal.h"
+ #include "../ast/symboltable.h"
+
  int yylex(void);
  int yyerror(char *s);
 
-#line 78 "grammar.tab.c"
+ SrcFile * ast;
+
+
+#line 110 "grammar.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -116,46 +148,46 @@ extern int yydebug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     SEMICOLON = 258,               /* SEMICOLON  */
-    IDENTIFIER = 259,              /* IDENTIFIER  */
-    INTEGER = 260,                 /* INTEGER  */
-    BOOLEAN = 261,                 /* BOOLEAN  */
-    PACKAGE = 262,                 /* PACKAGE  */
-    RETURN = 263,                  /* RETURN  */
-    VAR = 264,                     /* VAR  */
-    IF = 265,                      /* IF  */
-    FOR = 266,                     /* FOR  */
-    LPAREN = 267,                  /* LPAREN  */
-    RPAREN = 268,                  /* RPAREN  */
-    LBRACE = 269,                  /* LBRACE  */
-    RBRACE = 270,                  /* RBRACE  */
-    PLUS = 271,                    /* PLUS  */
-    MIN = 272,                     /* MIN  */
-    MUL = 273,                     /* MUL  */
-    DIV = 274,                     /* DIV  */
-    PLUSASSIGN = 275,              /* PLUSASSIGN  */
-    MINASSIGN = 276,               /* MINASSIGN  */
-    MULASSIGN = 277,               /* MULASSIGN  */
-    DIVASSIGN = 278,               /* DIVASSIGN  */
-    AND = 279,                     /* AND  */
-    OR = 280,                      /* OR  */
-    NOT = 281,                     /* NOT  */
-    INC = 282,                     /* INC  */
-    DEC = 283,                     /* DEC  */
-    GT = 284,                      /* GT  */
-    GE = 285,                      /* GE  */
-    LT = 286,                      /* LT  */
-    LE = 287,                      /* LE  */
-    EQ = 288,                      /* EQ  */
-    NE = 289,                      /* NE  */
-    INTLITERAL = 290,              /* INTLITERAL  */
-    BOOLLITERAL = 291,             /* BOOLLITERAL  */
-    ASSIGN = 292,                  /* ASSIGN  */
-    FUNC = 293,                    /* FUNC  */
-    NEWLINE = 294,                 /* NEWLINE  */
-    IMPORT = 295,                  /* IMPORT  */
-    COMMA = 296,                   /* COMMA  */
-    ELSE = 297,                    /* ELSE  */
-    SHORTVARASSIGN = 298,          /* SHORTVARASSIGN  */
+    INTEGER = 259,                 /* INTEGER  */
+    BOOLEAN = 260,                 /* BOOLEAN  */
+    PACKAGE = 261,                 /* PACKAGE  */
+    RETURN = 262,                  /* RETURN  */
+    VAR = 263,                     /* VAR  */
+    IF = 264,                      /* IF  */
+    FOR = 265,                     /* FOR  */
+    LPAREN = 266,                  /* LPAREN  */
+    RPAREN = 267,                  /* RPAREN  */
+    LBRACE = 268,                  /* LBRACE  */
+    RBRACE = 269,                  /* RBRACE  */
+    PLUS = 270,                    /* PLUS  */
+    MIN = 271,                     /* MIN  */
+    MUL = 272,                     /* MUL  */
+    DIV = 273,                     /* DIV  */
+    PLUSASSIGN = 274,              /* PLUSASSIGN  */
+    MINASSIGN = 275,               /* MINASSIGN  */
+    MULASSIGN = 276,               /* MULASSIGN  */
+    DIVASSIGN = 277,               /* DIVASSIGN  */
+    AND = 278,                     /* AND  */
+    OR = 279,                      /* OR  */
+    NOT = 280,                     /* NOT  */
+    INC = 281,                     /* INC  */
+    DEC = 282,                     /* DEC  */
+    GT = 283,                      /* GT  */
+    GE = 284,                      /* GE  */
+    LT = 285,                      /* LT  */
+    LE = 286,                      /* LE  */
+    EQ = 287,                      /* EQ  */
+    NE = 288,                      /* NE  */
+    ASSIGN = 289,                  /* ASSIGN  */
+    FUNC = 290,                    /* FUNC  */
+    NEWLINE = 291,                 /* NEWLINE  */
+    IMPORT = 292,                  /* IMPORT  */
+    COMMA = 293,                   /* COMMA  */
+    ELSE = 294,                    /* ELSE  */
+    SHORTVARASSIGN = 295,          /* SHORTVARASSIGN  */
+    IDENTIFIER = 296,              /* IDENTIFIER  */
+    BOOLLITERAL = 297,             /* BOOLLITERAL  */
+    INTLITERAL = 298,              /* INTLITERAL  */
     UMINUS = 299                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -163,7 +195,55 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 39 "grammar.y"
+
+        enum UnaryOperator unaryoperator;
+        enum BinaryOperator binaryoperator;
+        enum AssignOperator assignoperator;
+        enum IncDecOperator incdecoperator;
+
+        SrcFile* srcfile;
+        char* id;
+        bool* boollit;
+        int* intlit;
+
+        Block* block;
+        
+        Stm* stm; 
+        SimpleStm* simplestm;
+        StmList* stmlist;
+        ForClause* forclause;
+
+        Exp* exp; 
+        ExpList* explist;
+        Identifier* identifier;
+        IdentifierList* identifierlist;
+        Operand* operand;
+        
+        DeclList* decllist;
+        TopLevelDecl* toplvldecl;
+        Decl* decl;
+        VarDecl* vardecl;
+        VarSpec* varspec;
+        FunctionDecl* funcdecl;
+        Signature* signature;
+        Result* result;
+
+        Literal* literal;
+
+        ParameterList* paramlist;
+        ParameterDecl* paramdecl;
+
+        Type* type; 
+
+        PackageClause* packageclause;
+
+#line 244 "grammar.tab.c"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -184,46 +264,46 @@ enum yysymbol_kind_t
   YYSYMBOL_YYerror = 1,                    /* error  */
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
   YYSYMBOL_SEMICOLON = 3,                  /* SEMICOLON  */
-  YYSYMBOL_IDENTIFIER = 4,                 /* IDENTIFIER  */
-  YYSYMBOL_INTEGER = 5,                    /* INTEGER  */
-  YYSYMBOL_BOOLEAN = 6,                    /* BOOLEAN  */
-  YYSYMBOL_PACKAGE = 7,                    /* PACKAGE  */
-  YYSYMBOL_RETURN = 8,                     /* RETURN  */
-  YYSYMBOL_VAR = 9,                        /* VAR  */
-  YYSYMBOL_IF = 10,                        /* IF  */
-  YYSYMBOL_FOR = 11,                       /* FOR  */
-  YYSYMBOL_LPAREN = 12,                    /* LPAREN  */
-  YYSYMBOL_RPAREN = 13,                    /* RPAREN  */
-  YYSYMBOL_LBRACE = 14,                    /* LBRACE  */
-  YYSYMBOL_RBRACE = 15,                    /* RBRACE  */
-  YYSYMBOL_PLUS = 16,                      /* PLUS  */
-  YYSYMBOL_MIN = 17,                       /* MIN  */
-  YYSYMBOL_MUL = 18,                       /* MUL  */
-  YYSYMBOL_DIV = 19,                       /* DIV  */
-  YYSYMBOL_PLUSASSIGN = 20,                /* PLUSASSIGN  */
-  YYSYMBOL_MINASSIGN = 21,                 /* MINASSIGN  */
-  YYSYMBOL_MULASSIGN = 22,                 /* MULASSIGN  */
-  YYSYMBOL_DIVASSIGN = 23,                 /* DIVASSIGN  */
-  YYSYMBOL_AND = 24,                       /* AND  */
-  YYSYMBOL_OR = 25,                        /* OR  */
-  YYSYMBOL_NOT = 26,                       /* NOT  */
-  YYSYMBOL_INC = 27,                       /* INC  */
-  YYSYMBOL_DEC = 28,                       /* DEC  */
-  YYSYMBOL_GT = 29,                        /* GT  */
-  YYSYMBOL_GE = 30,                        /* GE  */
-  YYSYMBOL_LT = 31,                        /* LT  */
-  YYSYMBOL_LE = 32,                        /* LE  */
-  YYSYMBOL_EQ = 33,                        /* EQ  */
-  YYSYMBOL_NE = 34,                        /* NE  */
-  YYSYMBOL_INTLITERAL = 35,                /* INTLITERAL  */
-  YYSYMBOL_BOOLLITERAL = 36,               /* BOOLLITERAL  */
-  YYSYMBOL_ASSIGN = 37,                    /* ASSIGN  */
-  YYSYMBOL_FUNC = 38,                      /* FUNC  */
-  YYSYMBOL_NEWLINE = 39,                   /* NEWLINE  */
-  YYSYMBOL_IMPORT = 40,                    /* IMPORT  */
-  YYSYMBOL_COMMA = 41,                     /* COMMA  */
-  YYSYMBOL_ELSE = 42,                      /* ELSE  */
-  YYSYMBOL_SHORTVARASSIGN = 43,            /* SHORTVARASSIGN  */
+  YYSYMBOL_INTEGER = 4,                    /* INTEGER  */
+  YYSYMBOL_BOOLEAN = 5,                    /* BOOLEAN  */
+  YYSYMBOL_PACKAGE = 6,                    /* PACKAGE  */
+  YYSYMBOL_RETURN = 7,                     /* RETURN  */
+  YYSYMBOL_VAR = 8,                        /* VAR  */
+  YYSYMBOL_IF = 9,                         /* IF  */
+  YYSYMBOL_FOR = 10,                       /* FOR  */
+  YYSYMBOL_LPAREN = 11,                    /* LPAREN  */
+  YYSYMBOL_RPAREN = 12,                    /* RPAREN  */
+  YYSYMBOL_LBRACE = 13,                    /* LBRACE  */
+  YYSYMBOL_RBRACE = 14,                    /* RBRACE  */
+  YYSYMBOL_PLUS = 15,                      /* PLUS  */
+  YYSYMBOL_MIN = 16,                       /* MIN  */
+  YYSYMBOL_MUL = 17,                       /* MUL  */
+  YYSYMBOL_DIV = 18,                       /* DIV  */
+  YYSYMBOL_PLUSASSIGN = 19,                /* PLUSASSIGN  */
+  YYSYMBOL_MINASSIGN = 20,                 /* MINASSIGN  */
+  YYSYMBOL_MULASSIGN = 21,                 /* MULASSIGN  */
+  YYSYMBOL_DIVASSIGN = 22,                 /* DIVASSIGN  */
+  YYSYMBOL_AND = 23,                       /* AND  */
+  YYSYMBOL_OR = 24,                        /* OR  */
+  YYSYMBOL_NOT = 25,                       /* NOT  */
+  YYSYMBOL_INC = 26,                       /* INC  */
+  YYSYMBOL_DEC = 27,                       /* DEC  */
+  YYSYMBOL_GT = 28,                        /* GT  */
+  YYSYMBOL_GE = 29,                        /* GE  */
+  YYSYMBOL_LT = 30,                        /* LT  */
+  YYSYMBOL_LE = 31,                        /* LE  */
+  YYSYMBOL_EQ = 32,                        /* EQ  */
+  YYSYMBOL_NE = 33,                        /* NE  */
+  YYSYMBOL_ASSIGN = 34,                    /* ASSIGN  */
+  YYSYMBOL_FUNC = 35,                      /* FUNC  */
+  YYSYMBOL_NEWLINE = 36,                   /* NEWLINE  */
+  YYSYMBOL_IMPORT = 37,                    /* IMPORT  */
+  YYSYMBOL_COMMA = 38,                     /* COMMA  */
+  YYSYMBOL_ELSE = 39,                      /* ELSE  */
+  YYSYMBOL_SHORTVARASSIGN = 40,            /* SHORTVARASSIGN  */
+  YYSYMBOL_IDENTIFIER = 41,                /* IDENTIFIER  */
+  YYSYMBOL_BOOLLITERAL = 42,               /* BOOLLITERAL  */
+  YYSYMBOL_INTLITERAL = 43,                /* INTLITERAL  */
   YYSYMBOL_UMINUS = 44,                    /* UMINUS  */
   YYSYMBOL_YYACCEPT = 45,                  /* $accept  */
   YYSYMBOL_sourcefile = 46,                /* sourcefile  */
@@ -598,16 +678,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   337
+#define YYLAST   342
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  45
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  46
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  101
+#define YYNRULES  103
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  168
+#define YYNSTATES  167
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   299
@@ -658,19 +738,19 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int16 yyrline[] =
 {
-       0,    23,    23,    25,    26,    29,    31,    34,    35,    38,
-      41,    42,    45,    48,    49,    50,    53,    55,    57,    59,
-      60,    63,    64,    67,    68,    69,    72,    73,    76,    77,
-      78,    81,    82,    85,    86,    89,    90,    91,    92,    93,
-      94,    95,    96,    97,    98,    99,   100,   101,   104,   105,
-     108,   109,   112,   113,   116,   117,   118,   121,   122,   123,
-     126,   129,   130,   133,   136,   139,   142,   143,   146,   147,
-     148,   149,   150,   151,   154,   155,   156,   157,   158,   161,
-     163,   165,   167,   168,   169,   170,   171,   174,   175,   179,
-     180,   181,   182,   185,   186,   187,   190,   192,   195,   197,
-     199,   200
+       0,   154,   154,   163,   182,   183,   186,   188,   191,   192,
+     195,   198,   199,   202,   205,   206,   207,   210,   212,   214,
+     216,   217,   220,   221,   224,   225,   226,   229,   230,   233,
+     234,   235,   238,   239,   242,   243,   246,   247,   248,   249,
+     250,   251,   252,   253,   254,   255,   256,   257,   258,   261,
+     262,   265,   266,   269,   270,   273,   274,   275,   278,   279,
+     280,   283,   286,   287,   290,   293,   296,   299,   300,   303,
+     304,   305,   306,   307,   308,   311,   312,   313,   314,   315,
+     318,   320,   322,   324,   325,   326,   327,   328,   331,   332,
+     336,   337,   338,   339,   340,   343,   344,   345,   348,   350,
+     353,   355,   357,   358
 };
 #endif
 
@@ -686,23 +766,23 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "\"end of file\"", "error", "\"invalid token\"", "SEMICOLON",
-  "IDENTIFIER", "INTEGER", "BOOLEAN", "PACKAGE", "RETURN", "VAR", "IF",
-  "FOR", "LPAREN", "RPAREN", "LBRACE", "RBRACE", "PLUS", "MIN", "MUL",
-  "DIV", "PLUSASSIGN", "MINASSIGN", "MULASSIGN", "DIVASSIGN", "AND", "OR",
-  "NOT", "INC", "DEC", "GT", "GE", "LT", "LE", "EQ", "NE", "INTLITERAL",
-  "BOOLLITERAL", "ASSIGN", "FUNC", "NEWLINE", "IMPORT", "COMMA", "ELSE",
-  "SHORTVARASSIGN", "UMINUS", "$accept", "sourcefile",
-  "topleveldeclarations", "packageclause", "packagename", "topleveldecl",
-  "declaration", "vardecl", "shortvardecl", "varspec",
-  "functiondeclaration", "functionname", "functionbody", "signature",
-  "type", "typename", "result", "parameters", "parameterlist",
-  "parameterdecl", "expr", "expressionlist", "identifierlist", "unaryexpr",
-  "unary_op", "operand", "literal", "basiclit", "operandname",
-  "primaryexpr", "block", "statementlist", "statement", "simplestatement",
-  "emptystatement", "expressionstatement", "assignment", "assign_op",
-  "incdecstatement", "ifstatement", "forstatement", "condition",
-  "forclause", "initstatement", "poststatement", "returnstatement", YY_NULLPTR
+  "\"end of file\"", "error", "\"invalid token\"", "SEMICOLON", "INTEGER",
+  "BOOLEAN", "PACKAGE", "RETURN", "VAR", "IF", "FOR", "LPAREN", "RPAREN",
+  "LBRACE", "RBRACE", "PLUS", "MIN", "MUL", "DIV", "PLUSASSIGN",
+  "MINASSIGN", "MULASSIGN", "DIVASSIGN", "AND", "OR", "NOT", "INC", "DEC",
+  "GT", "GE", "LT", "LE", "EQ", "NE", "ASSIGN", "FUNC", "NEWLINE",
+  "IMPORT", "COMMA", "ELSE", "SHORTVARASSIGN", "IDENTIFIER", "BOOLLITERAL",
+  "INTLITERAL", "UMINUS", "$accept", "sourcefile", "topleveldeclarations",
+  "packageclause", "packagename", "topleveldecl", "declaration", "vardecl",
+  "shortvardecl", "varspec", "functiondeclaration", "functionname",
+  "functionbody", "signature", "type", "typename", "result", "parameters",
+  "parameterlist", "parameterdecl", "expr", "expressionlist",
+  "identifierlist", "unaryexpr", "unary_op", "operand", "literal",
+  "basiclit", "operandname", "primaryexpr", "block", "statementlist",
+  "statement", "simplestatement", "emptystatement", "expressionstatement",
+  "assignment", "assign_op", "incdecstatement", "ifstatement",
+  "forstatement", "condition", "forclause", "initstatement",
+  "poststatement", "returnstatement", YY_NULLPTR
 };
 
 static const char *
@@ -712,12 +792,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-146)
+#define YYPACT_NINF (-147)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-97)
+#define YYTABLE_NINF (-99)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -726,23 +806,23 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-       0,    24,    13,    16,  -146,  -146,  -146,    11,     4,    49,
-    -146,    67,  -146,  -146,  -146,    50,    86,  -146,    52,  -146,
-      85,    11,    86,   106,  -146,  -146,  -146,    98,   129,    99,
-    -146,    72,   105,   101,  -146,  -146,   124,   125,  -146,   129,
-    -146,  -146,  -146,  -146,  -146,   275,    71,  -146,   129,  -146,
-    -146,  -146,  -146,  -146,   129,     9,  -146,  -146,    10,  -146,
-      98,   118,  -146,  -146,    72,  -146,  -146,  -146,  -146,  -146,
-     227,   129,   129,   129,   129,   129,   129,   129,   129,   129,
-     129,   129,   129,   129,  -146,    71,  -146,    75,  -146,   -29,
-     129,   135,    82,  -146,  -146,   159,   242,    97,  -146,    57,
-     139,  -146,  -146,  -146,  -146,  -146,  -146,  -146,  -146,   125,
-    -146,   102,   102,  -146,  -146,   303,   294,    14,    14,    14,
-      14,    14,    14,   275,  -146,  -146,    71,   182,   140,   205,
-    -146,  -146,   105,   105,   145,  -146,  -146,  -146,  -146,  -146,
-    -146,  -146,   129,   129,  -146,   146,  -146,   108,   129,  -146,
-    -146,   129,    71,    71,  -146,    15,   256,   275,   153,  -146,
-    -146,   115,   135,    15,  -146,  -146,  -146,  -146
+       3,   -29,    15,    20,  -147,  -147,  -147,    22,     6,   -15,
+    -147,    64,  -147,  -147,  -147,    29,    36,  -147,    17,  -147,
+      70,    22,    79,    29,  -147,  -147,     9,   138,  -147,    54,
+    -147,    57,    77,    44,  -147,    81,  -147,    82,   138,  -147,
+    -147,  -147,  -147,  -147,  -147,   281,    53,  -147,   138,  -147,
+    -147,  -147,  -147,  -147,   138,  -147,    -5,  -147,    51,  -147,
+       9,   118,  -147,  -147,    57,  -147,  -147,  -147,  -147,  -147,
+     241,   138,   138,   138,   138,   138,   138,   138,   138,   138,
+     138,   138,   138,   138,  -147,    53,  -147,    61,  -147,   138,
+     143,   131,    46,  -147,  -147,   175,    58,    72,  -147,    83,
+     111,  -147,  -147,  -147,  -147,  -147,  -147,  -147,  -147,    82,
+    -147,    14,    14,  -147,  -147,   309,   300,   149,   149,   149,
+     149,   149,   149,   281,  -147,  -147,    53,   197,   112,   219,
+    -147,  -147,    77,    77,   113,  -147,  -147,  -147,  -147,  -147,
+    -147,  -147,   138,   138,  -147,    96,    80,   138,  -147,  -147,
+     138,    53,    53,  -147,    62,   262,   281,   117,  -147,  -147,
+      93,   143,    62,  -147,  -147,  -147,  -147
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -750,33 +830,33 @@ static const yytype_int16 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     0,     6,     5,     1,     0,     0,     0,
-       2,     0,     7,     9,     8,    51,     0,    10,     0,    17,
-       0,     4,     0,     0,    23,    24,    25,     0,     0,    14,
-      21,     0,     0,    20,     3,    50,     0,     0,    63,     0,
-      54,    55,    56,    61,    62,    49,    15,    35,     0,    64,
-      57,    60,    58,    52,     0,    51,    28,    34,     0,    32,
-       0,    79,    16,    18,     0,    27,    19,    26,    11,    22,
+       0,     0,     0,     0,     7,     6,     1,     3,     0,     0,
+       2,     0,     8,    10,     9,     0,    52,    11,     0,    18,
+       0,     5,     0,     0,    25,    26,     0,     0,    24,    15,
+      22,     0,     0,    21,     4,     0,    51,     0,     0,    55,
+      57,    64,    63,    62,    56,    50,    16,    36,     0,    65,
+      58,    61,    59,    53,     0,    29,    52,    35,     0,    33,
+       0,    80,    17,    19,     0,    28,    20,    27,    12,    23,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    53,    13,    30,     0,    33,    63,
-     101,    79,    79,    68,    78,    49,     0,     0,    69,    79,
-       0,    73,    77,    74,    75,    76,    70,    71,    72,    34,
-      59,    44,    45,    42,    43,    47,    46,    40,    41,    38,
-      39,    36,    37,    48,    29,    31,   100,    49,     0,    49,
-      95,    98,     0,     0,     0,    87,    88,    83,    84,    85,
-      86,    82,     0,     0,    65,     0,    66,     0,     0,    93,
-      94,     0,    81,    12,    67,     0,     0,    96,     0,    92,
-      91,     0,    79,     0,    99,    97,    90,    89
+       0,     0,     0,     0,    54,    14,    31,     0,    34,   103,
+      80,    80,    64,    69,    79,    50,     0,     0,    70,     0,
+       0,    74,    78,    75,    76,    77,    71,    72,    73,    35,
+      60,    45,    46,    43,    44,    48,    47,    41,    42,    39,
+      40,    37,    38,    49,    30,    32,   102,    50,     0,    50,
+      97,   100,     0,     0,     0,    88,    89,    84,    85,    86,
+      87,    83,     0,     0,    66,    67,    94,     0,    95,    96,
+       0,    82,    13,    68,     0,     0,    98,     0,    93,    92,
+       0,    80,     0,   101,    99,    91,    90
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -146,  -146,   137,  -146,  -146,  -146,   -52,  -146,  -146,   143,
-    -146,  -146,  -146,  -146,   -12,  -146,  -146,   127,  -146,    76,
-     -37,   -27,    -5,   119,  -146,  -146,  -146,  -146,  -146,  -146,
-     -32,  -146,    69,   -87,  -146,  -146,  -146,  -146,  -146,  -145,
-    -146,    18,  -146,  -146,  -146,  -146
+    -147,  -147,   114,  -147,  -147,  -147,   -58,  -147,  -147,   119,
+    -147,  -147,  -147,  -147,    -8,  -147,  -147,   103,  -147,    60,
+     -37,   -25,    -4,    97,  -147,  -147,  -147,  -147,  -147,  -147,
+     -32,     5,  -147,   -85,  -147,  -147,  -147,  -147,  -147,  -146,
+    -147,    -9,  -147,  -147,  -147,  -147
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -786,7 +866,7 @@ static const yytype_uint8 yydefgoto[] =
       14,    20,    62,    32,    57,    30,    66,    33,    58,    59,
       45,    96,    97,    47,    48,    49,    50,    51,    52,    53,
       98,    99,   100,   101,   102,   103,   104,   142,   105,   106,
-     107,   132,   133,   134,   165,   108
+     107,   132,   133,   134,   164,   108
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -794,133 +874,135 @@ static const yytype_uint8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      63,    46,    70,    18,   128,   131,    29,     1,    15,    93,
-     160,    18,    22,     6,   -51,    37,    16,    35,   167,     7,
-       8,    65,   -23,    86,    95,    91,    60,    85,     4,    61,
-      71,    72,    73,    74,   111,   112,   113,   114,   115,   116,
-     117,   118,   119,   120,   121,   122,   123,    93,    88,     9,
-      22,    87,   109,    19,   127,   129,    24,    25,    26,    60,
-     130,    89,    95,   126,    27,    90,     8,    91,    92,    39,
-      21,    61,   144,    40,    41,   164,    55,    25,    26,    55,
-      25,    26,    60,    42,    27,    56,    89,    27,   124,    28,
-      15,    22,    43,    44,    39,   147,    61,    31,    40,    41,
-     149,   150,    24,    25,    26,    24,    25,    26,    42,    36,
-      27,   156,    83,    64,   157,   152,   153,    43,    44,    61,
-      73,    74,    89,   159,   161,    95,    90,     8,    91,    92,
-      39,   166,    61,    38,    40,    41,    54,    68,    69,    89,
-     143,    39,   146,   148,    42,    40,    41,    39,   151,   154,
-     155,    40,    41,    43,    44,    42,   162,   163,    34,    23,
-      67,    42,   -80,   125,    43,    44,     0,    84,   145,   158,
-      43,    44,     0,   -80,     0,    71,    72,    73,    74,     0,
-       0,     0,     0,    75,    76,   -80,   135,   136,    77,    78,
-      79,    80,    81,    82,     0,     0,    61,     0,    71,    72,
-      73,    74,     0,     0,     0,     0,    75,    76,   -80,   135,
-     136,    77,    78,    79,    80,    81,    82,     0,     0,   -96,
-       0,    71,    72,    73,    74,     0,     0,     0,     0,    75,
-      76,     0,   135,   136,    77,    78,    79,    80,    81,    82,
-     110,     0,     0,    71,    72,    73,    74,     0,     0,     0,
-       0,    75,    76,     0,     0,     0,    77,    78,    79,    80,
-      81,    82,   137,   138,   139,   140,     0,     0,     0,     0,
-      61,     0,    71,    72,    73,    74,     0,     0,     0,   141,
-      75,    76,     0,    83,     0,    77,    78,    79,    80,    81,
-      82,    71,    72,    73,    74,     0,     0,     0,     0,    75,
-      76,     0,     0,     0,    77,    78,    79,    80,    81,    82,
-      71,    72,    73,    74,     0,     0,     0,     0,    75,    71,
-      72,    73,    74,    77,    78,    79,    80,    81,    82,     0,
-       0,     0,    77,    78,    79,    80,    81,    82
+      63,    70,    46,    93,    18,   128,   131,   -24,   159,     1,
+      29,    18,     4,    24,    25,     6,   166,    15,    37,    36,
+      26,    24,    25,     7,    95,    65,    19,    60,    26,    85,
+       8,    73,    74,    23,   111,   112,   113,   114,   115,   116,
+     117,   118,   119,   120,   121,   122,   123,    16,    24,    25,
+      28,    27,    88,   127,   129,    64,   109,     9,    28,   130,
+      60,    24,    25,    86,   126,    24,    25,    21,    26,    55,
+      16,    90,    26,   124,    23,    61,   163,   137,   138,   139,
+     140,    31,    35,    60,    23,    28,   -52,    93,    54,    87,
+      61,    83,   141,    68,    69,   146,    83,   144,    56,   -80,
+     148,   149,    56,    89,     8,    90,    91,    38,    95,    61,
+     155,    39,   143,   156,   145,   147,   150,   151,   152,   154,
+     161,    40,   158,   160,    95,    89,     8,    90,    91,    38,
+     165,    61,   162,    39,    22,    34,    67,    92,    42,    43,
+      44,   157,    38,    40,    61,    84,    39,   125,     0,    38,
+     153,     0,     0,    39,    38,     0,    40,     0,    39,    92,
+      42,    43,    44,    40,    71,    72,    73,    74,    40,     0,
+       0,     0,    92,    42,    43,    44,     0,     0,   -81,    41,
+      42,    43,    44,     0,    92,    42,    43,    44,   -81,     0,
+      71,    72,    73,    74,     0,     0,     0,     0,    75,    76,
+     -81,   135,   136,    77,    78,    79,    80,    81,    82,     0,
+      61,     0,    71,    72,    73,    74,     0,     0,     0,     0,
+      75,    76,   -81,   135,   136,    77,    78,    79,    80,    81,
+      82,     0,   -98,     0,    71,    72,    73,    74,     0,     0,
+       0,     0,    75,    76,     0,   135,   136,    77,    78,    79,
+      80,    81,    82,   110,     0,     0,    71,    72,    73,    74,
+       0,     0,     0,     0,    75,    76,     0,     0,     0,    77,
+      78,    79,    80,    81,    82,    61,     0,    71,    72,    73,
+      74,     0,     0,     0,     0,    75,    76,     0,     0,     0,
+      77,    78,    79,    80,    81,    82,    71,    72,    73,    74,
+       0,     0,     0,     0,    75,    76,     0,     0,     0,    77,
+      78,    79,    80,    81,    82,    71,    72,    73,    74,     0,
+       0,     0,     0,    75,    71,    72,    73,    74,    77,    78,
+      79,    80,    81,    82,     0,     0,     0,    77,    78,    79,
+      80,    81,    82
 };
 
 static const yytype_int16 yycheck[] =
 {
-      32,    28,    39,     8,    91,    92,    18,     7,     4,    61,
-     155,    16,    41,     0,    43,    27,    12,    22,   163,     3,
-       9,    33,    13,    13,    61,    10,    31,    54,     4,    14,
-      16,    17,    18,    19,    71,    72,    73,    74,    75,    76,
-      77,    78,    79,    80,    81,    82,    83,    99,    60,    38,
-      41,    41,    64,     4,    91,    92,     4,     5,     6,    64,
-      92,     4,    99,    90,    12,     8,     9,    10,    11,    12,
-       3,    14,    15,    16,    17,   162,     4,     5,     6,     4,
-       5,     6,    87,    26,    12,    13,     4,    12,    13,    37,
-       4,    41,    35,    36,    12,   127,    14,    12,    16,    17,
-     132,   133,     4,     5,     6,     4,     5,     6,    26,     3,
-      12,   148,    41,    12,   151,   142,   143,    35,    36,    14,
-      18,    19,     4,   155,   156,   162,     8,     9,    10,    11,
-      12,   163,    14,     4,    16,    17,    37,    13,    13,     4,
-      43,    12,     3,     3,    26,    16,    17,    12,     3,     3,
-      42,    16,    17,    35,    36,    26,     3,    42,    21,    16,
-      33,    26,     3,    87,    35,    36,    -1,    48,    99,   151,
-      35,    36,    -1,    14,    -1,    16,    17,    18,    19,    -1,
-      -1,    -1,    -1,    24,    25,     3,    27,    28,    29,    30,
-      31,    32,    33,    34,    -1,    -1,    14,    -1,    16,    17,
-      18,    19,    -1,    -1,    -1,    -1,    24,    25,     3,    27,
-      28,    29,    30,    31,    32,    33,    34,    -1,    -1,    14,
-      -1,    16,    17,    18,    19,    -1,    -1,    -1,    -1,    24,
-      25,    -1,    27,    28,    29,    30,    31,    32,    33,    34,
-      13,    -1,    -1,    16,    17,    18,    19,    -1,    -1,    -1,
-      -1,    24,    25,    -1,    -1,    -1,    29,    30,    31,    32,
-      33,    34,    20,    21,    22,    23,    -1,    -1,    -1,    -1,
-      14,    -1,    16,    17,    18,    19,    -1,    -1,    -1,    37,
-      24,    25,    -1,    41,    -1,    29,    30,    31,    32,    33,
-      34,    16,    17,    18,    19,    -1,    -1,    -1,    -1,    24,
-      25,    -1,    -1,    -1,    29,    30,    31,    32,    33,    34,
-      16,    17,    18,    19,    -1,    -1,    -1,    -1,    24,    16,
-      17,    18,    19,    29,    30,    31,    32,    33,    34,    -1,
-      -1,    -1,    29,    30,    31,    32,    33,    34
+      32,    38,    27,    61,     8,    90,    91,    12,   154,     6,
+      18,    15,    41,     4,     5,     0,   162,    11,    26,    23,
+      11,     4,     5,     3,    61,    33,    41,    31,    11,    54,
+       8,    17,    18,    38,    71,    72,    73,    74,    75,    76,
+      77,    78,    79,    80,    81,    82,    83,    41,     4,     5,
+      41,    34,    60,    90,    91,    11,    64,    35,    41,    91,
+      64,     4,     5,    12,    89,     4,     5,     3,    11,    12,
+      41,     9,    11,    12,    38,    13,   161,    19,    20,    21,
+      22,    11,     3,    87,    38,    41,    40,   145,    34,    38,
+      13,    38,    34,    12,    12,   127,    38,    14,    41,     3,
+     132,   133,    41,     7,     8,     9,    10,    11,   145,    13,
+     147,    15,    40,   150,     3,     3,     3,   142,   143,    39,
+       3,    25,   154,   155,   161,     7,     8,     9,    10,    11,
+     162,    13,    39,    15,    15,    21,    33,    41,    42,    43,
+      44,   150,    11,    25,    13,    48,    15,    87,    -1,    11,
+     145,    -1,    -1,    15,    11,    -1,    25,    -1,    15,    41,
+      42,    43,    44,    25,    15,    16,    17,    18,    25,    -1,
+      -1,    -1,    41,    42,    43,    44,    -1,    -1,     3,    41,
+      42,    43,    44,    -1,    41,    42,    43,    44,    13,    -1,
+      15,    16,    17,    18,    -1,    -1,    -1,    -1,    23,    24,
+       3,    26,    27,    28,    29,    30,    31,    32,    33,    -1,
+      13,    -1,    15,    16,    17,    18,    -1,    -1,    -1,    -1,
+      23,    24,     3,    26,    27,    28,    29,    30,    31,    32,
+      33,    -1,    13,    -1,    15,    16,    17,    18,    -1,    -1,
+      -1,    -1,    23,    24,    -1,    26,    27,    28,    29,    30,
+      31,    32,    33,    12,    -1,    -1,    15,    16,    17,    18,
+      -1,    -1,    -1,    -1,    23,    24,    -1,    -1,    -1,    28,
+      29,    30,    31,    32,    33,    13,    -1,    15,    16,    17,
+      18,    -1,    -1,    -1,    -1,    23,    24,    -1,    -1,    -1,
+      28,    29,    30,    31,    32,    33,    15,    16,    17,    18,
+      -1,    -1,    -1,    -1,    23,    24,    -1,    -1,    -1,    28,
+      29,    30,    31,    32,    33,    15,    16,    17,    18,    -1,
+      -1,    -1,    -1,    23,    15,    16,    17,    18,    28,    29,
+      30,    31,    32,    33,    -1,    -1,    -1,    28,    29,    30,
+      31,    32,    33
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     7,    46,    48,     4,    49,     0,     3,     9,    38,
-      47,    50,    51,    52,    55,     4,    12,    54,    67,     4,
-      56,     3,    41,    54,     4,     5,     6,    12,    37,    59,
-      60,    12,    58,    62,    47,    67,     3,    59,     4,    12,
-      16,    17,    26,    35,    36,    65,    66,    68,    69,    70,
-      71,    72,    73,    74,    37,     4,    13,    59,    63,    64,
-      67,    14,    57,    75,    12,    59,    61,    62,    13,    13,
-      65,    16,    17,    18,    19,    24,    25,    29,    30,    31,
-      32,    33,    34,    41,    68,    66,    13,    41,    59,     4,
-       8,    10,    11,    51,    53,    65,    66,    67,    75,    76,
+       0,     6,    46,    48,    41,    49,     0,     3,     8,    35,
+      47,    50,    51,    52,    55,    11,    41,    54,    67,    41,
+      56,     3,    54,    38,     4,     5,    11,    34,    41,    59,
+      60,    11,    58,    62,    47,     3,    67,    59,    11,    15,
+      25,    41,    42,    43,    44,    65,    66,    68,    69,    70,
+      71,    72,    73,    74,    34,    12,    41,    59,    63,    64,
+      67,    13,    57,    75,    11,    59,    61,    62,    12,    12,
+      65,    15,    16,    17,    18,    23,    24,    28,    29,    30,
+      31,    32,    33,    38,    68,    66,    12,    38,    59,     7,
+       9,    10,    41,    51,    53,    65,    66,    67,    75,    76,
       77,    78,    79,    80,    81,    83,    84,    85,    90,    59,
-      13,    65,    65,    65,    65,    65,    65,    65,    65,    65,
-      65,    65,    65,    65,    13,    64,    66,    65,    78,    65,
-      75,    78,    86,    87,    88,    27,    28,    20,    21,    22,
-      23,    37,    82,    43,    15,    77,     3,    75,     3,    75,
-      75,     3,    66,    66,     3,    42,    65,    65,    86,    75,
-      84,    75,     3,    42,    78,    89,    75,    84
+      12,    65,    65,    65,    65,    65,    65,    65,    65,    65,
+      65,    65,    65,    65,    12,    64,    66,    65,    78,    65,
+      75,    78,    86,    87,    88,    26,    27,    19,    20,    21,
+      22,    34,    82,    40,    14,     3,    75,     3,    75,    75,
+       3,    66,    66,    76,    39,    65,    65,    86,    75,    84,
+      75,     3,    39,    78,    89,    75,    84
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    45,    46,    47,    47,    48,    49,    50,    50,    51,
-      52,    52,    53,    54,    54,    54,    55,    56,    57,    58,
-      58,    59,    59,    60,    60,    60,    61,    61,    62,    62,
-      62,    63,    63,    64,    64,    65,    65,    65,    65,    65,
-      65,    65,    65,    65,    65,    65,    65,    65,    66,    66,
-      67,    67,    68,    68,    69,    69,    69,    70,    70,    70,
-      71,    72,    72,    73,    74,    75,    76,    76,    77,    77,
-      77,    77,    77,    77,    78,    78,    78,    78,    78,    79,
-      80,    81,    82,    82,    82,    82,    82,    83,    83,    84,
-      84,    84,    84,    85,    85,    85,    86,    87,    88,    89,
-      90,    90
+       0,    45,    46,    46,    47,    47,    48,    49,    50,    50,
+      51,    52,    52,    53,    54,    54,    54,    55,    56,    57,
+      58,    58,    59,    59,    60,    60,    60,    61,    61,    62,
+      62,    62,    63,    63,    64,    64,    65,    65,    65,    65,
+      65,    65,    65,    65,    65,    65,    65,    65,    65,    66,
+      66,    67,    67,    68,    68,    69,    69,    69,    70,    70,
+      70,    71,    72,    72,    73,    74,    75,    76,    76,    77,
+      77,    77,    77,    77,    77,    78,    78,    78,    78,    78,
+      79,    80,    81,    82,    82,    82,    82,    82,    83,    83,
+      84,    84,    84,    84,    84,    85,    85,    85,    86,    87,
+      88,    89,    90,    90
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     3,     3,     2,     2,     1,     1,     1,     1,
-       2,     5,     3,     4,     2,     3,     4,     1,     1,     2,
-       1,     1,     3,     1,     1,     1,     1,     1,     2,     4,
-       3,     3,     1,     2,     1,     1,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     3,     3,     3,     1,
-       3,     1,     1,     2,     1,     1,     1,     1,     1,     3,
-       1,     1,     1,     1,     1,     3,     2,     3,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     0,
-       1,     3,     1,     1,     1,     1,     1,     2,     2,     7,
-       7,     5,     5,     3,     3,     2,     1,     5,     1,     1,
-       2,     1
+       0,     2,     3,     2,     3,     2,     2,     1,     1,     1,
+       1,     2,     5,     3,     4,     2,     3,     4,     1,     1,
+       2,     1,     1,     3,     1,     1,     1,     1,     1,     2,
+       4,     3,     3,     1,     2,     1,     1,     3,     3,     3,
+       3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
+       1,     3,     1,     1,     2,     1,     1,     1,     1,     1,
+       3,     1,     1,     1,     1,     1,     3,     2,     3,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       0,     1,     3,     1,     1,     1,     1,     1,     2,     2,
+       7,     7,     5,     5,     3,     3,     3,     2,     1,     5,
+       1,     1,     2,     1
 };
 
 
@@ -1384,601 +1466,623 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* sourcefile: packageclause SEMICOLON topleveldeclarations  */
-#line 23 "grammar.y"
-                                                         {puts("packageclause SEMICOLON topleveldeclarations"); }
-#line 1390 "grammar.tab.c"
-    break;
-
-  case 3: /* topleveldeclarations: topleveldecl SEMICOLON topleveldeclarations  */
-#line 25 "grammar.y"
-                                                                   {puts("topleveldecl SEMICOLON topleveldeclarations"); }
-#line 1396 "grammar.tab.c"
-    break;
-
-  case 4: /* topleveldeclarations: topleveldecl SEMICOLON  */
-#line 26 "grammar.y"
-                                                                   {puts("topleveldecl SEMICOLON"); }
-#line 1402 "grammar.tab.c"
-    break;
-
-  case 5: /* packageclause: PACKAGE packagename  */
-#line 29 "grammar.y"
-                                    {puts("PACKAGE packagename"); }
-#line 1408 "grammar.tab.c"
-    break;
-
-  case 6: /* packagename: IDENTIFIER  */
-#line 31 "grammar.y"
-                        {puts("IDENTIFIER"); }
-#line 1414 "grammar.tab.c"
-    break;
-
-  case 7: /* topleveldecl: declaration  */
-#line 34 "grammar.y"
-                                   {puts("declaration"); }
-#line 1420 "grammar.tab.c"
-    break;
-
-  case 8: /* topleveldecl: functiondeclaration  */
-#line 35 "grammar.y"
-                                   {puts("functiondeclaration"); }
-#line 1426 "grammar.tab.c"
-    break;
-
-  case 9: /* declaration: vardecl  */
-#line 38 "grammar.y"
-                         {puts("vardecl"); }
-#line 1432 "grammar.tab.c"
-    break;
-
-  case 10: /* vardecl: VAR varspec  */
-#line 41 "grammar.y"
-                                                            {puts("VAR varspec"); }
-#line 1438 "grammar.tab.c"
-    break;
-
-  case 11: /* vardecl: VAR LPAREN varspec SEMICOLON RPAREN  */
-#line 42 "grammar.y"
-                                                            {puts("VAR LPAREN varspec SEMICOLON RPAREN "); }
-#line 1444 "grammar.tab.c"
-    break;
-
-  case 12: /* shortvardecl: identifierlist SHORTVARASSIGN expressionlist  */
-#line 45 "grammar.y"
-                                                            {puts("identifierlist SHORTVARASSIGN expressionlist"); }
-#line 1450 "grammar.tab.c"
-    break;
-
-  case 13: /* varspec: identifierlist type ASSIGN expressionlist  */
-#line 48 "grammar.y"
-                                                        {puts("identifierlist type ASSIGN expressionlist"); }
-#line 1456 "grammar.tab.c"
-    break;
-
-  case 14: /* varspec: identifierlist type  */
-#line 49 "grammar.y"
-                                                        {puts("identifierlist type"); }
-#line 1462 "grammar.tab.c"
-    break;
-
-  case 15: /* varspec: identifierlist ASSIGN expressionlist  */
-#line 50 "grammar.y"
-                                                        {puts("identifierlist ASSIGN expressionlist "); }
-#line 1468 "grammar.tab.c"
-    break;
-
-  case 16: /* functiondeclaration: FUNC functionname signature functionbody  */
-#line 53 "grammar.y"
-                                                              {puts("FUNC functionname signature functionbody"); }
+#line 154 "grammar.y"
+                                                                        {(yyval.srcfile) = new SrcFile((yyvsp[-2].packageclause), nullptr, (yyvsp[0].decllist));
+                                                                        ast = (yyval.srcfile);
+                                                                        }
 #line 1474 "grammar.tab.c"
     break;
 
-  case 17: /* functionname: IDENTIFIER  */
-#line 55 "grammar.y"
-                          {puts("IDENTIFIER"); }
-#line 1480 "grammar.tab.c"
-    break;
-
-  case 18: /* functionbody: block  */
-#line 57 "grammar.y"
-                     {puts("block"); }
-#line 1486 "grammar.tab.c"
-    break;
-
-  case 19: /* signature: parameters result  */
-#line 59 "grammar.y"
-                                {puts("parameters result"); }
-#line 1492 "grammar.tab.c"
-    break;
-
-  case 20: /* signature: parameters  */
-#line 60 "grammar.y"
-                                {puts("parameters"); }
-#line 1498 "grammar.tab.c"
-    break;
-
-  case 21: /* type: typename  */
-#line 63 "grammar.y"
-                                {puts("typename"); }
-#line 1504 "grammar.tab.c"
-    break;
-
-  case 22: /* type: LPAREN type RPAREN  */
-#line 64 "grammar.y"
-                                {puts("LPAREN type RPAREN"); }
-#line 1510 "grammar.tab.c"
-    break;
-
-  case 23: /* typename: IDENTIFIER  */
-#line 67 "grammar.y"
-                                {puts("IDENTIFIER"); }
-#line 1516 "grammar.tab.c"
-    break;
-
-  case 24: /* typename: INTEGER  */
-#line 68 "grammar.y"
-                                {puts("INTEGER"); }
-#line 1522 "grammar.tab.c"
-    break;
-
-  case 25: /* typename: BOOLEAN  */
-#line 69 "grammar.y"
-                                {puts("BOOLEAN"); }
-#line 1528 "grammar.tab.c"
-    break;
-
-  case 26: /* result: parameters  */
-#line 72 "grammar.y"
-                                {puts("parameters"); }
-#line 1534 "grammar.tab.c"
-    break;
-
-  case 27: /* result: type  */
-#line 73 "grammar.y"
-                                {puts("type"); }
-#line 1540 "grammar.tab.c"
-    break;
-
-  case 29: /* parameters: LPAREN parameterlist COMMA RPAREN  */
-#line 77 "grammar.y"
-                                                  {puts("LPAREN parameterlist COMMA RPAREN"); }
-#line 1546 "grammar.tab.c"
-    break;
-
-  case 30: /* parameters: LPAREN parameterlist RPAREN  */
-#line 78 "grammar.y"
-                                                 {puts("LPAREN parameterlist RPAREN  "); }
-#line 1552 "grammar.tab.c"
-    break;
-
-  case 31: /* parameterlist: parameterlist COMMA parameterdecl  */
-#line 81 "grammar.y"
-                                                     {puts("parameterdecl COMMA parameterdecl"); }
-#line 1558 "grammar.tab.c"
-    break;
-
-  case 32: /* parameterlist: parameterdecl  */
-#line 82 "grammar.y"
-                                                     {puts("parameterdecl"); }
-#line 1564 "grammar.tab.c"
-    break;
-
-  case 33: /* parameterdecl: identifierlist type  */
-#line 85 "grammar.y"
-                                                {puts("identifierlist type"); }
-#line 1570 "grammar.tab.c"
-    break;
-
-  case 34: /* parameterdecl: type  */
-#line 86 "grammar.y"
-                                                {puts("type"); }
-#line 1576 "grammar.tab.c"
-    break;
-
-  case 35: /* expr: unaryexpr  */
-#line 89 "grammar.y"
-                                {puts("unaryexpr"); }
-#line 1582 "grammar.tab.c"
-    break;
-
-  case 36: /* expr: expr EQ expr  */
-#line 90 "grammar.y"
-                                {puts("expr EQ expr"); }
-#line 1588 "grammar.tab.c"
-    break;
-
-  case 37: /* expr: expr NE expr  */
-#line 91 "grammar.y"
-                                {puts("expr NE expr"); }
-#line 1594 "grammar.tab.c"
-    break;
-
-  case 38: /* expr: expr LT expr  */
-#line 92 "grammar.y"
-                                {puts("expr LT expr"); }
-#line 1600 "grammar.tab.c"
-    break;
-
-  case 39: /* expr: expr LE expr  */
-#line 93 "grammar.y"
-                                {puts("expr LE expr"); }
-#line 1606 "grammar.tab.c"
-    break;
-
-  case 40: /* expr: expr GT expr  */
-#line 94 "grammar.y"
-                                {puts("expr GT expr"); }
-#line 1612 "grammar.tab.c"
-    break;
-
-  case 41: /* expr: expr GE expr  */
-#line 95 "grammar.y"
-                                {puts("expr GE expr"); }
-#line 1618 "grammar.tab.c"
-    break;
-
-  case 42: /* expr: expr MUL expr  */
-#line 96 "grammar.y"
-                                 {puts("expr MUL expr"); }
-#line 1624 "grammar.tab.c"
-    break;
-
-  case 43: /* expr: expr DIV expr  */
-#line 97 "grammar.y"
-                                 {puts("expr DIV expr"); }
-#line 1630 "grammar.tab.c"
-    break;
-
-  case 44: /* expr: expr PLUS expr  */
-#line 98 "grammar.y"
-                                {puts("expr PLUS expr"); }
-#line 1636 "grammar.tab.c"
-    break;
-
-  case 45: /* expr: expr MIN expr  */
-#line 99 "grammar.y"
-                                {puts("expr MIN expr"); }
-#line 1642 "grammar.tab.c"
-    break;
-
-  case 46: /* expr: expr OR expr  */
-#line 100 "grammar.y"
-                                {puts("expr OR expr"); }
-#line 1648 "grammar.tab.c"
-    break;
-
-  case 47: /* expr: expr AND expr  */
-#line 101 "grammar.y"
-                                {puts("expr AND expr"); }
-#line 1654 "grammar.tab.c"
-    break;
-
-  case 48: /* expressionlist: expressionlist COMMA expr  */
-#line 104 "grammar.y"
-                                                {puts("expressionlist COMMA expr"); }
-#line 1660 "grammar.tab.c"
-    break;
-
-  case 49: /* expressionlist: expr  */
-#line 105 "grammar.y"
-                                                {puts("expr"); }
-#line 1666 "grammar.tab.c"
-    break;
-
-  case 50: /* identifierlist: IDENTIFIER COMMA identifierlist  */
-#line 108 "grammar.y"
-                                                        {puts("IDENTIFIER COMMA identifierlist"); }
-#line 1672 "grammar.tab.c"
-    break;
-
-  case 51: /* identifierlist: IDENTIFIER  */
-#line 109 "grammar.y"
-                                                        {puts("IDENTIFIER"); }
-#line 1678 "grammar.tab.c"
-    break;
-
-  case 52: /* unaryexpr: primaryexpr  */
-#line 112 "grammar.y"
-                               {puts("primaryexpr"); }
-#line 1684 "grammar.tab.c"
-    break;
-
-  case 53: /* unaryexpr: unary_op unaryexpr  */
-#line 113 "grammar.y"
-                               {puts("unary_op unaryexpr"); }
-#line 1690 "grammar.tab.c"
-    break;
-
-  case 54: /* unary_op: PLUS  */
-#line 116 "grammar.y"
-                                {puts("PLUS"); }
-#line 1696 "grammar.tab.c"
-    break;
-
-  case 55: /* unary_op: MIN  */
-#line 117 "grammar.y"
-                                {puts("MIN"); }
-#line 1702 "grammar.tab.c"
-    break;
-
-  case 56: /* unary_op: NOT  */
-#line 118 "grammar.y"
-                                {puts("NOT"); }
-#line 1708 "grammar.tab.c"
-    break;
-
-  case 57: /* operand: literal  */
-#line 121 "grammar.y"
-                                {puts("literal"); }
-#line 1714 "grammar.tab.c"
-    break;
-
-  case 58: /* operand: operandname  */
-#line 122 "grammar.y"
-                                {puts("operandname"); }
-#line 1720 "grammar.tab.c"
-    break;
-
-  case 59: /* operand: LPAREN expr RPAREN  */
-#line 123 "grammar.y"
-                                {puts("LPAREN expr RPAREN"); }
-#line 1726 "grammar.tab.c"
-    break;
-
-  case 60: /* literal: basiclit  */
-#line 126 "grammar.y"
-                                {puts("basiclit"); }
-#line 1732 "grammar.tab.c"
-    break;
-
-  case 61: /* basiclit: INTLITERAL  */
-#line 129 "grammar.y"
-                                {puts("INTLITERAL"); }
-#line 1738 "grammar.tab.c"
-    break;
-
-  case 62: /* basiclit: BOOLLITERAL  */
-#line 130 "grammar.y"
-                                {puts("BOOLLITERAL"); }
-#line 1744 "grammar.tab.c"
-    break;
-
-  case 63: /* operandname: IDENTIFIER  */
-#line 133 "grammar.y"
-                                {puts("IDENTIFIER"); }
-#line 1750 "grammar.tab.c"
-    break;
-
-  case 64: /* primaryexpr: operand  */
-#line 136 "grammar.y"
-                                {puts("operand"); }
-#line 1756 "grammar.tab.c"
-    break;
-
-  case 65: /* block: LBRACE statementlist RBRACE  */
-#line 139 "grammar.y"
-                                        {puts("LBRACE statementlist RBRACE"); }
-#line 1762 "grammar.tab.c"
-    break;
-
-  case 66: /* statementlist: statement SEMICOLON  */
-#line 142 "grammar.y"
-                                                        {puts("statement SEMICOLON");}
-#line 1768 "grammar.tab.c"
-    break;
-
-  case 67: /* statementlist: statementlist statement SEMICOLON  */
-#line 143 "grammar.y"
-                                                        {puts("statementlist statement SEMICOLON");}
-#line 1774 "grammar.tab.c"
-    break;
-
-  case 68: /* statement: declaration  */
-#line 146 "grammar.y"
-                                         {puts("declaration");}
-#line 1780 "grammar.tab.c"
-    break;
-
-  case 69: /* statement: block  */
-#line 147 "grammar.y"
-                                         {puts("block");}
-#line 1786 "grammar.tab.c"
-    break;
-
-  case 70: /* statement: ifstatement  */
-#line 148 "grammar.y"
-                                         {puts("ifstatement");}
-#line 1792 "grammar.tab.c"
-    break;
-
-  case 71: /* statement: forstatement  */
-#line 149 "grammar.y"
-                                         {puts("forstatement");}
-#line 1798 "grammar.tab.c"
-    break;
-
-  case 72: /* statement: returnstatement  */
-#line 150 "grammar.y"
-                                         {puts("returnstatement");}
-#line 1804 "grammar.tab.c"
-    break;
-
-  case 73: /* statement: simplestatement  */
-#line 151 "grammar.y"
-                                         {puts("simplestatement");}
-#line 1810 "grammar.tab.c"
-    break;
-
-  case 74: /* simplestatement: expressionstatement  */
-#line 154 "grammar.y"
-                                         {puts("expressionstatement");}
-#line 1816 "grammar.tab.c"
-    break;
-
-  case 75: /* simplestatement: assignment  */
-#line 155 "grammar.y"
-                                         {puts("assignment");}
-#line 1822 "grammar.tab.c"
-    break;
-
-  case 76: /* simplestatement: incdecstatement  */
-#line 156 "grammar.y"
-                                         {puts("incdecstatement");}
-#line 1828 "grammar.tab.c"
-    break;
-
-  case 77: /* simplestatement: emptystatement  */
-#line 157 "grammar.y"
-                                         {puts("emptystatement");}
-#line 1834 "grammar.tab.c"
-    break;
-
-  case 78: /* simplestatement: shortvardecl  */
-#line 158 "grammar.y"
-                                         {puts("shortvardecl");}
-#line 1840 "grammar.tab.c"
-    break;
-
-  case 79: /* emptystatement: %empty  */
-#line 161 "grammar.y"
-                {puts("nothing");}
-#line 1846 "grammar.tab.c"
-    break;
-
-  case 80: /* expressionstatement: expr  */
+  case 3: /* sourcefile: packageclause SEMICOLON  */
 #line 163 "grammar.y"
-                          {puts("expr");}
-#line 1852 "grammar.tab.c"
+                                                                        {(yyval.srcfile) = new SrcFile((yyvsp[-1].packageclause), nullptr, nullptr);
+                                                                        ast = (yyval.srcfile);
+                                                                        }
+#line 1482 "grammar.tab.c"
     break;
 
-  case 81: /* assignment: expressionlist assign_op expressionlist  */
-#line 165 "grammar.y"
-                                                    {puts("expressionlist assign_op expressionlist");}
-#line 1858 "grammar.tab.c"
-    break;
-
-  case 82: /* assign_op: ASSIGN  */
-#line 167 "grammar.y"
-                                                    {puts("ASSIGN");}
-#line 1864 "grammar.tab.c"
-    break;
-
-  case 83: /* assign_op: PLUSASSIGN  */
-#line 168 "grammar.y"
-                                                    {puts("PLUSASSIGN");}
-#line 1870 "grammar.tab.c"
-    break;
-
-  case 84: /* assign_op: MINASSIGN  */
-#line 169 "grammar.y"
-                                                    {puts("MINASSIGN");}
-#line 1876 "grammar.tab.c"
-    break;
-
-  case 85: /* assign_op: MULASSIGN  */
-#line 170 "grammar.y"
-                                                    {puts("MULASSIGN");}
-#line 1882 "grammar.tab.c"
-    break;
-
-  case 86: /* assign_op: DIVASSIGN  */
-#line 171 "grammar.y"
-                                                    {puts("DIVASSIGN");}
-#line 1888 "grammar.tab.c"
-    break;
-
-  case 87: /* incdecstatement: expr INC  */
-#line 174 "grammar.y"
-                                                    {puts("expr INC");}
-#line 1894 "grammar.tab.c"
-    break;
-
-  case 88: /* incdecstatement: expr DEC  */
-#line 175 "grammar.y"
-                                                    {puts("expr DEC");}
-#line 1900 "grammar.tab.c"
-    break;
-
-  case 89: /* ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement  */
-#line 179 "grammar.y"
-                                                                        {puts("IF simplestatement SEMICOLON expr block ELSE ifstatement"); }
-#line 1906 "grammar.tab.c"
-    break;
-
-  case 90: /* ifstatement: IF simplestatement SEMICOLON expr block ELSE block  */
-#line 180 "grammar.y"
-                                                                        {puts("IF simplestatement SEMICOLON expr block ELSE block"); }
-#line 1912 "grammar.tab.c"
-    break;
-
-  case 91: /* ifstatement: IF expr block ELSE ifstatement  */
-#line 181 "grammar.y"
-                                                                        {puts("IF expr block ELSE ifstatement"); }
-#line 1918 "grammar.tab.c"
-    break;
-
-  case 92: /* ifstatement: IF expr block ELSE block  */
+  case 4: /* topleveldeclarations: topleveldecl SEMICOLON topleveldeclarations  */
 #line 182 "grammar.y"
-                                                                        {puts("IF expr block ELSE block"); }
-#line 1924 "grammar.tab.c"
+                                                                   {(yyval.decllist) = new PairDeclList((yyvsp[-2].toplvldecl), (yyvsp[0].decllist));}
+#line 1488 "grammar.tab.c"
     break;
 
-  case 93: /* forstatement: FOR condition block  */
-#line 185 "grammar.y"
-                                        {puts("FOR condition block"); }
-#line 1930 "grammar.tab.c"
+  case 5: /* topleveldeclarations: topleveldecl SEMICOLON  */
+#line 183 "grammar.y"
+                                                                   {(yyval.decllist) = new LastDeclList((yyvsp[-1].toplvldecl));}
+#line 1494 "grammar.tab.c"
     break;
 
-  case 94: /* forstatement: FOR forclause block  */
+  case 6: /* packageclause: PACKAGE packagename  */
 #line 186 "grammar.y"
-                                        {puts("FOR forclause block"); }
-#line 1936 "grammar.tab.c"
+                                    {(yyval.packageclause) = new PackageClause((yyvsp[0].identifier));}
+#line 1500 "grammar.tab.c"
     break;
 
-  case 95: /* forstatement: FOR block  */
-#line 187 "grammar.y"
-                                        {puts("FOR block"); }
-#line 1942 "grammar.tab.c"
+  case 7: /* packagename: IDENTIFIER  */
+#line 188 "grammar.y"
+                        {(yyval.identifier) = new Identifier((yyvsp[0].id));}
+#line 1506 "grammar.tab.c"
     break;
 
-  case 96: /* condition: expr  */
-#line 190 "grammar.y"
-                                        {puts("expr"); }
-#line 1948 "grammar.tab.c"
+  case 8: /* topleveldecl: declaration  */
+#line 191 "grammar.y"
+                                   {(yyval.toplvldecl) = (yyvsp[0].decl); }
+#line 1512 "grammar.tab.c"
     break;
 
-  case 97: /* forclause: initstatement SEMICOLON condition SEMICOLON poststatement  */
+  case 9: /* topleveldecl: functiondeclaration  */
 #line 192 "grammar.y"
-                                                                        {puts("initstatement SEMICOLON condition SEMICOLON poststatement"); }
-#line 1954 "grammar.tab.c"
+                                   {(yyval.toplvldecl) = (yyvsp[0].toplvldecl); }
+#line 1518 "grammar.tab.c"
     break;
 
-  case 98: /* initstatement: simplestatement  */
+  case 10: /* declaration: vardecl  */
 #line 195 "grammar.y"
-                                {puts("simplestatement"); }
-#line 1960 "grammar.tab.c"
+                         {(yyval.decl) = new VarDecl(); }
+#line 1524 "grammar.tab.c"
     break;
 
-  case 99: /* poststatement: simplestatement  */
-#line 197 "grammar.y"
-                                 {puts("simplestatement"); }
-#line 1966 "grammar.tab.c"
+  case 11: /* vardecl: VAR varspec  */
+#line 198 "grammar.y"
+                                                            {(yyval.decl) = new VarDecl((yyvsp[0].varspec)); }
+#line 1530 "grammar.tab.c"
     break;
 
-  case 100: /* returnstatement: RETURN expressionlist  */
+  case 12: /* vardecl: VAR LPAREN varspec SEMICOLON RPAREN  */
 #line 199 "grammar.y"
-                                         {puts("RETURN expressionlist"); }
-#line 1972 "grammar.tab.c"
+                                                            {(yyval.decl) = new VarDecl((yyvsp[-2].varspec)); }
+#line 1536 "grammar.tab.c"
     break;
 
-  case 101: /* returnstatement: RETURN  */
-#line 200 "grammar.y"
-                                         {puts("RETURN"); }
-#line 1978 "grammar.tab.c"
+  case 13: /* shortvardecl: identifierlist SHORTVARASSIGN expressionlist  */
+#line 202 "grammar.y"
+                                                            {puts("identifierlist SHORTVARASSIGN expressionlist"); }
+#line 1542 "grammar.tab.c"
+    break;
+
+  case 14: /* varspec: identifierlist type ASSIGN expressionlist  */
+#line 205 "grammar.y"
+                                                        {(yyval.varspec) = new VarSpec((yyvsp[-3].identifierlist), (yyvsp[-2].type), (yyvsp[0].explist)); }
+#line 1548 "grammar.tab.c"
+    break;
+
+  case 15: /* varspec: identifierlist type  */
+#line 206 "grammar.y"
+                                                        {(yyval.varspec) = new VarSpec((yyvsp[-1].identifierlist), (yyvsp[0].type), nullptr);}
+#line 1554 "grammar.tab.c"
+    break;
+
+  case 16: /* varspec: identifierlist ASSIGN expressionlist  */
+#line 207 "grammar.y"
+                                                        {(yyval.varspec) = new VarSpec((yyvsp[-2].identifierlist), nullptr, (yyvsp[0].explist)); }
+#line 1560 "grammar.tab.c"
+    break;
+
+  case 17: /* functiondeclaration: FUNC functionname signature functionbody  */
+#line 210 "grammar.y"
+                                                              {(yyval.toplvldecl) = new FunctionDecl((yyvsp[-2].identifier), (yyvsp[-1].signature), (yyvsp[0].block)); }
+#line 1566 "grammar.tab.c"
+    break;
+
+  case 18: /* functionname: IDENTIFIER  */
+#line 212 "grammar.y"
+                          {(yyval.identifier) = new Identifier((yyvsp[0].id)); }
+#line 1572 "grammar.tab.c"
+    break;
+
+  case 19: /* functionbody: block  */
+#line 214 "grammar.y"
+                     {(yyval.block) = (yyvsp[0].block); }
+#line 1578 "grammar.tab.c"
+    break;
+
+  case 20: /* signature: parameters result  */
+#line 216 "grammar.y"
+                                { (yyval.signature) = new Signature((yyvsp[-1].paramlist), (yyvsp[0].result)); }
+#line 1584 "grammar.tab.c"
+    break;
+
+  case 21: /* signature: parameters  */
+#line 217 "grammar.y"
+                                { (yyval.signature) = new Signature((yyvsp[0].paramlist), nullptr); }
+#line 1590 "grammar.tab.c"
+    break;
+
+  case 22: /* type: typename  */
+#line 220 "grammar.y"
+                                { (yyval.type) = (yyvsp[0].type); }
+#line 1596 "grammar.tab.c"
+    break;
+
+  case 23: /* type: LPAREN type RPAREN  */
+#line 221 "grammar.y"
+                                { (yyval.type) = (yyvsp[-1].type); }
+#line 1602 "grammar.tab.c"
+    break;
+
+  case 24: /* typename: IDENTIFIER  */
+#line 224 "grammar.y"
+                                { puts("IDENTIFIER"); }
+#line 1608 "grammar.tab.c"
+    break;
+
+  case 25: /* typename: INTEGER  */
+#line 225 "grammar.y"
+                                { (yyval.type) = new IntegerType(); }
+#line 1614 "grammar.tab.c"
+    break;
+
+  case 26: /* typename: BOOLEAN  */
+#line 226 "grammar.y"
+                                { (yyval.type) = new BooleanType(); }
+#line 1620 "grammar.tab.c"
+    break;
+
+  case 27: /* result: parameters  */
+#line 229 "grammar.y"
+                                { (yyval.result) = new ParametersResult((yyvsp[0].paramlist)); }
+#line 1626 "grammar.tab.c"
+    break;
+
+  case 28: /* result: type  */
+#line 230 "grammar.y"
+                                { (yyval.result) = new TypeResult((yyvsp[0].type)); }
+#line 1632 "grammar.tab.c"
+    break;
+
+  case 29: /* parameters: LPAREN RPAREN  */
+#line 233 "grammar.y"
+                                                  { (yyval.paramlist) = nullptr; }
+#line 1638 "grammar.tab.c"
+    break;
+
+  case 30: /* parameters: LPAREN parameterlist COMMA RPAREN  */
+#line 234 "grammar.y"
+                                                  { (yyval.paramlist) = (yyvsp[-2].paramlist); }
+#line 1644 "grammar.tab.c"
+    break;
+
+  case 31: /* parameters: LPAREN parameterlist RPAREN  */
+#line 235 "grammar.y"
+                                                  { (yyval.paramlist) = (yyvsp[-1].paramlist); }
+#line 1650 "grammar.tab.c"
+    break;
+
+  case 32: /* parameterlist: parameterlist COMMA parameterdecl  */
+#line 238 "grammar.y"
+                                                     { (yyval.paramlist) = new PairParamList((yyvsp[0].paramdecl), (yyvsp[-2].paramlist)); }
+#line 1656 "grammar.tab.c"
+    break;
+
+  case 33: /* parameterlist: parameterdecl  */
+#line 239 "grammar.y"
+                                                     { (yyval.paramlist) = new LastParamList((yyvsp[0].paramdecl)); }
+#line 1662 "grammar.tab.c"
+    break;
+
+  case 34: /* parameterdecl: identifierlist type  */
+#line 242 "grammar.y"
+                                                { (yyval.paramdecl) = new ParameterDecl((yyvsp[0].type), (yyvsp[-1].identifierlist)); }
+#line 1668 "grammar.tab.c"
+    break;
+
+  case 35: /* parameterdecl: type  */
+#line 243 "grammar.y"
+                                                { (yyval.paramdecl) = new ParameterDecl((yyvsp[0].type), nullptr); }
+#line 1674 "grammar.tab.c"
+    break;
+
+  case 36: /* expr: unaryexpr  */
+#line 246 "grammar.y"
+                                { (yyval.exp) = (yyvsp[0].exp); }
+#line 1680 "grammar.tab.c"
+    break;
+
+  case 37: /* expr: expr EQ expr  */
+#line 247 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.EQ); }
+#line 1686 "grammar.tab.c"
+    break;
+
+  case 38: /* expr: expr NE expr  */
+#line 248 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.NE); }
+#line 1692 "grammar.tab.c"
+    break;
+
+  case 39: /* expr: expr LT expr  */
+#line 249 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.LT); }
+#line 1698 "grammar.tab.c"
+    break;
+
+  case 40: /* expr: expr LE expr  */
+#line 250 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.LE); }
+#line 1704 "grammar.tab.c"
+    break;
+
+  case 41: /* expr: expr GT expr  */
+#line 251 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.GT); }
+#line 1710 "grammar.tab.c"
+    break;
+
+  case 42: /* expr: expr GE expr  */
+#line 252 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.GE); }
+#line 1716 "grammar.tab.c"
+    break;
+
+  case 43: /* expr: expr MUL expr  */
+#line 253 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.MUL); }
+#line 1722 "grammar.tab.c"
+    break;
+
+  case 44: /* expr: expr DIV expr  */
+#line 254 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.DIV); }
+#line 1728 "grammar.tab.c"
+    break;
+
+  case 45: /* expr: expr PLUS expr  */
+#line 255 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.PLUS); }
+#line 1734 "grammar.tab.c"
+    break;
+
+  case 46: /* expr: expr MIN expr  */
+#line 256 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.MIN); }
+#line 1740 "grammar.tab.c"
+    break;
+
+  case 47: /* expr: expr OR expr  */
+#line 257 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.OR); }
+#line 1746 "grammar.tab.c"
+    break;
+
+  case 48: /* expr: expr AND expr  */
+#line 258 "grammar.y"
+                                { (yyval.exp) = new BinaryExp((yyvsp[-2].exp), (yyvsp[0].exp), BinaryOperator.AND); }
+#line 1752 "grammar.tab.c"
+    break;
+
+  case 49: /* expressionlist: expressionlist COMMA expr  */
+#line 261 "grammar.y"
+                                                { (yyval.explist) = new PairExpList((yyvsp[0].exp), (yyvsp[-2].explist)); }
+#line 1758 "grammar.tab.c"
+    break;
+
+  case 50: /* expressionlist: expr  */
+#line 262 "grammar.y"
+                                                { (yyval.explist) = new LastExpList((yyvsp[0].exp)); }
+#line 1764 "grammar.tab.c"
+    break;
+
+  case 51: /* identifierlist: IDENTIFIER COMMA identifierlist  */
+#line 265 "grammar.y"
+                                                        { (yyval.identifierlist) = new PairIdentifierList((yyvsp[-2].id), (yyvsp[0].identifierlist)); }
+#line 1770 "grammar.tab.c"
+    break;
+
+  case 52: /* identifierlist: IDENTIFIER  */
+#line 266 "grammar.y"
+                                                        { (yyval.identifierlist) = new LastIdentifierList((yyvsp[0].id)); }
+#line 1776 "grammar.tab.c"
+    break;
+
+  case 53: /* unaryexpr: primaryexpr  */
+#line 269 "grammar.y"
+                               { (yyval.exp) = (yyvsp[0].exp); }
+#line 1782 "grammar.tab.c"
+    break;
+
+  case 54: /* unaryexpr: unary_op unaryexpr  */
+#line 270 "grammar.y"
+                               { (yyval.exp) = new UnaryExpr((yyvsp[0].exp), (yyvsp[-1].unaryoperator)); }
+#line 1788 "grammar.tab.c"
+    break;
+
+  case 55: /* unary_op: PLUS  */
+#line 273 "grammar.y"
+                                { (yyval.unaryoperator) = UnaryOperator.PLUS; }
+#line 1794 "grammar.tab.c"
+    break;
+
+  case 56: /* unary_op: UMINUS  */
+#line 274 "grammar.y"
+                                { (yyval.unaryoperator) = UnaryOperator.MIN; }
+#line 1800 "grammar.tab.c"
+    break;
+
+  case 57: /* unary_op: NOT  */
+#line 275 "grammar.y"
+                                { (yyval.unaryoperator) = UnaryOperator.NOT; }
+#line 1806 "grammar.tab.c"
+    break;
+
+  case 58: /* operand: literal  */
+#line 278 "grammar.y"
+                                { (yyval.operand) = new LiteralOperand((yyvsp[0].literal)); }
+#line 1812 "grammar.tab.c"
+    break;
+
+  case 59: /* operand: operandname  */
+#line 279 "grammar.y"
+                                { (yyval.operand) = new VariableOperand((yyvsp[0].identifier)); }
+#line 1818 "grammar.tab.c"
+    break;
+
+  case 60: /* operand: LPAREN expr RPAREN  */
+#line 280 "grammar.y"
+                                { (yyval.operand) = new ExprOperand((yyvsp[-1].exp)); }
+#line 1824 "grammar.tab.c"
+    break;
+
+  case 61: /* literal: basiclit  */
+#line 283 "grammar.y"
+                                { (yyval.literal) = (yyvsp[0].literal); }
+#line 1830 "grammar.tab.c"
+    break;
+
+  case 62: /* basiclit: INTLITERAL  */
+#line 286 "grammar.y"
+                                { (yyval.literal) = new IntLiteral((yyvsp[0].intlit)); }
+#line 1836 "grammar.tab.c"
+    break;
+
+  case 63: /* basiclit: BOOLLITERAL  */
+#line 287 "grammar.y"
+                                { (yyval.literal) = new BoolLiteral((yyvsp[0].boollit)); }
+#line 1842 "grammar.tab.c"
+    break;
+
+  case 64: /* operandname: IDENTIFIER  */
+#line 290 "grammar.y"
+                                { (yyval.identifier) = new Identifier((yyvsp[0].id)); }
+#line 1848 "grammar.tab.c"
+    break;
+
+  case 65: /* primaryexpr: operand  */
+#line 293 "grammar.y"
+                                { (yyval.exp) = new PrimaryExp((yyvsp[0].operand)); }
+#line 1854 "grammar.tab.c"
+    break;
+
+  case 66: /* block: LBRACE statementlist RBRACE  */
+#line 296 "grammar.y"
+                                        { (yyval.block) = new Block((yyvsp[-1].stmlist)); }
+#line 1860 "grammar.tab.c"
+    break;
+
+  case 67: /* statementlist: statement SEMICOLON  */
+#line 299 "grammar.y"
+                                                        { (yyval.stmlist) = new LastStmList((yyvsp[-1].stm)); }
+#line 1866 "grammar.tab.c"
+    break;
+
+  case 68: /* statementlist: statement SEMICOLON statementlist  */
+#line 300 "grammar.y"
+                                                        { (yyval.stmlist) = new PairStmList((yyvsp[-2].stm), (yyvsp[0].stmlist));}
+#line 1872 "grammar.tab.c"
+    break;
+
+  case 69: /* statement: declaration  */
+#line 303 "grammar.y"
+                                         { (yyval.stm) = new DeclStm((yyvsp[0].decl)); }
+#line 1878 "grammar.tab.c"
+    break;
+
+  case 70: /* statement: block  */
+#line 304 "grammar.y"
+                                         { (yyval.stm) = new BlockStm((yyvsp[0].block)); }
+#line 1884 "grammar.tab.c"
+    break;
+
+  case 71: /* statement: ifstatement  */
+#line 305 "grammar.y"
+                                         { (yyval.stm) = (yyvsp[0].stm); }
+#line 1890 "grammar.tab.c"
+    break;
+
+  case 72: /* statement: forstatement  */
+#line 306 "grammar.y"
+                                         { (yyval.stm) = (yyvsp[0].stm); }
+#line 1896 "grammar.tab.c"
+    break;
+
+  case 73: /* statement: returnstatement  */
+#line 307 "grammar.y"
+                                         { (yyval.stm) = (yyvsp[0].stm); }
+#line 1902 "grammar.tab.c"
+    break;
+
+  case 74: /* statement: simplestatement  */
+#line 308 "grammar.y"
+                                         { (yyval.stm) = (yyvsp[0].stm); }
+#line 1908 "grammar.tab.c"
+    break;
+
+  case 75: /* simplestatement: expressionstatement  */
+#line 311 "grammar.y"
+                                         { (yyval.stm) = (yyvsp[0].stm); }
+#line 1914 "grammar.tab.c"
+    break;
+
+  case 76: /* simplestatement: assignment  */
+#line 312 "grammar.y"
+                                         { (yyval.stm) = (yyvsp[0].stm); }
+#line 1920 "grammar.tab.c"
+    break;
+
+  case 77: /* simplestatement: incdecstatement  */
+#line 313 "grammar.y"
+                                         { (yyval.stm) = (yyvsp[0].stm); }
+#line 1926 "grammar.tab.c"
+    break;
+
+  case 78: /* simplestatement: emptystatement  */
+#line 314 "grammar.y"
+                                         { (yyval.stm) = (yyvsp[0].stm); }
+#line 1932 "grammar.tab.c"
+    break;
+
+  case 79: /* simplestatement: shortvardecl  */
+#line 315 "grammar.y"
+                                         {puts("shortvardecl");}
+#line 1938 "grammar.tab.c"
+    break;
+
+  case 80: /* emptystatement: %empty  */
+#line 318 "grammar.y"
+                { (yyval.stm) = new EmptyStm();}
+#line 1944 "grammar.tab.c"
+    break;
+
+  case 81: /* expressionstatement: expr  */
+#line 320 "grammar.y"
+                          { (yyval.stm) = new ExprStm((yyvsp[0].exp)); }
+#line 1950 "grammar.tab.c"
+    break;
+
+  case 82: /* assignment: expressionlist assign_op expressionlist  */
+#line 322 "grammar.y"
+                                                    { (yyval.stm) = new AssignmentStm((yyvsp[-2].explist), (yyvsp[0].explist), (yyvsp[-1].assignoperator)); }
+#line 1956 "grammar.tab.c"
+    break;
+
+  case 83: /* assign_op: ASSIGN  */
+#line 324 "grammar.y"
+                                                    { (yyval.assignoperator) = AssignOperator.ASSIGN;}
+#line 1962 "grammar.tab.c"
+    break;
+
+  case 84: /* assign_op: PLUSASSIGN  */
+#line 325 "grammar.y"
+                                                    { (yyval.assignoperator) = AssignOperator.PLUSASSIGN; }
+#line 1968 "grammar.tab.c"
+    break;
+
+  case 85: /* assign_op: MINASSIGN  */
+#line 326 "grammar.y"
+                                                    { (yyval.assignoperator) = AssignOperator.MINASSIGN; }
+#line 1974 "grammar.tab.c"
+    break;
+
+  case 86: /* assign_op: MULASSIGN  */
+#line 327 "grammar.y"
+                                                    { (yyval.assignoperator) = AssignOperator.MULASSIGN; }
+#line 1980 "grammar.tab.c"
+    break;
+
+  case 87: /* assign_op: DIVASSIGN  */
+#line 328 "grammar.y"
+                                                    { (yyval.assignoperator) = AssignOperator.DIVASSIGN;}
+#line 1986 "grammar.tab.c"
+    break;
+
+  case 88: /* incdecstatement: expr INC  */
+#line 331 "grammar.y"
+                                                    { (yyval.stm) = new IncDecStm((yyvsp[-1].exp), IncDecOperator.PLUSPLUS); }
+#line 1992 "grammar.tab.c"
+    break;
+
+  case 89: /* incdecstatement: expr DEC  */
+#line 332 "grammar.y"
+                                                    { (yyval.stm) = new IncDecStm((yyvsp[-1].exp), IncDecOperator.MINMIN); }
+#line 1998 "grammar.tab.c"
+    break;
+
+  case 90: /* ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement  */
+#line 336 "grammar.y"
+                                                                        { (yyval.stm) = new IfStm((yyvsp[-5].stm), (yyvsp[-3].exp), (yyvsp[-2].block), nullptr, (yyvsp[0].stm)); }
+#line 2004 "grammar.tab.c"
+    break;
+
+  case 91: /* ifstatement: IF simplestatement SEMICOLON expr block ELSE block  */
+#line 337 "grammar.y"
+                                                                        { (yyval.stm) = new IfStm((yyvsp[-5].stm), (yyvsp[-3].exp), (yyvsp[-2].block), (yyvsp[0].block), nullptr); }
+#line 2010 "grammar.tab.c"
+    break;
+
+  case 92: /* ifstatement: IF expr block ELSE ifstatement  */
+#line 338 "grammar.y"
+                                                                        { (yyval.stm) = new IfStm(nullptr, (yyvsp[-3].exp), (yyvsp[-2].block), nullptr, (yyvsp[0].stm)); }
+#line 2016 "grammar.tab.c"
+    break;
+
+  case 93: /* ifstatement: IF expr block ELSE block  */
+#line 339 "grammar.y"
+                                                                        { (yyval.stm) = new IfStm(nullptr, (yyvsp[-3].exp), (yyvsp[-2].block), (yyvsp[0].block), nullptr); }
+#line 2022 "grammar.tab.c"
+    break;
+
+  case 94: /* ifstatement: IF expr block  */
+#line 340 "grammar.y"
+                                                                        { (yyval.stm) = new IfStm(nullptr, (yyvsp[-1].exp), (yyvsp[0].block), nullptr, nullptr); }
+#line 2028 "grammar.tab.c"
+    break;
+
+  case 95: /* forstatement: FOR condition block  */
+#line 343 "grammar.y"
+                                        { (yyval.stm) = new ForCondStm((yyvsp[-1].exp), (yyvsp[0].block)); }
+#line 2034 "grammar.tab.c"
+    break;
+
+  case 96: /* forstatement: FOR forclause block  */
+#line 344 "grammar.y"
+                                        { (yyval.stm) = new ForClauseStm((yyvsp[-1].forclause), (yyvsp[0].block)); }
+#line 2040 "grammar.tab.c"
+    break;
+
+  case 97: /* forstatement: FOR block  */
+#line 345 "grammar.y"
+                                        { (yyval.stm) = new ForStm((yyvsp[0].block)); }
+#line 2046 "grammar.tab.c"
+    break;
+
+  case 98: /* condition: expr  */
+#line 348 "grammar.y"
+                                        { (yyval.exp) = (yyvsp[0].exp); }
+#line 2052 "grammar.tab.c"
+    break;
+
+  case 99: /* forclause: initstatement SEMICOLON condition SEMICOLON poststatement  */
+#line 350 "grammar.y"
+                                                                        { (yyval.forclause) = new ForClause((yyvsp[-4].simplestm), (yyvsp[-2].exp), (yyvsp[0].simplestm)); }
+#line 2058 "grammar.tab.c"
+    break;
+
+  case 100: /* initstatement: simplestatement  */
+#line 353 "grammar.y"
+                                { (yyval.simplestm) = (yyvsp[0].stm); }
+#line 2064 "grammar.tab.c"
+    break;
+
+  case 101: /* poststatement: simplestatement  */
+#line 355 "grammar.y"
+                                 { (yyval.simplestm) = (yyvsp[0].stm); }
+#line 2070 "grammar.tab.c"
+    break;
+
+  case 102: /* returnstatement: RETURN expressionlist  */
+#line 357 "grammar.y"
+                                         { (yyval.stm) = new ReturnStm((yyvsp[0].explist)); }
+#line 2076 "grammar.tab.c"
+    break;
+
+  case 103: /* returnstatement: RETURN  */
+#line 358 "grammar.y"
+                                         { (yyval.stm) = new ReturnStm(nullptr); }
+#line 2082 "grammar.tab.c"
     break;
 
 
-#line 1982 "grammar.tab.c"
+#line 2086 "grammar.tab.c"
 
       default: break;
     }
@@ -2171,4 +2275,4 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 203 "grammar.y"
+#line 361 "grammar.y"

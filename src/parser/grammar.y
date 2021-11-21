@@ -1,21 +1,31 @@
 %{
  // C-DECLARATIONS
  #include <stdio.h>
- #include "../ast/types/srcfile.h"
+ #include "../ast/srcfile/srcfile.h"
+
+ #include "../ast/block/block.h"
  
  #include "../ast/expressions/explist.h"
  #include "../ast/expressions/exp.h"
 
- #include "../ast/identifier/identifier.h"
+ #include "../ast/identifiers/identifier.h"
 
  #include "../ast/declarations/decllist.h"
  #include "../ast/declarations/decl.h"
  #include "../ast/declarations/varspec.h"
 
+ #include "../ast/functions/signature.h"
+ #include "../ast/functions/result.h"
+
+ #include "../ast/literals/literal.h"
+
  #include "../ast/statements/stmlist.h"
  #include "../ast/statements/stm.h"
+ #include "../ast/statements/forclause.h"
 
  #include "../ast/packages/packageclause.h"
+
+ #include "../ast/types/type.h"
 
  #include "../ast/literals/literal.h"
  #include "../ast/symboltable.h"
@@ -27,21 +37,44 @@
 
 %}
 %union{
+        enum UnaryOperator unaryoperator;
+        enum BinaryOperator binaryoperator;
+        enum AssignOperator assignoperator;
+        enum IncDecOperator incdecoperator;
+
         SrcFile* srcfile;
         char* id;
+        bool* boollit;
+        int* intlit;
+
+        Block* block;
         
         Stm* stm; 
+        SimpleStm* simplestm;
         StmList* stmlist;
+        ForClause* forclause;
 
         Exp* exp; 
         ExpList* explist;
         Identifier* identifier;
+        IdentifierList* identifierlist;
+        Operand* operand;
         
         DeclList* decllist;
         TopLevelDecl* toplvldecl;
         Decl* decl;
         VarDecl* vardecl;
         VarSpec* varspec;
+        FunctionDecl* funcdecl;
+        Signature* signature;
+        Result* result;
+
+        Literal* literal;
+
+        ParameterList* paramlist;
+        ParameterDecl* paramdecl;
+
+        Type* type; 
 
         PackageClause* packageclause;
 }
@@ -53,19 +86,63 @@
     PLUS MIN MUL DIV
     PLUSASSIGN MINASSIGN MULASSIGN DIVASSIGN
     AND OR NOT INC DEC GT GE LT LE EQ NE
-    INTLITERAL BOOLLITERAL ASSIGN FUNC NEWLINE 
-    IMPORT COMMA ELSE SHORTVARASSIGN
+    ASSIGN FUNC NEWLINE IMPORT COMMA ELSE 
+    SHORTVARASSIGN
 
 %token <id> IDENTIFIER
+%token <boollit> BOOLLITERAL
+%token <intlit> INTLITERAL
 %type <identifier> packagename
 %type <srcfile> sourcefile 
 %type <decllist> topleveldeclarations
 %type <packageclause> packageclause
+%type <identifierlist> identifierlist
+%type <block> block
+
 %type <toplvldecl> topleveldecl
 %type <decl> declaration
-%type <vardecl> vardecl
+%type <decl> vardecl
 %type <varspec> varspec
 
+%type <exp> expr
+%type <exp> unaryexpr
+%type <exp> primaryexpr
+%type <explist> expressionlist
+%type <unaryoperator> unary_op
+%type <operand> operand
+%type <identifier> operandname
+
+%type <stm> statement
+%type <stmlist> statementlist
+%type <stm> simplestatement
+%type <simplestm> initstatement
+%type <simplestm> poststatement
+%type <stm> emptystatement
+%type <stm> expressionstatement
+%type <stm> forstatement
+%type <stm> assignment
+%type <stm> ifstatement
+%type <stm> incdecstatement
+%type <stm> returnstatement
+%type <forclause> forclause
+%type <exp> condition
+%type <assignoperator> assign_op
+
+%type <literal> literal
+%type <literal> basiclit
+
+%type <toplvldecl> functiondeclaration
+%type <block> functionbody
+%type <identifier> functionname
+%type <signature> signature
+%type <result> result
+
+%type <type> type
+%type <type> typename
+
+%type <paramlist> parameters
+%type <paramlist> parameterlist
+%type <paramdecl> parameterdecl
 
 %left OR
 %left AND
@@ -74,9 +151,33 @@
 %left MUL DIV
 %right UMINUS
 %%
-sourcefile: packageclause SEMICOLON topleveldeclarations {$$ = new SrcFile($1, $3);
-                                                          ast = $$;
-                                                         };
+sourcefile: packageclause SEMICOLON  topleveldeclarations               {$$ = new SrcFile($1, nullptr, $3);
+                                                                        ast = $$;
+                                                                        }
+          /* | packageclause SEMICOLON importdeclarations SEMICOLON topleveldeclarations   {$$ = new SrcFile($1, $3, $5);
+                                                                                        ast = $$;
+                                                                                        }
+          | packageclause SEMICOLON importdeclarations                  {$$ = new SrcFile($1, $3, nullptr);
+                                                                        ast = $$;
+                                                                        } */
+          | packageclause SEMICOLON                                     {$$ = new SrcFile($1, nullptr, nullptr);
+                                                                        ast = $$;
+                                                                        }
+        ;
+
+/* 
+importdeclarations: IMPORT importspec
+                  | IMPORT LPAREN importspeclist RPAREN
+                  ;
+
+importspeclist: importspec SEMICOLON
+              | importspec SEMICOLON importspeclist
+              ;
+
+importspec: 
+
+importpath: */
+
 
 topleveldeclarations: topleveldecl SEMICOLON topleveldeclarations  {$$ = new PairDeclList($1, $3);}
                     | topleveldecl SEMICOLON                       {$$ = new LastDeclList($1);}
@@ -103,157 +204,158 @@ shortvardecl: identifierlist SHORTVARASSIGN expressionlist  {puts("identifierlis
 
 varspec: identifierlist type ASSIGN expressionlist      {$$ = new VarSpec($1, $2, $4); }
         | identifierlist type                           {$$ = new VarSpec($1, $2, nullptr);}
-        | identifierlist ASSIGN expressionlist          {$$ = new VarSpec($1, nullptr, $4); }
+        | identifierlist ASSIGN expressionlist          {$$ = new VarSpec($1, nullptr, $3); }
         ;
 
-functiondeclaration: FUNC functionname signature functionbody {puts("FUNC functionname signature functionbody"); };
+functiondeclaration: FUNC functionname signature functionbody {$$ = new FunctionDecl($2, $3, $4); };
 
-functionname: IDENTIFIER  {puts("IDENTIFIER"); };
+functionname: IDENTIFIER  {$$ = new Identifier($1); };
 
-functionbody: block  {puts("block"); }; 
+functionbody: block  {$$ = $1; }; 
 
-signature: parameters result    {puts("parameters result"); }
-         | parameters           {puts("parameters"); } 
+signature: parameters result    { $$ = new Signature($1, $2); }
+         | parameters           { $$ = new Signature($1, nullptr); } 
          ; 
 
-type: typename                  {puts("typename"); }
-    | LPAREN type RPAREN        {puts("LPAREN type RPAREN"); }
+type: typename                  { $$ = $1; }
+    | LPAREN type RPAREN        { $$ = $2; }
     ;
 
-typename: IDENTIFIER            {puts("IDENTIFIER"); }
-        | INTEGER               {puts("INTEGER"); } 
-        | BOOLEAN               {puts("BOOLEAN"); }
+typename: IDENTIFIER            { puts("IDENTIFIER"); }
+        | INTEGER               { $$ = new IntegerType(); } 
+        | BOOLEAN               { $$ = new BooleanType(); }
         ;
 
-result: parameters              {puts("parameters"); }
-        | type                  {puts("type"); }
+result: parameters              { $$ = new ParametersResult($1); }
+        | type                  { $$ = new TypeResult($1); }
         ;
 
-parameters: LPAREN RPAREN
-           | LPAREN parameterlist COMMA RPAREN    {puts("LPAREN parameterlist COMMA RPAREN"); }
-           | LPAREN parameterlist RPAREN          {puts("LPAREN parameterlist RPAREN  "); }
+parameters: LPAREN RPAREN                         { $$ = nullptr; }
+           | LPAREN parameterlist COMMA RPAREN    { $$ = $2; }
+           | LPAREN parameterlist RPAREN          { $$ = $2; }
            ;
 
-parameterlist: parameterlist COMMA parameterdecl     {puts("parameterdecl COMMA parameterdecl"); }
-             | parameterdecl                         {puts("parameterdecl"); }
+parameterlist: parameterlist COMMA parameterdecl     { $$ = new PairParamList($3, $1); } 
+             | parameterdecl                         { $$ = new LastParamList($1); }
              ;
 
-parameterdecl: identifierlist type              {puts("identifierlist type"); }
-             | type                             {puts("type"); }
+parameterdecl: identifierlist type              { $$ = new ParameterDecl($2, $1); }
+             | type                             { $$ = new ParameterDecl($1, nullptr); }
              ;
 
-expr: unaryexpr                 {puts("unaryexpr"); }
-    | expr EQ expr              {puts("expr EQ expr"); }
-    | expr NE expr              {puts("expr NE expr"); }
-    | expr LT expr              {puts("expr LT expr"); }
-    | expr LE expr              {puts("expr LE expr"); } 
-    | expr GT expr              {puts("expr GT expr"); } 
-    | expr GE expr              {puts("expr GE expr"); } 
-    | expr MUL expr             {puts("expr MUL expr"); }
-    | expr DIV expr             {puts("expr DIV expr"); }
-    | expr PLUS expr            {puts("expr PLUS expr"); }
-    | expr MIN expr             {puts("expr MIN expr"); }
-    | expr OR expr              {puts("expr OR expr"); }
-    | expr AND expr             {puts("expr AND expr"); }
+expr: unaryexpr                 { $$ = $1; }
+    | expr EQ expr              { $$ = new BinaryExp($1, $3, BinaryOperator.EQ); }
+    | expr NE expr              { $$ = new BinaryExp($1, $3, BinaryOperator.NE); }
+    | expr LT expr              { $$ = new BinaryExp($1, $3, BinaryOperator.LT); }
+    | expr LE expr              { $$ = new BinaryExp($1, $3, BinaryOperator.LE); } 
+    | expr GT expr              { $$ = new BinaryExp($1, $3, BinaryOperator.GT); } 
+    | expr GE expr              { $$ = new BinaryExp($1, $3, BinaryOperator.GE); } 
+    | expr MUL expr             { $$ = new BinaryExp($1, $3, BinaryOperator.MUL); }
+    | expr DIV expr             { $$ = new BinaryExp($1, $3, BinaryOperator.DIV); }
+    | expr PLUS expr            { $$ = new BinaryExp($1, $3, BinaryOperator.PLUS); }
+    | expr MIN expr             { $$ = new BinaryExp($1, $3, BinaryOperator.MIN); }
+    | expr OR expr              { $$ = new BinaryExp($1, $3, BinaryOperator.OR); }
+    | expr AND expr             { $$ = new BinaryExp($1, $3, BinaryOperator.AND); }
     ;
 
-expressionlist: expressionlist COMMA expr       {puts("expressionlist COMMA expr"); }
-              | expr                            {puts("expr"); }
+expressionlist: expressionlist COMMA expr       { $$ = new PairExpList($3, $1); }
+              | expr                            { $$ = new LastExpList($1); }
               ;
 
-identifierlist: IDENTIFIER COMMA identifierlist         {puts("IDENTIFIER COMMA identifierlist"); }
-              | IDENTIFIER                              {puts("IDENTIFIER"); }
+identifierlist: IDENTIFIER COMMA identifierlist         { $$ = new PairIdentifierList($1, $3); }
+              | IDENTIFIER                              { $$ = new LastIdentifierList($1); }
               ;
 
-unaryexpr: primaryexpr         {puts("primaryexpr"); }
-          | unary_op unaryexpr {puts("unary_op unaryexpr"); }
+unaryexpr: primaryexpr         { $$ = $1; }
+          | unary_op unaryexpr { $$ = new UnaryExpr($2, $1); }
           ;
 
-unary_op: PLUS                  {puts("PLUS"); }
-        | MIN                   {puts("MIN"); }
-        | NOT                   {puts("NOT"); }
+unary_op: PLUS                  { $$ = UnaryOperator.PLUS; }
+        | UMINUS                { $$ = UnaryOperator.MIN; }
+        | NOT                   { $$ = UnaryOperator.NOT; }
         ;
 
-operand: literal                {puts("literal"); }
-        | operandname           {puts("operandname"); }
-        | LPAREN expr RPAREN    {puts("LPAREN expr RPAREN"); }
+operand: literal                { $$ = new LiteralOperand($1); }
+        | operandname           { $$ = new VariableOperand($1); }
+        | LPAREN expr RPAREN    { $$ = new ExprOperand($2); }
         ;
 
-literal: basiclit               {puts("basiclit"); }
+literal: basiclit               { $$ = $1; }
         ;
 
-basiclit: INTLITERAL            {puts("INTLITERAL"); }
-        | BOOLLITERAL           {puts("BOOLLITERAL"); }
+basiclit: INTLITERAL            { $$ = new IntLiteral($1); }
+        | BOOLLITERAL           { $$ = new BoolLiteral($1); }
         ;
 
-operandname: IDENTIFIER         {puts("IDENTIFIER"); }
+operandname: IDENTIFIER         { $$ = new Identifier($1); }
             ;
 
-primaryexpr: operand            {puts("operand"); }
+primaryexpr: operand            { $$ = new PrimaryExp($1); }
             ;
 
-block: LBRACE statementlist RBRACE      {puts("LBRACE statementlist RBRACE"); }
+block: LBRACE statementlist RBRACE      { $$ = new Block($2); }
        ;
 
-statementlist: statement SEMICOLON                      {puts("statement SEMICOLON");}
-               | statementlist statement SEMICOLON      {puts("statementlist statement SEMICOLON");}
+statementlist: statement SEMICOLON                      { $$ = new LastStmList($1); }
+               | statement SEMICOLON statementlist      { $$ = new PairStmList($1, $3);}
                ;
 
-statement: declaration                   {puts("declaration");}
-        | block                          {puts("block");}
-        | ifstatement                    {puts("ifstatement");}
-        | forstatement                   {puts("forstatement");}
-        | returnstatement                {puts("returnstatement");}
-        | simplestatement                {puts("simplestatement");}                   
+statement: declaration                   { $$ = new DeclStm($1); }
+        | block                          { $$ = new BlockStm($1); }
+        | ifstatement                    { $$ = $1; }
+        | forstatement                   { $$ = $1; }
+        | returnstatement                { $$ = $1; }
+        | simplestatement                { $$ = $1; }                   
         ;
 
-simplestatement: expressionstatement     {puts("expressionstatement");}
-                | assignment             {puts("assignment");}
-                | incdecstatement        {puts("incdecstatement");}
-                | emptystatement         {puts("emptystatement");}
+simplestatement: expressionstatement     { $$ = $1; }
+                | assignment             { $$ = $1; }
+                | incdecstatement        { $$ = $1; }
+                | emptystatement         { $$ = $1; }
                 | shortvardecl           {puts("shortvardecl");}
                 ;
 
-emptystatement: {puts("nothing");} ;
+emptystatement: { $$ = new EmptyStm();} ;
 
-expressionstatement: expr {puts("expr");} ;
+expressionstatement: expr { $$ = new ExprStm($1); } ;
 
-assignment: expressionlist assign_op expressionlist {puts("expressionlist assign_op expressionlist");}  ;
+assignment: expressionlist assign_op expressionlist { $$ = new AssignmentStm($1, $3, $2); };
 
-assign_op: ASSIGN                                   {puts("ASSIGN");} 
-         | PLUSASSIGN                               {puts("PLUSASSIGN");} 
-         | MINASSIGN                                {puts("MINASSIGN");} 
-         | MULASSIGN                                {puts("MULASSIGN");} 
-         | DIVASSIGN                                {puts("DIVASSIGN");}            
+assign_op: ASSIGN                                   { $$ = AssignOperator.ASSIGN;} 
+         | PLUSASSIGN                               { $$ = AssignOperator.PLUSASSIGN; } 
+         | MINASSIGN                                { $$ = AssignOperator.MINASSIGN; } 
+         | MULASSIGN                                { $$ = AssignOperator.MULASSIGN; } 
+         | DIVASSIGN                                { $$ = AssignOperator.DIVASSIGN;}            
          ;
 
-incdecstatement: expr INC                           {puts("expr INC");} 
-                | expr DEC                          {puts("expr DEC");} 
+incdecstatement: expr INC                           { $$ = new IncDecStm($1, IncDecOperator.PLUSPLUS); } 
+                | expr DEC                          { $$ = new IncDecStm($1, IncDecOperator.MINMIN); } 
                 ;
 
 
-ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement   {puts("IF simplestatement SEMICOLON expr block ELSE ifstatement"); }
-            | IF simplestatement SEMICOLON expr block ELSE block        {puts("IF simplestatement SEMICOLON expr block ELSE block"); }
-            | IF expr block ELSE ifstatement                            {puts("IF expr block ELSE ifstatement"); }
-            | IF expr block ELSE block                                  {puts("IF expr block ELSE block"); }
+ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement   { $$ = new IfStm($2, $4, $5, nullptr, $7); }
+            | IF simplestatement SEMICOLON expr block ELSE block        { $$ = new IfStm($2, $4, $5, $7, nullptr); }
+            | IF expr block ELSE ifstatement                            { $$ = new IfStm(nullptr, $2, $3, nullptr, $5); }
+            | IF expr block ELSE block                                  { $$ = new IfStm(nullptr, $2, $3, $5, nullptr); }
+            | IF expr block                                             { $$ = new IfStm(nullptr, $2, $3, nullptr, nullptr); }
             ;
 
-forstatement: FOR condition block       {puts("FOR condition block"); }
-            | FOR forclause block       {puts("FOR forclause block"); }
-            | FOR block                 {puts("FOR block"); }
+forstatement: FOR condition block       { $$ = new ForCondStm($2, $3); }
+            | FOR forclause block       { $$ = new ForClauseStm($2, $3); }
+            | FOR block                 { $$ = new ForStm($2); }
             ;
 
-condition: expr                         {puts("expr"); };
+condition: expr                         { $$ = $1; };
 
-forclause: initstatement SEMICOLON condition SEMICOLON poststatement    {puts("initstatement SEMICOLON condition SEMICOLON poststatement"); }
+forclause: initstatement SEMICOLON condition SEMICOLON poststatement    { $$ = new ForClause($1, $3, $5); }
          ;             
 
-initstatement: simplestatement  {puts("simplestatement"); };
+initstatement: simplestatement  { $$ = $1; };
 
-poststatement: simplestatement   {puts("simplestatement"); };
+poststatement: simplestatement   { $$ = $1; };
 
-returnstatement: RETURN expressionlist   {puts("RETURN expressionlist"); }
-                | RETURN                 {puts("RETURN"); }
+returnstatement: RETURN expressionlist   { $$ = new ReturnStm($2); }
+                | RETURN                 { $$ = new ReturnStm(nullptr); }
                 ;
 
 %%

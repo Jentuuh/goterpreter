@@ -71,12 +71,30 @@ else "else"
 {if} { ADJUST(); return IF; }
 {else} {ADJUST(); return ELSE; }
 {for} { ADJUST(); return FOR; }
-{boollit} { ADJUST(); return BOOLLITERAL; }
+{integerlit} { ADJUST(); 
+            char *s = (char*) malloc(yyleng+1);
+            strcpy(s, yytext);
+            long int value = strtol(s, NULL, 10);
+            yylval.intlit = value;
+            return INTLITERAL;
+          }
+{boollit} { ADJUST(); 
+               char *s = (char*) malloc(yyleng+1);
+               strcpy(s, yytext);
+               if(strcmp(s, "true") == 0){
+                 yylval.boollit = true;
+               }
+               else{
+                 yylval.boollit = false;
+               }
+              return BOOLLITERAL; 
+              }
 {identifier} { ADJUST(); 
                char *s = (char*) malloc(yyleng+1);
                strcpy(s, yytext);
                yylval.id = s; 
-               return IDENTIFIER; }
+               return IDENTIFIER; 
+              }
 {lparen} { ADJUST(); return LPAREN; }
 {rparen} { ADJUST(); return RPAREN; }
 {lbrace} { ADJUST(); return LBRACE; }
@@ -100,7 +118,6 @@ else "else"
 {lessthanequal} { ADJUST(); return LE; }
 {equal} { ADJUST(); return EQ; }
 {notequal} { ADJUST(); return NE; }
-{integerlit} { ADJUST(); return INTLITERAL; }
 {assign} { ADJUST(); return ASSIGN; } 
 {shortvarassign} {ADJUST(); return SHORTVARASSIGN; }
 {comma} { ADJUST(); return COMMA; }
