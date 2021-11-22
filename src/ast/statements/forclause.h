@@ -1,17 +1,16 @@
-#include "../expressions/exp.h"
+#pragma once
 #include <memory>
+#include "./stm.h"
+#include "../expressions/exp.h"
 
-struct SimpleStm;
+struct SymbolTable;
+struct Stm;
 
 struct ForClause{
-    std::shared_ptr<SimpleStm> initStm;
+    std::shared_ptr<Stm> initStm;
     std::shared_ptr<Exp> condition;
-    std::shared_ptr<SimpleStm> postStm;
+    std::shared_ptr<Stm> postStm;
 
-    ForClause(SimpleStm* init, Exp* cond, SimpleStm* post): initStm{init}, condition{cond}, postStm{post}{};
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
+    ForClause(Stm* init, Exp* cond, Stm* post);
+    SymbolTable* interp(SymbolTable& table);
 };

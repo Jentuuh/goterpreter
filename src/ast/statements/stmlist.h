@@ -1,11 +1,12 @@
-#include "stm.h"
-#include "../symboltable.h"
+#pragma once
 #include <memory>
-
+#include "./stm.h"
 /**
  * Abstract StatementList class.
  * Jente Vandersanden - Compilers 2021-2022 - Hasselt University
  */ 
+struct SymbolTable;
+struct Stm;
 
 struct StmList{
     virtual int length() = 0;
@@ -15,32 +16,16 @@ struct StmList{
 struct LastStmList:StmList{
     std::shared_ptr<Stm> last;
 
-    LastStmList(Stm* last):last{last}{};
-
-    int length() 
-    {
-        // TODO: implement
-    };
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
+    LastStmList(Stm* last);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 };
 
 struct PairStmList:StmList{
     std::shared_ptr<Stm> head;
     std::shared_ptr<StmList> tail; 
 
-    PairStmList(Stm* head, StmList* tail): head{head}, tail{tail}{};
-
-    int length() 
-    {
-        // TODO: implement  
-    };
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
+    PairStmList(Stm* head, StmList* tail);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 };

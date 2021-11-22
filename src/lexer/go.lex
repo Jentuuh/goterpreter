@@ -2,8 +2,7 @@
 /* 
 go.lex: lex-file for go basisniveau
 */
-
-#include "../parser/grammar.tab.h"
+#include "../parser/parser.hpp"
 #include <stdlib.h>
 #include <string.h>
 
@@ -72,26 +71,23 @@ else "else"
 {else} {ADJUST(); return ELSE; }
 {for} { ADJUST(); return FOR; }
 {integerlit} { ADJUST(); 
-            char *s = (char*) malloc(yyleng+1);
-            strcpy(s, yytext);
+            char* s = strdup(yytext);
             long int value = strtol(s, NULL, 10);
-            yylval.intlit = value;
+            *yylval.intlit = value;
             return INTLITERAL;
           }
 {boollit} { ADJUST(); 
-               char *s = (char*) malloc(yyleng+1);
-               strcpy(s, yytext);
+               char* s = strdup(yytext);
                if(strcmp(s, "true") == 0){
-                 yylval.boollit = true;
+                *yylval.boollit = true;
                }
                else{
-                 yylval.boollit = false;
+                 *yylval.boollit = false;
                }
               return BOOLLITERAL; 
               }
 {identifier} { ADJUST(); 
-               char *s = (char*) malloc(yyleng+1);
-               strcpy(s, yytext);
+               char* s = strdup(yytext);
                yylval.id = s; 
                return IDENTIFIER; 
               }

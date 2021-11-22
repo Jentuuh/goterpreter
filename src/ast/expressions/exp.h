@@ -1,54 +1,44 @@
-#include "./operand.h"
+#pragma once
 #include <memory>
+#include "./operand.h"
 
 /**
  * Abstract Expression class.
  * Jente Vandersanden - Compilers 2021-2022 - Hasselt University
  */
 struct SymbolTable;
-enum UnaryOperator { PLUS, MIN, NOT };
-enum BinaryOperator { EQ, NE, LT, LE, GT, GE, MUL, DIV, PLUS, MIN, OR, AND };
+struct Operand;
 
-struct Exp{
+enum UnaryOperator { PLUS_UNARY, MIN_UNARY, NOT_UNARY };
+enum BinaryOperator { EQ_BIN, NE_BIN, LT_BIN, LE_BIN, GT_BIN, GE_BIN, MUL_BIN, DIV_BIN, PLUS_BIN, MIN_BIN, OR_BIN, AND_BIN };
+
+struct Exp
+{
 	virtual SymbolTable* interp(SymbolTable& table) = 0;
-
 };
 
-struct UnaryExp: Exp{
+struct UnaryExp:Exp{
 
 	UnaryOperator op;
 	std::shared_ptr<Exp> unaryExp;
 
-	UnaryExp(Exp* unaryExp, UnaryOperator op): unaryExp{unaryExp}, op{op}{};
-
-	SymbolTable* interp(SymbolTable& table)
-	{
-		// TODO: implement
-	};
-
+	UnaryExp(Exp* unaryExp, UnaryOperator op);
+	SymbolTable* interp(SymbolTable& table) override;
 };
 
-struct PrimaryExp: Exp{
+struct PrimaryExp:Exp{
 	std::shared_ptr<Operand> operand;
 
-	PrimaryExp(Operand* operand): operand{operand}{};
-	
-	SymbolTable* interp(SymbolTable& table)
-	{
-		// TODO: implement
-	};
+	PrimaryExp(Operand* operand);
+	SymbolTable* interp(SymbolTable& table) override;
 };
 
-struct BinaryExp: Exp{
+struct BinaryExp:Exp{
 
 	std::shared_ptr<Exp> left;
 	std::shared_ptr<Exp> right;
 	BinaryOperator op;
 
-	BinaryExp(Exp* left, Exp* right, BinaryOperator op): left{left}, right{right}, op{op}{};
-
-	SymbolTable* interp(SymbolTable& table)
-	{
-		// TODO: implement
-	};
+	BinaryExp(Exp* left, Exp* right, BinaryOperator op);
+	SymbolTable* interp(SymbolTable& table) override;
 };

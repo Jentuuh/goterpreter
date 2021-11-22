@@ -1,5 +1,6 @@
-#include "exp.h"
+#pragma once
 #include <memory>
+#include "./exp.h"
 
 /**
  * Abstract ExpressionList class.
@@ -16,33 +17,16 @@ struct ExpList{
 struct LastExpList:ExpList{
     std::shared_ptr<Exp> last;
 
-
-    LastExpList(Exp* l): last{l}{};
-
-    int length()
-    {
-        // TODO: implement
-    };
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
+    LastExpList(Exp* l);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 };
 
 struct PairExpList:ExpList{
     std::shared_ptr<Exp> head;
     std::shared_ptr<ExpList> tail;
 
-    PairExpList(Exp* h, ExpList* t): head{h}, tail{t}{};
-
-    int length()
-    {
-        // TODO: implement
-    };
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
+    PairExpList(Exp* h, ExpList* t);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 };

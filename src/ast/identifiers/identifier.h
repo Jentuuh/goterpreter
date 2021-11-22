@@ -1,8 +1,10 @@
+#pragma once
 
+struct SymbolTable;
 
 struct Identifier{
     char* name;
 
-    Identifier(char* name): name{name}{};
-
+    Identifier(char* name);
+    SymbolTable* interp(SymbolTable& table);
 };

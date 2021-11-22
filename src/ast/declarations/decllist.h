@@ -1,5 +1,8 @@
-#include "decl.h"
+#pragma once
 #include <memory>
+#include "./decl.h"
+
+struct SymbolTable;
 
 struct DeclList{
     virtual int length() = 0;
@@ -11,27 +14,16 @@ struct PairDeclList:DeclList{
     std::shared_ptr<TopLevelDecl> head;
     std::shared_ptr<DeclList> tail;
 
-    PairDeclList(TopLevelDecl* h, DeclList* t): head{h}, tail{t}{};
-    
-    int length()
-    {
-
-    };
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-
-    };
+    PairDeclList(TopLevelDecl* h, DeclList* t);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 
 };
 
 struct LastDeclList:DeclList{
     std::shared_ptr<TopLevelDecl> last;
 
-    LastDeclList(TopLevelDecl* l): last{l}{};
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-
-    };
+    LastDeclList(TopLevelDecl* l);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 };

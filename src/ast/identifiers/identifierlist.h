@@ -1,4 +1,6 @@
+#pragma once
 #include <memory>
+#include "./identifier.h"
 
 struct SymbolTable;
 
@@ -10,24 +12,16 @@ struct IdentifierList{
 struct LastIdentifierList:IdentifierList{
     std::shared_ptr<Identifier> last;
 
-    LastIdentifierList(Identifier* l): last{last}{};
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
-
+    LastIdentifierList(Identifier* l);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 };
 
 struct PairIdentifierList:IdentifierList{
     std::shared_ptr<Identifier> head;
     std::shared_ptr<IdentifierList> tail;
 
-    PairIdentifierList(Identifier* h, IdentifierList* t): head{h}, tail{t}{};
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
-    
+    PairIdentifierList(Identifier* h, IdentifierList* t);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table); 
 };

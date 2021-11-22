@@ -1,41 +1,14 @@
-%{
+%code requires{
  // C-DECLARATIONS
  #include <stdio.h>
- #include "../ast/srcfile/srcfile.h"
-
- #include "../ast/block/block.h"
- 
- #include "../ast/expressions/explist.h"
- #include "../ast/expressions/exp.h"
-
- #include "../ast/identifiers/identifier.h"
-
- #include "../ast/declarations/decllist.h"
- #include "../ast/declarations/decl.h"
- #include "../ast/declarations/varspec.h"
-
- #include "../ast/functions/signature.h"
- #include "../ast/functions/result.h"
-
- #include "../ast/literals/literal.h"
-
- #include "../ast/statements/stmlist.h"
- #include "../ast/statements/stm.h"
- #include "../ast/statements/forclause.h"
-
- #include "../ast/packages/packageclause.h"
-
- #include "../ast/types/type.h"
-
- #include "../ast/literals/literal.h"
- #include "../ast/symboltable.h"
+ #include "../includes.h"
 
  int yylex(void);
  int yyerror(char *s);
 
- SrcFile * ast;
+ extern SrcFile* ast;
 
-%}
+}
 %union{
         enum UnaryOperator unaryoperator;
         enum BinaryOperator binaryoperator;
@@ -78,7 +51,6 @@
 
         PackageClause* packageclause;
 }
-
 %token
     SEMICOLON INTEGER BOOLEAN
     PACKAGE RETURN VAR IF FOR
@@ -100,8 +72,8 @@
 %type <block> block
 
 %type <toplvldecl> topleveldecl
-%type <decl> declaration
-%type <decl> vardecl
+%type <toplvldecl> declaration
+%type <toplvldecl> vardecl
 %type <varspec> varspec
 
 %type <exp> expr
@@ -115,8 +87,8 @@
 %type <stm> statement
 %type <stmlist> statementlist
 %type <stm> simplestatement
-%type <simplestm> initstatement
-%type <simplestm> poststatement
+%type <stm> initstatement
+%type <stm> poststatement
 %type <stm> emptystatement
 %type <stm> expressionstatement
 %type <stm> forstatement
@@ -192,7 +164,7 @@ topleveldecl: declaration          {$$ = $1; }
             | functiondeclaration  {$$ = $1; }
             ;
 
-declaration: vardecl     {$$ = new VarDecl(); }
+declaration: vardecl     {$$ = $1; }
            ;
 
 vardecl: VAR varspec                                        {$$ = new VarDecl($2); }
@@ -244,35 +216,35 @@ parameterdecl: identifierlist type              { $$ = new ParameterDecl($2, $1)
              ;
 
 expr: unaryexpr                 { $$ = $1; }
-    | expr EQ expr              { $$ = new BinaryExp($1, $3, BinaryOperator.EQ); }
-    | expr NE expr              { $$ = new BinaryExp($1, $3, BinaryOperator.NE); }
-    | expr LT expr              { $$ = new BinaryExp($1, $3, BinaryOperator.LT); }
-    | expr LE expr              { $$ = new BinaryExp($1, $3, BinaryOperator.LE); } 
-    | expr GT expr              { $$ = new BinaryExp($1, $3, BinaryOperator.GT); } 
-    | expr GE expr              { $$ = new BinaryExp($1, $3, BinaryOperator.GE); } 
-    | expr MUL expr             { $$ = new BinaryExp($1, $3, BinaryOperator.MUL); }
-    | expr DIV expr             { $$ = new BinaryExp($1, $3, BinaryOperator.DIV); }
-    | expr PLUS expr            { $$ = new BinaryExp($1, $3, BinaryOperator.PLUS); }
-    | expr MIN expr             { $$ = new BinaryExp($1, $3, BinaryOperator.MIN); }
-    | expr OR expr              { $$ = new BinaryExp($1, $3, BinaryOperator.OR); }
-    | expr AND expr             { $$ = new BinaryExp($1, $3, BinaryOperator.AND); }
+    | expr EQ expr              { $$ = new BinaryExp($1, $3, EQ_BIN); }
+    | expr NE expr              { $$ = new BinaryExp($1, $3, NE_BIN); }
+    | expr LT expr              { $$ = new BinaryExp($1, $3, LT_BIN); }
+    | expr LE expr              { $$ = new BinaryExp($1, $3, LE_BIN); } 
+    | expr GT expr              { $$ = new BinaryExp($1, $3, GT_BIN); } 
+    | expr GE expr              { $$ = new BinaryExp($1, $3, GE_BIN); } 
+    | expr MUL expr             { $$ = new BinaryExp($1, $3, MUL_BIN); }
+    | expr DIV expr             { $$ = new BinaryExp($1, $3, DIV_BIN); }
+    | expr PLUS expr            { $$ = new BinaryExp($1, $3, PLUS_BIN); }
+    | expr MIN expr             { $$ = new BinaryExp($1, $3, MIN_BIN); }
+    | expr OR expr              { $$ = new BinaryExp($1, $3, OR_BIN); }
+    | expr AND expr             { $$ = new BinaryExp($1, $3, AND_BIN); }
     ;
 
 expressionlist: expressionlist COMMA expr       { $$ = new PairExpList($3, $1); }
               | expr                            { $$ = new LastExpList($1); }
               ;
 
-identifierlist: IDENTIFIER COMMA identifierlist         { $$ = new PairIdentifierList($1, $3); }
-              | IDENTIFIER                              { $$ = new LastIdentifierList($1); }
+identifierlist: IDENTIFIER COMMA identifierlist         { $$ = new PairIdentifierList(new Identifier($1), $3); }
+              | IDENTIFIER                              { $$ = new LastIdentifierList(new Identifier($1)); }
               ;
 
 unaryexpr: primaryexpr         { $$ = $1; }
-          | unary_op unaryexpr { $$ = new UnaryExpr($2, $1); }
+          | unary_op unaryexpr { $$ = new UnaryExp($2, $1); }
           ;
 
-unary_op: PLUS                  { $$ = UnaryOperator.PLUS; }
-        | UMINUS                { $$ = UnaryOperator.MIN; }
-        | NOT                   { $$ = UnaryOperator.NOT; }
+unary_op: PLUS                  { $$ = PLUS_UNARY; }
+        | UMINUS                { $$ = MIN_UNARY; }
+        | NOT                   { $$ = NOT_UNARY; }
         ;
 
 operand: literal                { $$ = new LiteralOperand($1); }
@@ -283,8 +255,8 @@ operand: literal                { $$ = new LiteralOperand($1); }
 literal: basiclit               { $$ = $1; }
         ;
 
-basiclit: INTLITERAL            { $$ = new IntLiteral($1); }
-        | BOOLLITERAL           { $$ = new BoolLiteral($1); }
+basiclit: INTLITERAL            { $$ = new IntLiteral(*$1); }
+        | BOOLLITERAL           { $$ = new BoolLiteral(*$1); }
         ;
 
 operandname: IDENTIFIER         { $$ = new Identifier($1); }
@@ -321,15 +293,15 @@ expressionstatement: expr { $$ = new ExprStm($1); } ;
 
 assignment: expressionlist assign_op expressionlist { $$ = new AssignmentStm($1, $3, $2); };
 
-assign_op: ASSIGN                                   { $$ = AssignOperator.ASSIGN;} 
-         | PLUSASSIGN                               { $$ = AssignOperator.PLUSASSIGN; } 
-         | MINASSIGN                                { $$ = AssignOperator.MINASSIGN; } 
-         | MULASSIGN                                { $$ = AssignOperator.MULASSIGN; } 
-         | DIVASSIGN                                { $$ = AssignOperator.DIVASSIGN;}            
+assign_op: ASSIGN                                   { $$ = ASSIGN_OP;} 
+         | PLUSASSIGN                               { $$ = PLUSASSIGN_OP; } 
+         | MINASSIGN                                { $$ = MINASSIGN_OP; } 
+         | MULASSIGN                                { $$ = MULASSIGN_OP; } 
+         | DIVASSIGN                                { $$ = DIVASSIGN_OP;}            
          ;
 
-incdecstatement: expr INC                           { $$ = new IncDecStm($1, IncDecOperator.PLUSPLUS); } 
-                | expr DEC                          { $$ = new IncDecStm($1, IncDecOperator.MINMIN); } 
+incdecstatement: expr INC                           { $$ = new IncDecStm($1, PLUSPLUS); } 
+                | expr DEC                          { $$ = new IncDecStm($1, MINMIN); } 
                 ;
 
 

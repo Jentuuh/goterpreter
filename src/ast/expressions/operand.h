@@ -1,7 +1,12 @@
-#include "../literals/literal.h"
+#pragma once
 #include <memory>
+#include "./exp.h"
+#include "../identifiers/identifier.h"
+#include "../literals/literal.h"
 
+struct SymbolTable;
 struct Exp;
+struct Literal;
 struct Identifier;
 
 struct Operand{
@@ -11,34 +16,21 @@ struct Operand{
 struct LiteralOperand: Operand{
     std::shared_ptr<Literal> literal;
 
-    LiteralOperand(Literal* lit): literal{lit}{};
- 
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: Implement
-    };
+    LiteralOperand(Literal* lit);
+    SymbolTable* interp(SymbolTable& table) override;
 };
 
 struct VariableOperand: Operand{
     std::shared_ptr<Identifier> operandName;
 
-    VariableOperand(Identifier* operandName): operandName{operandName}{};
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: Implement
-    };
-
+    VariableOperand(Identifier* operandName);
+    SymbolTable* interp(SymbolTable& table) override;
 };
 
 struct ExprOperand: Operand{
     std::shared_ptr<Exp> exp;
 
-    ExprOperand(Exp* exp): exp{exp}{};
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: Implement
-    };
+    ExprOperand(Exp* exp);
+    SymbolTable* interp(SymbolTable& table) override;
 };
 

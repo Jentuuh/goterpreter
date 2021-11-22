@@ -8,10 +8,16 @@ FLAGS=-O3 -DNDEBUG -std=c++17
 # Settings for a debug build
 #FLAGS=-g -std=c++17
 
-all: lexer_test
+all: interpreter_test
 
 clean:
 	rm -f lexer_test
 
-lexer_test: main.cpp 
-	$(CXX) $(FLAGS) -o lexer_test main.cpp lexer/lex.yy.c parser/grammar.tab.c
+flex: lexer/go.lex
+	flex -o ./lexer/lexer.cpp --header-file=./lexer/lexer.hpp ./lexer/go.lex
+
+bison: parser/grammar.y
+	bison -o ./parser/parser.cpp ./parser/grammar.y -dv
+
+interpreter_test: main.cpp 
+	$(CXX) $(FLAGS) -o interpreter_test main.cpp lexer/lexer.cpp parser/parser.cpp ast/*/*.cpp ast/*.cpp

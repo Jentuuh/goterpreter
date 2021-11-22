@@ -1,3 +1,4 @@
+#pragma once
 struct SymbolTable;
 
 struct Literal{
@@ -7,24 +8,14 @@ struct Literal{
 struct BoolLiteral: Literal{
     bool value;
 
-    BoolLiteral(bool value): value{value}{};
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: interp
-    }
-
+    BoolLiteral(bool value);
+    SymbolTable* interp(SymbolTable& table) override;
 };
 
 struct IntLiteral: Literal{
-
     int value;
 
-    IntLiteral(int value): value{value}{};
-
-   SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: interp
-    }
+    IntLiteral(int value);
+    SymbolTable* interp(SymbolTable& table) override;
 };
 

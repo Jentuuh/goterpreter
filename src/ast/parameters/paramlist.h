@@ -1,6 +1,7 @@
+#pragma once
 #include <memory>
+#include "./parameterdecl.h"
 
-struct ParameterDecl;
 struct SymbolTable;
 
 struct ParameterList{
@@ -8,37 +9,19 @@ struct ParameterList{
     virtual SymbolTable* interp(SymbolTable& table) = 0;
 };
 
-
 struct LastParamList:ParameterList{
     std::shared_ptr<ParameterDecl> last;
 
-    LastParamList(ParameterDecl* last):last{last}{};
-
-    int length() 
-    {
-        // TODO: implement
-    };
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
+    LastParamList(ParameterDecl* last);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 };
-
 
 struct PairParamList:ParameterList{
     std::shared_ptr<ParameterDecl> head;
     std::shared_ptr<ParameterList> tail; 
 
-    PairParamList(ParameterDecl* head, ParameterList* tail): head{head}, tail{tail}{};
-
-    int length() 
-    {
-        // TODO: implement  
-    };
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
+    PairParamList(ParameterDecl* head, ParameterList* tail);
+    int length() override;
+    SymbolTable* interp(SymbolTable& table) override;
 };

@@ -1,20 +1,17 @@
+#pragma once
 #include <memory>
+#include "../identifiers/identifierlist.h"
+#include "../types/type.h"
 
-struct IdentifierList;
+struct SymbolTable;
 
-// TODO: Make local function scope of these parameters!
+// TODO: Make local function scope (symbol table) of these parameters!
 
 struct ParameterDecl{
 
     std::shared_ptr<Type> type;
     std::shared_ptr<IdentifierList> identifiers;
 
-    ParameterDecl(Type* type, IdentifierList* identifiers): type{type}, identifiers{identifiers}{};
-
-
-    SymbolTable* interp(SymbolTable& table)
-    {
-        // TODO: implement
-    };
-
+    ParameterDecl(Type* type, IdentifierList* identifiers);
+    SymbolTable* interp(SymbolTable& table);
 };
