@@ -29,4 +29,4 @@
 
  #include "./ast/types/type.h"
 
- #include "./ast/symboltable.h"
+ #include "./environment/interp/symboltable.h"

@@ -3,6 +3,7 @@ struct SymbolTable;
 
 struct Literal{
     virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual void printValue() = 0;
 };
 
 struct BoolLiteral: Literal{
@@ -10,6 +11,7 @@ struct BoolLiteral: Literal{
 
     BoolLiteral(bool value);
     SymbolTable* interp(SymbolTable& table) override;
+    void printValue() override;
 };
 
 struct IntLiteral: Literal{
@@ -17,5 +19,6 @@ struct IntLiteral: Literal{
 
     IntLiteral(int value);
     SymbolTable* interp(SymbolTable& table) override;
+    void printValue() override;
 };
 

@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "./lexer/lexer.hpp"
 #include "./parser/parser.hpp"
-#include "./ast/symboltable.h"
+#include "./environment/interp/env.h"
+#include "./environment/interp/symboltable.h"
 
 extern int yyparse();
 SrcFile* ast;
@@ -44,10 +45,14 @@ int main(int argc, char* argv[])
   //   printf("\n");
 
   yyparse();
-  SymbolTable symbols{};
-  SymbolTable* symbol_ptr = &symbols;
+  ScopedEnv scopeEnvironment{};
+  scopeEnvironment.currentScope()->add("Test integer", std::make_shared<IntegerType>(), std::make_shared<IntLiteral>(2));
+  scopeEnvironment.currentScope()->add("Test boolean", std::make_shared<BooleanType>(), std::make_shared<BoolLiteral>(true));
+  scopeEnvironment.currentScope()->printValues();  
 
+  // SymbolTable symbols{};
+  // SymbolTable* symbol_ptr = &symbols;
 
-  symbol_ptr = ast->interp(symbols);
+  //symbol_ptr = ast->interp(symbols);
   return 0;
 }

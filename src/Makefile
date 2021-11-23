@@ -20,4 +20,4 @@ bison: parser/grammar.y
 	bison -o ./parser/parser.cpp ./parser/grammar.y -dv
 
 interpreter_test: main.cpp 
-	$(CXX) $(FLAGS) -o interpreter_test main.cpp lexer/lexer.cpp parser/parser.cpp ast/*/*.cpp ast/*.cpp
+	$(CXX) $(FLAGS) -o interpreter_test main.cpp lexer/lexer.cpp parser/parser.cpp ast/*/*.cpp environment/*/*.cpp
