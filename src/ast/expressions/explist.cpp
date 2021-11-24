@@ -8,7 +8,7 @@ int LastExpList::length()
     // TODO: implement
 }
 
-SymbolTable* LastExpList::interp(SymbolTable& table)
+Environments LastExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -21,7 +21,7 @@ int PairExpList::length()
     // TODO: implement
 }
 
-SymbolTable* PairExpList::interp(SymbolTable& table)
+Environments PairExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

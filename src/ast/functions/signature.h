@@ -1,14 +1,17 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "../parameters/paramlist.h"
 #include "./result.h"
 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 struct Signature{
     std::shared_ptr<ParameterList> parameters;
     std::shared_ptr<Result> result;
 
     Signature(ParameterList* params, Result* res);
-    SymbolTable* interp(SymbolTable& table);
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

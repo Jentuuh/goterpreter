@@ -1,16 +1,20 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "./stm.h"
+
 /**
  * Abstract StatementList class.
  * Jente Vandersanden - Compilers 2021-2022 - Hasselt University
  */ 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 struct Stm;
 
 struct StmList{
     virtual int length() = 0;
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct LastStmList:StmList{
@@ -18,7 +22,7 @@ struct LastStmList:StmList{
 
     LastStmList(Stm* last);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct PairStmList:StmList{
@@ -27,5 +31,5 @@ struct PairStmList:StmList{
 
     PairStmList(Stm* head, StmList* tail);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

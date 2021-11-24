@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "./exp.h"
 
 /**
@@ -7,11 +8,14 @@
  * Jente Vandersanden - Compilers 2021-2022 - Hasselt University
  */
 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
+struct Exp;
 
 struct ExpList{
     virtual int length() = 0;
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct LastExpList:ExpList{
@@ -19,7 +23,7 @@ struct LastExpList:ExpList{
 
     LastExpList(Exp* l);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct PairExpList:ExpList{
@@ -28,5 +32,5 @@ struct PairExpList:ExpList{
 
     PairExpList(Exp* h, ExpList* t);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

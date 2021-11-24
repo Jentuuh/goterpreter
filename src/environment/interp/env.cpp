@@ -1,4 +1,5 @@
 #include "./env.h"
+#include <iostream>
 
 GlobalEnv::GlobalEnv()
 {
@@ -59,3 +60,26 @@ void ScopedEnv::pushScope()
     scopeSymbolTables.push_back(SymbolTable{});
 }
 
+void ScopedEnv::printScopes()
+{
+    int scopeLevel = 0;
+    for (SymbolTable s : scopeSymbolTables)
+    {
+        std::cout << "================ Scope Depth: " << scopeLevel << " ================"  << std::endl;
+        s.printValues();
+        std::cout << std::endl;
+        scopeLevel++;
+    }
+}
+
+std::shared_ptr<FunctionDecl> FunctionEnv::lookupVar(std::string id)
+{
+        // Check if table contains the id we're looking for
+        if(declaredFunctions.entries.count(id))
+        {
+            return declaredFunctions.entries.at(id);
+        }
+
+        // If not, we return NULL
+        return nullptr;
+}

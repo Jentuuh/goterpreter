@@ -8,7 +8,7 @@ int PairImportDeclList::length()
     // TODO: implement
 }
 
-SymbolTable* PairImportDeclList::interp(SymbolTable& table)
+Environments PairImportDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -21,7 +21,7 @@ int LastImportDeclList::length()
     // TODO: implement
 }
 
-SymbolTable* LastImportDeclList::interp(SymbolTable& table)
+Environments LastImportDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

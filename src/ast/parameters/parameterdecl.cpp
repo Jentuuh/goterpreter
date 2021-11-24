@@ -3,7 +3,7 @@
 // ============= ParameterDecl =============
 ParameterDecl::ParameterDecl(Type* type, IdentifierList* identifiers): type{type}, identifiers{identifiers}{}
 
-SymbolTable* ParameterDecl::interp(SymbolTable& table)
+Environments ParameterDecl::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

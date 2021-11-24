@@ -1,12 +1,15 @@
 #pragma once
 #include "./importdecl.h"
 #include <memory>
+#include <utility>
 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 struct ImportDeclList{
     virtual int length() = 0;
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct PairImportDeclList:ImportDeclList{
@@ -16,7 +19,7 @@ struct PairImportDeclList:ImportDeclList{
 
     PairImportDeclList(ImportDecl* h, ImportDeclList* t);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct LastImportDeclList:ImportDeclList{
@@ -24,5 +27,5 @@ struct LastImportDeclList:ImportDeclList{
 
     LastImportDeclList(ImportDecl* l);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

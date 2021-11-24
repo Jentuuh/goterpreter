@@ -1,3 +1,4 @@
+#include <iostream>
 #include "decllist.h"
 
 
@@ -9,9 +10,11 @@ int PairDeclList::length()
     // TODO: implement
 }
 
-SymbolTable* PairDeclList::interp(SymbolTable& table)
+Environments PairDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    std::cout << "Interpreting PairDeclList..." << std::endl;
+    head->interp(env, funcEnv);
+    tail->interp(env, funcEnv);
 }
 
 
@@ -23,8 +26,9 @@ int LastDeclList::length()
     // TODO: implement
 }
 
-SymbolTable* LastDeclList::interp(SymbolTable& table)
+Environments LastDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    std::cout << "Interpreting LastDeclList..." << std::endl;
+    last->interp(env, funcEnv);
 }
 

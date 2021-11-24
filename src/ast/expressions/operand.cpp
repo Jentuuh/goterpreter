@@ -3,7 +3,7 @@
 // ============= LiteralOperand =============
 LiteralOperand::LiteralOperand(Literal* lit): literal{lit}{}
 
-SymbolTable* LiteralOperand::interp(SymbolTable& table)
+Environments LiteralOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }
@@ -11,7 +11,7 @@ SymbolTable* LiteralOperand::interp(SymbolTable& table)
 // ============= VariableOperand =============
 VariableOperand::VariableOperand(Identifier* operandName): operandName{operandName}{}
 
-SymbolTable* VariableOperand::interp(SymbolTable& table)
+Environments VariableOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }
@@ -19,7 +19,7 @@ SymbolTable* VariableOperand::interp(SymbolTable& table)
 // ============= ExprOperand =============
 ExprOperand::ExprOperand(Exp* exp): exp{exp}{};
 
-SymbolTable* ExprOperand::interp(SymbolTable& table)
+Environments ExprOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }

@@ -1,19 +1,22 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "./varspec.h"
 #include "../identifiers/identifier.h"
 #include "../functions/signature.h"
 #include "../block/block.h"
 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv; 
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 struct Block;
 
 struct TopLevelDecl{
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct Decl:TopLevelDecl{
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct VarDecl:Decl{
@@ -21,14 +24,14 @@ struct VarDecl:Decl{
     std::shared_ptr<VarSpec> varspec;
 
     VarDecl(VarSpec* varspec);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
-struct FunctionDecl:TopLevelDecl{
+struct FunctionDecl:public std::enable_shared_from_this<FunctionDecl>, TopLevelDecl{
     std::shared_ptr<Identifier> funcName;
     std::shared_ptr<Signature> funcSign;
     std::shared_ptr<Block> funcBody;
 
     FunctionDecl(Identifier* funcName, Signature* sign, Block* body);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

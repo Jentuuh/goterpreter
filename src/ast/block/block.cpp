@@ -4,7 +4,7 @@
 Block::Block(StmList* stmList): statements{stmList}{};
 
 
-SymbolTable* Block::interp(SymbolTable& table)
+Environments Block::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 };

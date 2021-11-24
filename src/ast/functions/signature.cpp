@@ -3,7 +3,7 @@
 // ============= Signature =============
 Signature::Signature(ParameterList* params, Result* res):parameters{params}, result{res}{}
 
-SymbolTable* Signature::interp(SymbolTable& table)
+Environments Signature::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

@@ -3,7 +3,7 @@
 // ============= Identifier =============
 Identifier::Identifier(char* name): name{name}{}
 
-SymbolTable* Identifier::interp(SymbolTable& table)
+Environments Identifier::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

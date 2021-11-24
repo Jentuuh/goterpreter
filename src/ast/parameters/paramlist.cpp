@@ -8,7 +8,7 @@ int LastParamList::length()
     // TODO: implement
 }
 
-SymbolTable* LastParamList::interp(SymbolTable& table)
+Environments LastParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -21,7 +21,7 @@ int PairParamList::length()
     // TODO: implement
 }
 
-SymbolTable* PairParamList::interp(SymbolTable& table)
+Environments PairParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

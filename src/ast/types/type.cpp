@@ -3,7 +3,7 @@
 // ============= IntegerType =============
 IntegerType::IntegerType(){}
 
-SymbolTable* IntegerType::interp(SymbolTable& table)
+Environments IntegerType::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -11,7 +11,7 @@ SymbolTable* IntegerType::interp(SymbolTable& table)
 // ============= BooleanType =============
 BooleanType::BooleanType(){}
 
-SymbolTable* BooleanType::interp(SymbolTable& table)
+Environments BooleanType::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

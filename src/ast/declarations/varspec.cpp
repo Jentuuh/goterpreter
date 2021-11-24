@@ -3,7 +3,7 @@
 // ============= VarSpec =============
 VarSpec::VarSpec(IdentifierList* idList, Type* type, ExpList* expList): idList{idList}, type{type}, expList{expList}{}
 
-SymbolTable* VarSpec::interp(SymbolTable& table)
+Environments VarSpec::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

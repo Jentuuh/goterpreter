@@ -1,16 +1,21 @@
 #pragma once
-struct SymbolTable;
+#include <utility>
+
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
+
 
 struct Type{
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct IntegerType:Type{
     IntegerType();
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct BooleanType:Type{
     BooleanType();
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

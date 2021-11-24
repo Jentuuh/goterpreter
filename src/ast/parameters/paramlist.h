@@ -1,12 +1,16 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "./parameterdecl.h"
 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
+
 
 struct ParameterList{
     virtual int length() = 0;
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct LastParamList:ParameterList{
@@ -14,7 +18,7 @@ struct LastParamList:ParameterList{
 
     LastParamList(ParameterDecl* last);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct PairParamList:ParameterList{
@@ -23,5 +27,5 @@ struct PairParamList:ParameterList{
 
     PairParamList(ParameterDecl* head, ParameterList* tail);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

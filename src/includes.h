@@ -30,3 +30,4 @@
  #include "./ast/types/type.h"
 
  #include "./environment/interp/symboltable.h"
+ #include "./environment/interp/functiontable.h"

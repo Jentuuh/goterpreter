@@ -3,7 +3,7 @@
 // ============= ParametersResult =============
 ParametersResult::ParametersResult(ParameterList* params): parameters{params}{}
 
-SymbolTable* ParametersResult::interp(SymbolTable& table)
+Environments ParametersResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }
@@ -11,7 +11,7 @@ SymbolTable* ParametersResult::interp(SymbolTable& table)
 // ============= TypeResult =============
 TypeResult::TypeResult(Type* type): type{type}{}
 
-SymbolTable* TypeResult::interp(SymbolTable& table)
+Environments TypeResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }

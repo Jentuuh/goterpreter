@@ -13,7 +13,10 @@ void SymbolTable::add(std::string i, std::shared_ptr<Type> t, std::shared_ptr<Li
 void SymbolTable::update(std::string i, std::shared_ptr<Literal> v)
 {
     // TODO: TYPECHECKING (should actually be done before interpreting the program) !!!
-    entries.at(i).value = v;
+    if(entries.count(i))
+    {
+        entries.at(i).value = v;
+    }
 }
 
 SymbolTable::SymbolTable()

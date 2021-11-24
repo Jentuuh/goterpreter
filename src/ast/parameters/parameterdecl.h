@@ -1,9 +1,12 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "../identifiers/identifierlist.h"
 #include "../types/type.h"
 
-struct SymbolTable;
+struct ScopedEnv; 
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 // TODO: Make local function scope (symbol table) of these parameters!
 
@@ -13,5 +16,5 @@ struct ParameterDecl{
     std::shared_ptr<IdentifierList> identifiers;
 
     ParameterDecl(Type* type, IdentifierList* identifiers);
-    SymbolTable* interp(SymbolTable& table);
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

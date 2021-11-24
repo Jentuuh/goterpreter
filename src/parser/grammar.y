@@ -108,6 +108,7 @@
 %type <identifier> functionname
 %type <signature> signature
 %type <result> result
+%type <explist> arguments
 
 %type <type> type
 %type <type> typename
@@ -121,6 +122,7 @@
 %left EQ NE GT GE LT LE
 %left PLUS MIN
 %left MUL DIV
+%right RCOMMA
 %right UMINUS
 %%
 sourcefile: packageclause SEMICOLON  topleveldeclarations               {$$ = new SrcFile($1, nullptr, $3);
@@ -167,6 +169,7 @@ topleveldecl: declaration          {$$ = $1; }
 declaration: vardecl     {$$ = $1; }
            ;
 
+/* TODO: HIER MOET EEN VARSPEC LIST GESCHEIDEN DOOR SEMICOLONS STAAN! */
 vardecl: VAR varspec                                        {$$ = new VarDecl($2); }
         | VAR LPAREN varspec SEMICOLON RPAREN               {$$ = new VarDecl($3); }
         ;
@@ -262,8 +265,15 @@ basiclit: INTLITERAL            { $$ = new IntLiteral(*$1); }
 operandname: IDENTIFIER         { $$ = new Identifier($1); }
             ;
 
-primaryexpr: operand            { $$ = new PrimaryExp($1); }
-            ;
+primaryexpr: operand                              { $$ = new OperandExp($1); }
+           | primaryexpr arguments SEMICOLON      { $$ = new FunctionCall($1, $2); }
+           ;
+
+arguments: LPAREN RPAREN                                          { $$ = nullptr; }
+         | LPAREN expressionlist RPAREN                           { $$ = $2; }
+         | LPAREN expressionlist RCOMMA RPAREN                    { $$ = $2; }
+         ;
+         
 
 block: LBRACE statementlist RBRACE      { $$ = new Block($2); }
        ;

@@ -3,23 +3,32 @@
 // ============= UnaryExp =============
 UnaryExp::UnaryExp(Exp* unaryExp, UnaryOperator op): unaryExp{unaryExp}, op{op}{}
 
-SymbolTable* UnaryExp::interp(SymbolTable& table)
+Environments UnaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
 
-// ============= PrimaryExp =============
-PrimaryExp::PrimaryExp(Operand* operand): operand{operand}{}
+// ============= FunctionCall =============
 
-SymbolTable* PrimaryExp::interp(SymbolTable& table)
+FunctionCall::FunctionCall(Exp* primExp, ExpList* expList): primaryExp{primExp}, arguments{expList}{}
+
+Environments FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
 
+// ============= OperandExp =============
+
+OperandExp::OperandExp(Operand* operand): operand{operand}{}
+
+Environments OperandExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+{
+    // TODO: implement
+}
 // ============= BinaryExp =============
 BinaryExp::BinaryExp(Exp* left, Exp* right, BinaryOperator op): left{left}, right{right}, op{op}{}
 
-SymbolTable* BinaryExp::interp(SymbolTable& table)
+Environments BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

@@ -1,15 +1,20 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "../declarations/decl.h"
 #include "../block/block.h"
 #include "../expressions/exp.h"
 #include "../expressions/explist.h"
 #include "./forclause.h"
+
 /**
  * Abstract Statement struct.
  * Jente Vandersanden - Compilers 2021-2022 - Hasselt University
  */
-struct SymbolTable;
+
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 struct ForClause;
 struct Block;
 struct Exp;
@@ -20,25 +25,25 @@ enum IncDecOperator{ PLUSPLUS, MINMIN };
 
 struct Stm
 {
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct SimpleStm:Stm{
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct DeclStm:Stm{
     std::shared_ptr<TopLevelDecl> declaration;
 
     DeclStm(TopLevelDecl* decl);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct BlockStm:Stm{
     std::shared_ptr<Block> block;
 
     BlockStm(Block* block);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct IfStm:Stm{
@@ -51,7 +56,7 @@ struct IfStm:Stm{
     std::shared_ptr<Stm> nestedIfStm;
 
     IfStm(Stm* simpleStm, Exp* cond, Block* ifBlock, Block* elseBlock, Stm* nestedIf);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct ForCondStm:Stm{
@@ -59,7 +64,7 @@ struct ForCondStm:Stm{
     std::shared_ptr<Block> body;
 
     ForCondStm(Exp* cond, Block* body);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct ForClauseStm:Stm{
@@ -67,26 +72,26 @@ struct ForClauseStm:Stm{
     std::shared_ptr<Block> body;
 
     ForClauseStm(ForClause* forclause, Block* body);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct ForStm:Stm{
     std::shared_ptr<Block> body;
 
     ForStm(Block* body);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct ReturnStm:Stm{
     std::shared_ptr<ExpList> expressionList;
 
     ReturnStm(ExpList* expList);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct EmptyStm:SimpleStm{
     EmptyStm();
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct AssignmentStm:SimpleStm{
@@ -95,7 +100,7 @@ struct AssignmentStm:SimpleStm{
     AssignOperator assignOp;
 
     AssignmentStm(ExpList* left, ExpList* right, AssignOperator assign_op);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct IncDecStm:SimpleStm{
@@ -103,13 +108,13 @@ struct IncDecStm:SimpleStm{
     IncDecOperator op;
 
     IncDecStm(Exp* exp, IncDecOperator op);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct ExprStm:SimpleStm{
     std::shared_ptr<Exp> exp; 
 
     ExprStm(Exp* exp);
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 

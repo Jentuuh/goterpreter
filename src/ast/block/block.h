@@ -1,14 +1,18 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "../statements/stmlist.h"
 
 struct StmList;
-struct SymbolTable;
+struct ScopedEnv; 
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
+
 
 struct Block
 {
     std::shared_ptr<StmList> statements;
 
     Block(StmList* stmList);
-    SymbolTable* interp(SymbolTable& table);
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

@@ -3,7 +3,7 @@
 // ============= LastIdentifierList =============
 LastIdentifierList::LastIdentifierList(Identifier* l): last{last}{}
 
-SymbolTable* LastIdentifierList::interp(SymbolTable& table)
+Environments LastIdentifierList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -16,7 +16,7 @@ int LastIdentifierList::length()
 // ============= PairIdentifierList =============
 PairIdentifierList::PairIdentifierList(Identifier* h, IdentifierList* t): head{h}, tail{t}{}
 
-SymbolTable* PairIdentifierList::interp(SymbolTable& table)
+Environments PairIdentifierList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

@@ -8,7 +8,7 @@ int LastStmList::length()
     // TODO: implement
 }
 
-SymbolTable* LastStmList::interp(SymbolTable& table)
+Environments LastStmList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -21,7 +21,7 @@ int PairStmList::length()
     // TODO: implement
 }
 
-SymbolTable* PairStmList::interp(SymbolTable& table)
+Environments PairStmList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

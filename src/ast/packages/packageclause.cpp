@@ -3,7 +3,8 @@
 // ============= PackageClause =============
 PackageClause::PackageClause(Identifier* pack_name): packageName{pack_name}{}
 
-SymbolTable* PackageClause::interp(SymbolTable& table)
+Environments PackageClause::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
+    return Environments(&env, &funcEnv);
 }

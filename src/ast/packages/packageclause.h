@@ -1,12 +1,15 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "../identifiers/identifier.h"
 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 struct PackageClause{
     std::shared_ptr<Identifier> packageName;
 
     PackageClause(Identifier* pack_name);
-    SymbolTable* interp(SymbolTable& table);
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

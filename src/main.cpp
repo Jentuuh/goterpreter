@@ -46,13 +46,20 @@ int main(int argc, char* argv[])
 
   yyparse();
   ScopedEnv scopeEnvironment{};
-  scopeEnvironment.currentScope()->add("Test integer", std::make_shared<IntegerType>(), std::make_shared<IntLiteral>(2));
-  scopeEnvironment.currentScope()->add("Test boolean", std::make_shared<BooleanType>(), std::make_shared<BoolLiteral>(true));
-  scopeEnvironment.currentScope()->printValues();  
+  FunctionEnv functionEnvironment{};
 
-  // SymbolTable symbols{};
-  // SymbolTable* symbol_ptr = &symbols;
+  // // Test of scoped environment
+  // scopeEnvironment.currentScope()->add("Test integer", std::make_shared<IntegerType>(), std::make_shared<IntLiteral>(2));
+  // scopeEnvironment.currentScope()->add("Test boolean", std::make_shared<BooleanType>(), std::make_shared<BoolLiteral>(true));
+  // scopeEnvironment.printScopes();
 
-  //symbol_ptr = ast->interp(symbols);
+  // // Test of function environment
+  // char* funcName = "TestFunction";
+  // functionEnvironment.declaredFunctions.add("Test function", std::make_shared<FunctionDecl>(std::make_shared<Identifier>(funcName).get(), std::shared_ptr<Signature>(nullptr).get(), std::shared_ptr<Block>(nullptr).get()));
+  // functionEnvironment.declaredFunctions.printValues();
+  
+  ast->interp(scopeEnvironment, functionEnvironment);
+  scopeEnvironment.printScopes();
+  functionEnvironment.declaredFunctions.printValues();
   return 0;
 }

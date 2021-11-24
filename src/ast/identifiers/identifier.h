@@ -1,10 +1,13 @@
 #pragma once
+#include <utility>
 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 struct Identifier{
     char* name;
 
     Identifier(char* name);
-    SymbolTable* interp(SymbolTable& table);
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

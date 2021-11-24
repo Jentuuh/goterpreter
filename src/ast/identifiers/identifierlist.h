@@ -1,12 +1,16 @@
 #pragma once
 #include <memory>
+#include <utility>
 #include "./identifier.h"
 
-struct SymbolTable;
+struct ScopedEnv;
+struct FunctionEnv;
+typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
+struct Identifier; 
 
 struct IdentifierList{
     virtual int length() = 0;
-    virtual SymbolTable* interp(SymbolTable& table) = 0;
+    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct LastIdentifierList:IdentifierList{
@@ -14,7 +18,7 @@ struct LastIdentifierList:IdentifierList{
 
     LastIdentifierList(Identifier* l);
     int length() override;
-    SymbolTable* interp(SymbolTable& table) override;
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct PairIdentifierList:IdentifierList{
@@ -23,5 +27,5 @@ struct PairIdentifierList:IdentifierList{
 
     PairIdentifierList(Identifier* h, IdentifierList* t);
     int length() override;
-    SymbolTable* interp(SymbolTable& table); 
+    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv); 
 };

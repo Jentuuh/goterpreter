@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "./symboltable.h"
+#include "./functiontable.h"
 
 struct Env{
     virtual std::shared_ptr<Literal> lookupVar(std::string id) = 0;
@@ -22,4 +23,11 @@ struct ScopedEnv:Env{
     SymbolTable* currentScope();
     void popScope();
     void pushScope();
+    void printScopes();
+};
+
+struct FunctionEnv{
+    FunctionTable declaredFunctions;
+
+    std::shared_ptr<FunctionDecl> lookupVar(std::string id);
 };
