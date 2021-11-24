@@ -5,12 +5,10 @@
 
 struct ScopedEnv;
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
-
 
 struct ParameterList{
     virtual int length() = 0;
-    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct LastParamList:ParameterList{
@@ -18,7 +16,7 @@ struct LastParamList:ParameterList{
 
     LastParamList(ParameterDecl* last);
     int length() override;
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct PairParamList:ParameterList{
@@ -27,5 +25,5 @@ struct PairParamList:ParameterList{
 
     PairParamList(ParameterDecl* head, ParameterList* tail);
     int length() override;
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

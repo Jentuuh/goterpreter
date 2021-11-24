@@ -8,7 +8,7 @@ int LastParamList::length()
     // TODO: implement
 }
 
-Environments LastParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void LastParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -21,7 +21,7 @@ int PairParamList::length()
     // TODO: implement
 }
 
-Environments PairParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void PairParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

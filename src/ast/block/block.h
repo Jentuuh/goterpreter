@@ -6,13 +6,11 @@
 struct StmList;
 struct ScopedEnv; 
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
-
 
 struct Block
 {
     std::shared_ptr<StmList> statements;
 
     Block(StmList* stmList);
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

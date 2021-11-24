@@ -3,7 +3,7 @@
 // ============= LiteralOperand =============
 LiteralOperand::LiteralOperand(Literal* lit): literal{lit}{}
 
-Environments LiteralOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void LiteralOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }
@@ -11,7 +11,7 @@ Environments LiteralOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= VariableOperand =============
 VariableOperand::VariableOperand(Identifier* operandName): operandName{operandName}{}
 
-Environments VariableOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void VariableOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }
@@ -19,7 +19,7 @@ Environments VariableOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= ExprOperand =============
 ExprOperand::ExprOperand(Exp* exp): exp{exp}{};
 
-Environments ExprOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void ExprOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }

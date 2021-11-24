@@ -3,7 +3,7 @@
 // ============= DeclStm =============
 DeclStm::DeclStm(TopLevelDecl* decl): declaration{decl}{}
 
-Environments DeclStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void DeclStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -11,7 +11,7 @@ Environments DeclStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= BlockStm =============
 BlockStm::BlockStm(Block* block): block{block}{}
 
-Environments BlockStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void BlockStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -19,7 +19,7 @@ Environments BlockStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= IfStm =============
 IfStm::IfStm(Stm* simpleStm, Exp* cond, Block* ifBlock, Block* elseBlock, Stm* nestedIf): simpleStm{simpleStm}, condition{cond}, ifBlock{ifBlock}, elseBlock{elseBlock}, nestedIfStm{nestedIf}{}
 
-Environments IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -27,7 +27,7 @@ Environments IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= ForCondStm =============
 ForCondStm::ForCondStm(Exp* cond, Block* body): condition{cond}, body{body}{}
 
-Environments ForCondStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void ForCondStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -35,7 +35,7 @@ Environments ForCondStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= ForClauseStm =============
 ForClauseStm::ForClauseStm(ForClause* forclause, Block* body): forclause{forclause}, body{body}{}
 
-Environments ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -43,7 +43,7 @@ Environments ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= ForStm =============
 ForStm::ForStm(Block* body): body{body}{}
 
-Environments ForStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void ForStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -51,7 +51,7 @@ Environments ForStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= ReturnStm =============
 ReturnStm::ReturnStm(ExpList* expList): expressionList{expList}{}
 
-Environments ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -59,7 +59,7 @@ Environments ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= EmptyStm =============
 EmptyStm::EmptyStm(){}
 
-Environments EmptyStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void EmptyStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -67,7 +67,7 @@ Environments EmptyStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= AssignmentStm =============
 AssignmentStm::AssignmentStm(ExpList* left, ExpList* right, AssignOperator assign_op): leftExpList{left}, rightExpList{right}, assignOp{assign_op}{}
 
-Environments AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -75,7 +75,7 @@ Environments AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= IncDecStm =============
 IncDecStm::IncDecStm(Exp* exp, IncDecOperator op): exp{exp}, op{op}{}
 
-Environments IncDecStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void IncDecStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -83,7 +83,7 @@ Environments IncDecStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= ExprStm =============
 ExprStm::ExprStm(Exp* exp): exp{exp}{}
 
-Environments ExprStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void ExprStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

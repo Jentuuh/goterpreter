@@ -3,7 +3,7 @@
 // ============= IntegerType =============
 IntegerType::IntegerType(){}
 
-Environments IntegerType::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void IntegerType::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -11,7 +11,7 @@ Environments IntegerType::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= BooleanType =============
 BooleanType::BooleanType(){}
 
-Environments BooleanType::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void BooleanType::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

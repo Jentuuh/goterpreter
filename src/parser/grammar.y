@@ -269,6 +269,7 @@ primaryexpr: operand                              { $$ = new OperandExp($1); }
            | primaryexpr arguments SEMICOLON      { $$ = new FunctionCall($1, $2); }
            ;
 
+/* TODO: ER KAN OOK EEN TYPE IN DE ARGUMENTS STAAN! */
 arguments: LPAREN RPAREN                                          { $$ = nullptr; }
          | LPAREN expressionlist RPAREN                           { $$ = $2; }
          | LPAREN expressionlist RCOMMA RPAREN                    { $$ = $2; }

@@ -8,7 +8,6 @@
 
 struct ScopedEnv;
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 struct SrcFile{
     std::shared_ptr<DeclList> topLvlDeclarations;
@@ -16,5 +15,5 @@ struct SrcFile{
     std::shared_ptr<PackageClause> packageClause;
 
     SrcFile(PackageClause* packageClause, ImportDeclList* imports, DeclList* topLvlDecls);
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

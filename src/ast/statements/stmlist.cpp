@@ -8,7 +8,7 @@ int LastStmList::length()
     // TODO: implement
 }
 
-Environments LastStmList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void LastStmList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -21,7 +21,7 @@ int PairStmList::length()
     // TODO: implement
 }
 
-Environments PairStmList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void PairStmList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

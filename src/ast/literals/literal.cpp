@@ -4,7 +4,7 @@
 // ============= BoolLiteral =============
 BoolLiteral::BoolLiteral(bool value): value{value}{}
 
-Environments BoolLiteral::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void BoolLiteral::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: interp
 }
@@ -25,7 +25,7 @@ void BoolLiteral::printValue()
 // ============= IntLiteral =============
 IntLiteral::IntLiteral(int value): value{value}{};
 
-Environments IntLiteral::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void IntLiteral::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: interp
 }

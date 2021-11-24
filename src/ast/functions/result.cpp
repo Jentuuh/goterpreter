@@ -3,7 +3,7 @@
 // ============= ParametersResult =============
 ParametersResult::ParametersResult(ParameterList* params): parameters{params}{}
 
-Environments ParametersResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void ParametersResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }
@@ -11,7 +11,7 @@ Environments ParametersResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 // ============= TypeResult =============
 TypeResult::TypeResult(Type* type): type{type}{}
 
-Environments TypeResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void TypeResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }

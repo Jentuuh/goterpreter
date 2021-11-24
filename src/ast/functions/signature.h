@@ -6,12 +6,11 @@
 
 struct ScopedEnv;
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 struct Signature{
     std::shared_ptr<ParameterList> parameters;
     std::shared_ptr<Result> result;
 
     Signature(ParameterList* params, Result* res);
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

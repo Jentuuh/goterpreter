@@ -5,12 +5,10 @@
 
 struct ScopedEnv;
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
-
 
 struct DeclList{
     virtual int length() = 0;
-    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct PairDeclList:DeclList{
@@ -20,7 +18,7 @@ struct PairDeclList:DeclList{
 
     PairDeclList(TopLevelDecl* h, DeclList* t);
     int length() override;
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 
 };
 
@@ -29,5 +27,5 @@ struct LastDeclList:DeclList{
 
     LastDeclList(TopLevelDecl* l);
     int length() override;
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

@@ -8,7 +8,7 @@ int LastExpList::length()
     // TODO: implement
 }
 
-Environments LastExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void LastExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -21,7 +21,7 @@ int PairExpList::length()
     // TODO: implement
 }
 
-Environments PairExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void PairExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

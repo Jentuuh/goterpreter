@@ -10,7 +10,7 @@ int PairDeclList::length()
     // TODO: implement
 }
 
-Environments PairDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void PairDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     std::cout << "Interpreting PairDeclList..." << std::endl;
     head->interp(env, funcEnv);
@@ -26,7 +26,7 @@ int LastDeclList::length()
     // TODO: implement
 }
 
-Environments LastDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void LastDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     std::cout << "Interpreting LastDeclList..." << std::endl;
     last->interp(env, funcEnv);

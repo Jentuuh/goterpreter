@@ -8,7 +8,7 @@ int PairImportDeclList::length()
     // TODO: implement
 }
 
-Environments PairImportDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void PairImportDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }
@@ -21,7 +21,7 @@ int LastImportDeclList::length()
     // TODO: implement
 }
 
-Environments LastImportDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+void LastImportDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: implement
 }

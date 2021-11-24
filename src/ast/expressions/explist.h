@@ -10,12 +10,11 @@
 
 struct ScopedEnv;
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 struct Exp;
 
 struct ExpList{
     virtual int length() = 0;
-    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct LastExpList:ExpList{
@@ -23,7 +22,7 @@ struct LastExpList:ExpList{
 
     LastExpList(Exp* l);
     int length() override;
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct PairExpList:ExpList{
@@ -32,5 +31,5 @@ struct PairExpList:ExpList{
 
     PairExpList(Exp* h, ExpList* t);
     int length() override;
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

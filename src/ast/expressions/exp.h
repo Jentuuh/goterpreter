@@ -10,7 +10,6 @@
  */
 struct ScopedEnv;
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 struct Operand;
 struct ExpList;
 
@@ -18,18 +17,18 @@ enum UnaryOperator { PLUS_UNARY, MIN_UNARY, NOT_UNARY };
 enum BinaryOperator { EQ_BIN, NE_BIN, LT_BIN, LE_BIN, GT_BIN, GE_BIN, MUL_BIN, DIV_BIN, PLUS_BIN, MIN_BIN, OR_BIN, AND_BIN };
 
 struct Exp{
-	virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+	virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 // struct PrimaryExp:Exp{
-// 	virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+// 	virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 // };
 
 struct OperandExp:Exp{
 	std::shared_ptr<Operand> operand;
 
 	OperandExp(Operand* operand);
-	Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+	void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct FunctionCall:Exp{
@@ -37,7 +36,7 @@ struct FunctionCall:Exp{
 	std::shared_ptr<ExpList> arguments;
 
 	FunctionCall(Exp* primExp, ExpList* expList);
-	Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+	void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct UnaryExp:Exp{
@@ -46,7 +45,7 @@ struct UnaryExp:Exp{
 	std::shared_ptr<Exp> unaryExp;
 
 	UnaryExp(Exp* unaryExp, UnaryOperator op);
-	Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+	void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 
@@ -57,5 +56,5 @@ struct BinaryExp:Exp{
 	BinaryOperator op;
 
 	BinaryExp(Exp* left, Exp* right, BinaryOperator op);
-	Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+	void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };

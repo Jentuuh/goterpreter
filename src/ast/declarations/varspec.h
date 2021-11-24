@@ -7,7 +7,6 @@
 
 struct ScopedEnv;
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 
 struct VarSpec{
@@ -16,5 +15,5 @@ struct VarSpec{
     std::shared_ptr<ExpList> expList;
 
     VarSpec(IdentifierList* idList, Type* type, ExpList* expList);
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

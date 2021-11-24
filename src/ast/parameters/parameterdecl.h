@@ -6,7 +6,6 @@
 
 struct ScopedEnv; 
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 
 // TODO: Make local function scope (symbol table) of these parameters!
 
@@ -16,5 +15,5 @@ struct ParameterDecl{
     std::shared_ptr<IdentifierList> identifiers;
 
     ParameterDecl(Type* type, IdentifierList* identifiers);
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv);
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

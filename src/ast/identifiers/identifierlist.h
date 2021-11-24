@@ -5,12 +5,11 @@
 
 struct ScopedEnv;
 struct FunctionEnv;
-typedef std::pair<ScopedEnv*, FunctionEnv*> Environments;
 struct Identifier; 
 
 struct IdentifierList{
     virtual int length() = 0;
-    virtual Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct LastIdentifierList:IdentifierList{
@@ -18,7 +17,7 @@ struct LastIdentifierList:IdentifierList{
 
     LastIdentifierList(Identifier* l);
     int length() override;
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct PairIdentifierList:IdentifierList{
@@ -27,5 +26,5 @@ struct PairIdentifierList:IdentifierList{
 
     PairIdentifierList(Identifier* h, IdentifierList* t);
     int length() override;
-    Environments interp(ScopedEnv& env, FunctionEnv& funcEnv); 
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv); 
 };
