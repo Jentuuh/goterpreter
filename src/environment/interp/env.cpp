@@ -48,6 +48,20 @@ std::shared_ptr<Literal> ScopedEnv::lookupVar(std::string id)
     return nullptr;
 }
 
+void ScopedEnv::updateVar(std::string id, std::shared_ptr<Literal> newVal)
+{
+    for(int i = scopeSymbolTables.size(); i >= 0; i++)
+    {
+        // Check if the symbol is defined anywhere
+        if(scopeSymbolTables[i].entries.count(id))
+        {
+            // Update the value
+            scopeSymbolTables[i].entries.at(id).value = newVal;
+            return;
+        }
+    }
+}
+
 void ScopedEnv::popScope()
 {
     // Pop the symbol table of the current scope off the stack

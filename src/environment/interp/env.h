@@ -22,6 +22,7 @@ struct ScopedEnv:Env{
     ScopedEnv();
     std::shared_ptr<Literal> lookupVar(std::string id) override;
     SymbolTable* currentScope();
+    void updateVar(std::string id, std::shared_ptr<Literal> newVal);
     void popScope();
     void pushScope();
     void printScopes();

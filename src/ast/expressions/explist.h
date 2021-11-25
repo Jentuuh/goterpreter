@@ -16,6 +16,7 @@ struct Literal;
 
 struct ExpList{
     virtual int length() = 0;
+    virtual void getOperandNames(std::vector<std::string>& names) = 0;
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer) = 0;
 };
 
@@ -24,6 +25,7 @@ struct LastExpList:ExpList{
 
     LastExpList(Exp* l);
     int length() override;
+    void getOperandNames(std::vector<std::string>& names);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer) override;
 };
 
@@ -33,5 +35,6 @@ struct PairExpList:ExpList{
 
     PairExpList(Exp* h, ExpList* t);
     int length() override;
+    void getOperandNames(std::vector<std::string>& names);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer) override;
 };

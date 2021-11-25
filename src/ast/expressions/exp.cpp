@@ -3,6 +3,12 @@
 // ============= UnaryExp =============
 UnaryExp::UnaryExp(Exp* unaryExp, UnaryOperator op): unaryExp{unaryExp}, op{op}{}
 
+std::string UnaryExp::getOperandName() 
+{
+    return std::string("NO_OPERAND_EXPRESSION");
+}
+
+
 std::shared_ptr<Literal> UnaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     std::shared_ptr<Literal> intermediateResult = unaryExp->interp(env, funcEnv);
@@ -50,6 +56,11 @@ std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcE
     // TODO: implement
 }
 
+std::string FunctionCall::getOperandName() 
+{
+    return std::string("NO_OPERAND_EXPRESSION");
+}
+
 // ============= OperandExp =============
 
 OperandExp::OperandExp(Operand* operand): operand{operand}{}
@@ -58,8 +69,21 @@ std::shared_ptr<Literal> OperandExp::interp(ScopedEnv& env, FunctionEnv& funcEnv
 {
     return operand->interp(env, funcEnv);
 }
+
+std::string OperandExp::getOperandName() 
+{
+    if(std::dynamic_pointer_cast<VariableOperand>(operand) != nullptr)
+        return std::dynamic_pointer_cast<VariableOperand>(operand)->operandName->name;
+    return std::string("NO_OPERAND_EXPRESSION");
+}
+
 // ============= BinaryExp =============
 BinaryExp::BinaryExp(Exp* left, Exp* right, BinaryOperator op): left{left}, right{right}, op{op}{}
+
+std::string BinaryExp::getOperandName() 
+{
+    return std::string("NO_OPERAND_EXPRESSION");
+}
 
 std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
