@@ -1,25 +1,26 @@
 #include "operand.h"
+#include "../../environment/interp/env.h"
 
 // ============= LiteralOperand =============
 LiteralOperand::LiteralOperand(Literal* lit): literal{lit}{}
 
-void LiteralOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+std::shared_ptr<Literal> LiteralOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: Implement
+    return literal;
 }
 
 // ============= VariableOperand =============
 VariableOperand::VariableOperand(Identifier* operandName): operandName{operandName}{}
 
-void VariableOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+std::shared_ptr<Literal> VariableOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: Implement
+    return env.lookupVar(operandName->name);
 }
 
 // ============= ExprOperand =============
 ExprOperand::ExprOperand(Exp* exp): exp{exp}{};
 
-void ExprOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+std::shared_ptr<Literal> ExprOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Implement
 }

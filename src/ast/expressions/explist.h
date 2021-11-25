@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <utility>
+#include <vector>
 #include "./exp.h"
 
 /**
@@ -11,10 +12,11 @@
 struct ScopedEnv;
 struct FunctionEnv;
 struct Exp;
+struct Literal;
 
 struct ExpList{
     virtual int length() = 0;
-    virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer) = 0;
 };
 
 struct LastExpList:ExpList{
@@ -22,7 +24,7 @@ struct LastExpList:ExpList{
 
     LastExpList(Exp* l);
     int length() override;
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer) override;
 };
 
 struct PairExpList:ExpList{
@@ -31,5 +33,5 @@ struct PairExpList:ExpList{
 
     PairExpList(Exp* h, ExpList* t);
     int length() override;
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer) override;
 };

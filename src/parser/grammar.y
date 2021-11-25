@@ -69,6 +69,7 @@
 %type <decllist> topleveldeclarations
 %type <packageclause> packageclause
 %type <identifierlist> identifierlist
+%type <identifier> identifier
 %type <block> block
 
 %type <toplvldecl> topleveldecl
@@ -237,9 +238,12 @@ expressionlist: expressionlist COMMA expr       { $$ = new PairExpList($3, $1); 
               | expr                            { $$ = new LastExpList($1); }
               ;
 
-identifierlist: IDENTIFIER COMMA identifierlist         { $$ = new PairIdentifierList(new Identifier($1), $3); }
-              | IDENTIFIER                              { $$ = new LastIdentifierList(new Identifier($1)); }
+/* TODO: Make separate rule? So 'new Identifier() can be called separately?*/
+identifierlist: identifier RCOMMA identifierlist         { $$ = new PairIdentifierList($1, $3); }
+              | identifier                               { $$ = new LastIdentifierList($1); }
               ;
+
+identifier: IDENTIFIER         { $$ = new Identifier($1); };
 
 unaryexpr: primaryexpr         { $$ = $1; }
           | unary_op unaryexpr { $$ = new UnaryExp($2, $1); }
@@ -331,6 +335,9 @@ forstatement: FOR condition block       { $$ = new ForCondStm($2, $3); }
 condition: expr                         { $$ = $1; };
 
 forclause: initstatement SEMICOLON condition SEMICOLON poststatement    { $$ = new ForClause($1, $3, $5); }
+         | initstatement SEMICOLON condition SEMICOLON                  { $$ = new ForClause($1, $3, nullptr); }
+         | SEMICOLON condition SEMICOLON poststatement                  { $$ = new ForClause(nullptr, $2, $4); }
+         | SEMICOLON condition SEMICOLON                                { $$ = new ForClause(nullptr, $2, nullptr); }
          ;             
 
 initstatement: simplestatement  { $$ = $1; };

@@ -7,6 +7,7 @@
 
 struct ScopedEnv;
 struct FunctionEnv;
+struct ExpList;
 
 
 struct VarSpec{

@@ -3,6 +3,7 @@
 #include "./symboltable.h"
 #include "./functiontable.h"
 
+
 struct Env{
     virtual std::shared_ptr<Literal> lookupVar(std::string id) = 0;
 };
@@ -29,5 +30,5 @@ struct ScopedEnv:Env{
 struct FunctionEnv{
     FunctionTable declaredFunctions;
 
-    std::shared_ptr<FunctionDecl> lookupVar(std::string id);
+    FuncTableEntry* lookupVar(std::string id);
 };

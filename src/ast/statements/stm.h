@@ -18,6 +18,7 @@ struct ForClause;
 struct Block;
 struct Exp;
 struct TopLevelDecl;
+struct ExpList;
 
 enum AssignOperator{ ASSIGN_OP, PLUSASSIGN_OP, MINASSIGN_OP, MULASSIGN_OP, DIVASSIGN_OP };
 enum IncDecOperator{ PLUSPLUS, MINMIN };

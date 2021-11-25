@@ -13,27 +13,27 @@ struct Literal;
 struct Identifier;
 
 struct Operand{
-    virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
 struct LiteralOperand: Operand{
     std::shared_ptr<Literal> literal;
 
     LiteralOperand(Literal* lit);
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct VariableOperand: Operand{
     std::shared_ptr<Identifier> operandName;
 
     VariableOperand(Identifier* operandName);
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
 struct ExprOperand: Operand{
     std::shared_ptr<Exp> exp;
 
     ExprOperand(Exp* exp);
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 

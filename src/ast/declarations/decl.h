@@ -9,6 +9,7 @@
 struct ScopedEnv;
 struct FunctionEnv; 
 struct Block;
+struct VarSpec;
 
 struct TopLevelDecl{
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;

@@ -75,7 +75,7 @@ else "else"
             long int value = strtol(s, NULL, 10);
             *yylval.intlit = value;
             return INTLITERAL;
-          }
+            }
 {boollit} { ADJUST(); 
                char* s = strdup(yytext);
                if(strcmp(s, "true") == 0){
@@ -85,7 +85,7 @@ else "else"
                  *yylval.boollit = false;
                }
               return BOOLLITERAL; 
-              }
+          }
 {identifier} { ADJUST(); 
                char* s = strdup(yytext);
                yylval.id = s; 

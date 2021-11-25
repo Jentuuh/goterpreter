@@ -7,6 +7,7 @@
 struct ScopedEnv;
 struct FunctionEnv;
 struct Stm;
+struct Exp;
 
 struct ForClause{
     std::shared_ptr<Stm> initStm;

@@ -13,8 +13,10 @@ int PairDeclList::length()
 void PairDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     std::cout << "Interpreting PairDeclList..." << std::endl;
+    
     head->interp(env, funcEnv);
     tail->interp(env, funcEnv);
+
 }
 
 

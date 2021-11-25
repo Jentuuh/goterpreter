@@ -72,12 +72,12 @@ void ScopedEnv::printScopes()
     }
 }
 
-std::shared_ptr<FunctionDecl> FunctionEnv::lookupVar(std::string id)
+FuncTableEntry* FunctionEnv::lookupVar(std::string id)
 {
         // Check if table contains the id we're looking for
         if(declaredFunctions.entries.count(id))
         {
-            return declaredFunctions.entries.at(id);
+            return &declaredFunctions.entries.at(id);
         }
 
         // If not, we return NULL

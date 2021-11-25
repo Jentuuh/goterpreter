@@ -1,11 +1,12 @@
 #include "stm.h"
+#include <iostream>
 
 // ============= DeclStm =============
 DeclStm::DeclStm(TopLevelDecl* decl): declaration{decl}{}
 
 void DeclStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    declaration->interp(env, funcEnv);
 }
 
 // ============= BlockStm =============
@@ -13,7 +14,7 @@ BlockStm::BlockStm(Block* block): block{block}{}
 
 void BlockStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    block->interp(env, funcEnv);
 }
 
 // ============= IfStm =============
@@ -21,7 +22,31 @@ IfStm::IfStm(Stm* simpleStm, Exp* cond, Block* ifBlock, Block* elseBlock, Stm* n
 
 void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    std::cout << "In if statement..." << std::endl;
+    // First, execute simple statement if there is any
+    if(simpleStm.get() != nullptr)
+    {
+        simpleStm->interp(env, funcEnv);
+    }
+
+    // Check if condition is true
+    if(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value)
+    {
+        ifBlock->interp(env, funcEnv);
+    }
+    else
+    {
+        // Execute else block (if there is one)
+        if(elseBlock.get() != nullptr)
+        {
+            elseBlock->interp(env, funcEnv);
+        }
+        // Execute nested if statement (if there is one)
+        if(nestedIfStm.get() != nullptr)
+        {
+            nestedIfStm->interp(env, funcEnv);
+        }
+    }
 }
 
 // ============= ForCondStm =============
@@ -29,7 +54,11 @@ ForCondStm::ForCondStm(Exp* cond, Block* body): condition{cond}, body{body}{}
 
 void ForCondStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    // The for-loop can be executed as long as the condition evaluates to true
+    while(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value)
+    {
+        body->interp(env, funcEnv);
+    }
 }
 
 // ============= ForClauseStm =============
@@ -37,7 +66,19 @@ ForClauseStm::ForClauseStm(ForClause* forclause, Block* body): forclause{forclau
 
 void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    // We execute the init statement once before evaluating the condition (if there is one)
+    if(forclause->initStm.get() != nullptr)
+        forclause->initStm->interp(env, funcEnv);
+
+    while(std::dynamic_pointer_cast<BoolLiteral>(forclause->condition->interp(env, funcEnv))->value)
+    {
+        // Execute the body of the for-loop
+        body->interp(env, funcEnv);
+
+        // Update condition variable with poststatement (if there is one)
+        if(forclause->postStm.get() != nullptr)
+            forclause->postStm->interp(env, funcEnv);
+    }
 }
 
 // ============= ForStm =============
@@ -45,7 +86,10 @@ ForStm::ForStm(Block* body): body{body}{}
 
 void ForStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    while(true)
+    {
+        body->interp(env, funcEnv);
+    }
 }
 
 // ============= ReturnStm =============

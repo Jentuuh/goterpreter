@@ -10,7 +10,7 @@ int LastStmList::length()
 
 void LastStmList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    last->interp(env, funcEnv);
 }
 
 // ============= PairStmList =============
@@ -23,5 +23,6 @@ int PairStmList::length()
 
 void PairStmList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    head->interp(env, funcEnv);
+    tail->interp(env, funcEnv);
 }

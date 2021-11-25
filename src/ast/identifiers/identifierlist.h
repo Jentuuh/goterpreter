@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <utility>
+#include <vector>
+#include <string>
 #include "./identifier.h"
 
 struct ScopedEnv;
@@ -9,6 +11,7 @@ struct Identifier;
 
 struct IdentifierList{
     virtual int length() = 0;
+    virtual void getIdentifierStrings(std::vector<std::string>& container) = 0;
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 };
 
@@ -17,6 +20,7 @@ struct LastIdentifierList:IdentifierList{
 
     LastIdentifierList(Identifier* l);
     int length() override;
+    void getIdentifierStrings(std::vector<std::string>& container) override;
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
@@ -26,5 +30,6 @@ struct PairIdentifierList:IdentifierList{
 
     PairIdentifierList(Identifier* h, IdentifierList* t);
     int length() override;
+    void getIdentifierStrings(std::vector<std::string>& container) override;
     void interp(ScopedEnv& env, FunctionEnv& funcEnv); 
 };
