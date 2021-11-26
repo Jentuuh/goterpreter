@@ -50,13 +50,16 @@ std::shared_ptr<Literal> ScopedEnv::lookupVar(std::string id)
 
 void ScopedEnv::updateVar(std::string id, std::shared_ptr<Literal> newVal)
 {
-    for(int i = scopeSymbolTables.size(); i >= 0; i++)
+    std::cout << "Updating variable in symbol table... Amount scopes: " << scopeSymbolTables.size() << std::endl;
+    for(int i = scopeSymbolTables.size() - 1; i >= 0; i++)
     {
+
         // Check if the symbol is defined anywhere
         if(scopeSymbolTables[i].entries.count(id))
         {
             // Update the value
             scopeSymbolTables[i].entries.at(id).value = newVal;
+            std::cout << "Updated variable!" << std::endl;
             return;
         }
     }
@@ -97,3 +100,19 @@ FuncTableEntry* FunctionEnv::lookupVar(std::string id)
         // If not, we return NULL
         return nullptr;
 }
+
+std::string FunctionEnv::currentFunc()
+{
+    return callStack.back();
+}
+
+void FunctionEnv::pushFunc(std::string funcName)
+{
+    callStack.push_back(funcName);
+}
+
+void FunctionEnv::popFunc()
+{
+    callStack.pop_back();
+}
+

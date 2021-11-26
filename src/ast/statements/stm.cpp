@@ -15,6 +15,7 @@ BlockStm::BlockStm(Block* block): block{block}{}
 
 void BlockStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    env.pushScope();
     block->interp(env, funcEnv);
 }
 
@@ -98,7 +99,33 @@ ReturnStm::ReturnStm(ExpList* expList): expressionList{expList}{}
 
 void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    std::vector<std::shared_ptr<Literal>> returnValues;
+
+    // TODO: Typecheck! Check if type matches return type of function!
+    std::string funcName = funcEnv.currentFunc();
+    FuncTableEntry* funcDetails = funcEnv.lookupVar(funcName);
+    
+    // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
+    if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
+    {
+        // 2. If so, retrieve these values from the environment, and return them
+        std::vector<std::string> returnValueIdentifiers;
+        std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);
+
+        for(std::string r : returnValueIdentifiers)
+        {
+            returnValues.push_back(env.lookupVar(r));
+        }
+
+        funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+    }
+    else
+    {
+        // 3. If not, return whatever expressionlist is behind the return statement
+        // 4. If there isn't anything, return an empty list
+        expressionList->interp(env, funcEnv, returnValues);
+        funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+    }
 }
 
 // ============= EmptyStm =============
@@ -124,6 +151,8 @@ void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // Get the variable names (identifiers) of the left side of the assignment
     std::vector<std::string> operandNames;
     leftExpList->getOperandNames(operandNames);
+
+    std::cout << "Assigning..." << std::endl;
 
     if(newValues.size() == 1)
     {

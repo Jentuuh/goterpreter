@@ -123,6 +123,7 @@
 %left EQ NE GT GE LT LE
 %left PLUS MIN
 %left MUL DIV
+%right RSEMICOL
 %right RCOMMA
 %right UMINUS
 %%
@@ -270,7 +271,7 @@ operandname: IDENTIFIER         { $$ = new Identifier($1); }
             ;
 
 primaryexpr: operand                              { $$ = new OperandExp($1); }
-           | primaryexpr arguments SEMICOLON      { $$ = new FunctionCall($1, $2); }
+           | primaryexpr arguments                { $$ = new FunctionCall($1, $2); }
            ;
 
 /* TODO: ER KAN OOK EEN TYPE IN DE ARGUMENTS STAAN! */
@@ -335,9 +336,8 @@ forstatement: FOR condition block       { $$ = new ForCondStm($2, $3); }
 condition: expr                         { $$ = $1; };
 
 forclause: initstatement SEMICOLON condition SEMICOLON poststatement    { $$ = new ForClause($1, $3, $5); }
-         | initstatement SEMICOLON condition SEMICOLON                  { $$ = new ForClause($1, $3, nullptr); }
-         | SEMICOLON condition SEMICOLON poststatement                  { $$ = new ForClause(nullptr, $2, $4); }
-         | SEMICOLON condition SEMICOLON                                { $$ = new ForClause(nullptr, $2, nullptr); }
+         | initstatement SEMICOLON condition RSEMICOL                   { $$ = new ForClause($1, $3, nullptr); }
+         | RSEMICOL condition RSEMICOL poststatement                    { $$ = new ForClause(nullptr, $2, $4); }
          ;             
 
 initstatement: simplestatement  { $$ = $1; };

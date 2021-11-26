@@ -30,6 +30,10 @@ struct ScopedEnv:Env{
 
 struct FunctionEnv{
     FunctionTable declaredFunctions;
+    std::vector<std::string> callStack;    
 
     FuncTableEntry* lookupVar(std::string id);
+    std::string currentFunc();
+    void pushFunc(std::string funcName);
+    void popFunc();
 };

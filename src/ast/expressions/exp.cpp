@@ -1,4 +1,6 @@
 #include "exp.h"
+#include "../../environment/interp/env.h"
+#include <iostream>
 
 // ============= UnaryExp =============
 UnaryExp::UnaryExp(Exp* unaryExp, UnaryOperator op): unaryExp{unaryExp}, op{op}{}
@@ -53,8 +55,59 @@ FunctionCall::FunctionCall(Exp* primExp, ExpList* expList): primaryExp{primExp},
 
 std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
-}
+    // TODO: Typechecker: Check if function exists + if parameters have correct type!!
+
+    std::cout << "In function call!" << std::endl;
+
+    // Get the name of the function that's being called 
+    std::string funcName = primaryExp->getOperandName();
+
+    // Push function on the call stack
+    funcEnv.pushFunc(funcName);
+
+    std::cout << "Function name: " << funcName <<  std::endl;
+
+    // Evaluate the parameters
+    std::vector<std::shared_ptr<Literal>> argValues;
+    if(arguments.get() != nullptr)
+    {
+        arguments->interp(env, funcEnv, argValues);
+        std::cout << "Got argument values!" << std::endl;
+    }
+
+    // We are entering the function's scope
+    env.pushScope();
+    std::cout << "New scope!" << std::endl;
+
+    // Add arguments to this scope
+    std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> argNamesAndTypes;
+    if(funcEnv.lookupVar(funcName)->funcDecl->funcSign->parameters != nullptr)
+    {
+        funcEnv.lookupVar(funcName)->funcDecl->funcSign->parameters->getIdentifiersWithTypes(argNamesAndTypes);
+    }
+
+    int valueIndex = 0;
+    for(int i = 0; i < argNamesAndTypes.size(); i++)
+    {
+        for(int j = 0; j < argNamesAndTypes.at(i).first.size(); j++)
+        {
+             env.currentScope()->add(argNamesAndTypes.at(i).first.at(j), argNamesAndTypes.at(i).second, argValues[valueIndex]);
+             valueIndex++;
+        }
+    }
+
+    // Execute the function's body
+    funcEnv.lookupVar(funcName)->funcDecl->funcBody->interp(env, funcEnv);
+
+    std::cout << "Executed function " << funcName << "!" << std::endl;
+    // Pop function from call stack
+    funcEnv.popFunc();
+
+    // Pop scope after the function has been executed
+    env.printScopes();
+
+    // TODO: This function does not return a literal pointer, that's why I get a segmentation fault!
+};
 
 std::string FunctionCall::getOperandName() 
 {

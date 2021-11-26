@@ -16,7 +16,7 @@ void VarDecl::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         std::cout << "Evaluating var expression list..." << std::endl;
         varspec->expList->interp(env, funcEnv, values);
 
-     
+        std::cout << "Done evaluating vardecl expressions!" << std::endl;
 
         for (int i = 0; i < identifiers.size(); i++)
         {

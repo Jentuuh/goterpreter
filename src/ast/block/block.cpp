@@ -1,10 +1,10 @@
 #include "block.h"
-
+#include "../../environment/interp/env.h"
 
 Block::Block(StmList* stmList): statements{stmList}{};
 
 
 void Block::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: implement
+    statements->interp(env, funcEnv);
 };
