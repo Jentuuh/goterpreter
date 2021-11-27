@@ -24,33 +24,19 @@ IfStm::IfStm(Stm* simpleStm, Exp* cond, Block* ifBlock, Block* elseBlock, Stm* n
 
 void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    std::cout << "In if statement..." << std::endl;
     // First, execute simple statement if there is any
     if(simpleStm.get() != nullptr)
     {
         simpleStm->interp(env, funcEnv);
     }
 
-    if(std::dynamic_pointer_cast<BinaryExp>(condition) != nullptr)
-    {
-        std::cout << "condition is binaryexp!" << std::endl;
-    }
-
-    if(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv)) != nullptr){
-        std::cout << std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value << std::endl;
-    }
-
     // Check if condition is true
     if(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value)
     {
-        std::cout << "If condition is true!" << std::endl;
-
         ifBlock->interp(env, funcEnv);
     }
     else
     {
-        std::cout << "If condition is false!" << std::endl;
-
         // Execute else block (if there is one)
         if(elseBlock.get() != nullptr)
         {
@@ -121,8 +107,6 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
     if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
     {
-        std::cout << "Parameter result!" << std::endl;
-
         // 2. If so, retrieve these values from the environment, and return them
         std::vector<std::string> returnValueIdentifiers;
         std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);

@@ -140,12 +140,9 @@ std::string BinaryExp::getOperandName()
 
 std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    std::cout << "Interpreting binary expression... " << std::endl;
     // TODO: TYPECHECKING!!
     switch (op)
     {
-        // BOOLEANS
-
         // EQ_BIN and NE_BIN can be used on both integers and booleans
         case EQ_BIN:
             if(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv)) != nullptr)

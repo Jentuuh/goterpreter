@@ -58,6 +58,7 @@ int main(int argc, char* argv[])
   // functionEnvironment.declaredFunctions.add("Test function", std::make_shared<FunctionDecl>(std::make_shared<Identifier>(funcName).get(), std::shared_ptr<Signature>(nullptr).get(), std::shared_ptr<Block>(nullptr).get()));
   // functionEnvironment.declaredFunctions.printValues();
 
+
   ast->interp(scopeEnvironment, functionEnvironment);
 
   scopeEnvironment.printScopes();

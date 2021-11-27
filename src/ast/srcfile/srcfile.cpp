@@ -16,13 +16,13 @@ void SrcFile::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         topLvlDeclarations->interp(env, funcEnv);
     }
 
+    // ================== MAIN FUNCTION CALL ==================
     // In Go, the main function is always called after the file has been evaluated
     // TODO: typechecking: Check if function main exists, CONTAINS NO ARGUMENTS AND NO RETURN VALUES!!
     env.pushScope();
     funcEnv.pushFunc(std::string("main"));
     funcEnv.lookupVar(std::string("main"))->funcDecl->funcBody->interp(env, funcEnv);
     funcEnv.popFunc();
-    env.printScopes();
     env.popScope();
 
     return;
