@@ -1,29 +1,29 @@
 #include "srcfile.h"
+#include "../../environment/interp/env.h"
 
 // ============= SrcFile =============
 SrcFile::SrcFile(PackageClause* packageClause, ImportDeclList* imports, DeclList* topLvlDecls): topLvlDeclarations{topLvlDecls}, imports{imports}, packageClause{packageClause}{}
 
 void SrcFile::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // void updatedTable = topLvlDeclarations->interp(table);
-
-    // // if(imports != NULL)
-    // // {
-    // //     updatedTable = imports->interp(*updatedTable);
-    // // }
-    std::cout << "Start..." << std::endl;
     packageClause->interp(env, funcEnv);
-    std::cout << "After..." << std::endl;
     if(imports != NULL)
     {
-        std::cout << "Interpreting imports..." << std::endl;
         imports->interp(env, funcEnv);
     }
     if(topLvlDeclarations != NULL)
     {
-        std::cout << "Interpreting topleveldeclarations..." << std::endl;
         topLvlDeclarations->interp(env, funcEnv);
     }
+
+    // In Go, the main function is always called after the file has been evaluated
+    // TODO: typechecking: Check if function main exists, CONTAINS NO ARGUMENTS AND NO RETURN VALUES!!
+    env.pushScope();
+    funcEnv.pushFunc(std::string("main"));
+    funcEnv.lookupVar(std::string("main"))->funcDecl->funcBody->interp(env, funcEnv);
+    funcEnv.popFunc();
+    env.printScopes();
+    env.popScope();
 
     return;
 }

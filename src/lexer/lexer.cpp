@@ -869,7 +869,7 @@ YY_RULE_SETUP
             long int value = strtol(s, NULL, 10);
             *yylval.intlit = value;
             return INTLITERAL;
-          }
+            }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
@@ -883,7 +883,7 @@ YY_RULE_SETUP
                  *yylval.boollit = false;
                }
               return BOOLLITERAL; 
-              }
+          }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP

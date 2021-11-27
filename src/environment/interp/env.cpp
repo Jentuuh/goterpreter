@@ -50,7 +50,6 @@ std::shared_ptr<Literal> ScopedEnv::lookupVar(std::string id)
 
 void ScopedEnv::updateVar(std::string id, std::shared_ptr<Literal> newVal)
 {
-    std::cout << "Updating variable in symbol table... Amount scopes: " << scopeSymbolTables.size() << std::endl;
     for(int i = scopeSymbolTables.size() - 1; i >= 0; i++)
     {
 
@@ -59,7 +58,6 @@ void ScopedEnv::updateVar(std::string id, std::shared_ptr<Literal> newVal)
         {
             // Update the value
             scopeSymbolTables[i].entries.at(id).value = newVal;
-            std::cout << "Updated variable!" << std::endl;
             return;
         }
     }

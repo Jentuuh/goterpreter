@@ -31,13 +31,26 @@ void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         simpleStm->interp(env, funcEnv);
     }
 
+    if(std::dynamic_pointer_cast<BinaryExp>(condition) != nullptr)
+    {
+        std::cout << "condition is binaryexp!" << std::endl;
+    }
+
+    if(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv)) != nullptr){
+        std::cout << std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value << std::endl;
+    }
+
     // Check if condition is true
     if(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value)
     {
+        std::cout << "If condition is true!" << std::endl;
+
         ifBlock->interp(env, funcEnv);
     }
     else
     {
+        std::cout << "If condition is false!" << std::endl;
+
         // Execute else block (if there is one)
         if(elseBlock.get() != nullptr)
         {
@@ -108,6 +121,8 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
     if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
     {
+        std::cout << "Parameter result!" << std::endl;
+
         // 2. If so, retrieve these values from the environment, and return them
         std::vector<std::string> returnValueIdentifiers;
         std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);
@@ -123,8 +138,11 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     {
         // 3. If not, return whatever expressionlist is behind the return statement
         // 4. If there isn't anything, return an empty list
-        expressionList->interp(env, funcEnv, returnValues);
-        funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+        if(expressionList.get() != nullptr)
+        {
+            expressionList->interp(env, funcEnv, returnValues);
+            funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+        }
     }
 }
 
@@ -152,14 +170,33 @@ void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     std::vector<std::string> operandNames;
     leftExpList->getOperandNames(operandNames);
 
-    std::cout << "Assigning..." << std::endl;
-
     if(newValues.size() == 1)
     {
         // Update all variables on the left side with this value
         for(std::string n : operandNames)
         {
-            env.updateVar(n, newValues[0]);
+            // TODO: typecheck that the operatorAssign operators are only used on integers!!!
+            switch (assignOp)
+            {
+                case ASSIGN_OP:
+                    env.updateVar(n, newValues[0]);
+                    break;
+                case PLUSASSIGN_OP:
+                    std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(n))->value += std::dynamic_pointer_cast<IntLiteral>(newValues[0])->value;
+                    break;
+                case MINASSIGN_OP:
+                    std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(n))->value -= std::dynamic_pointer_cast<IntLiteral>(newValues[0])->value;
+                    break;
+                case MULASSIGN_OP:
+                    std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(n))->value *= std::dynamic_pointer_cast<IntLiteral>(newValues[0])->value;
+                    break;
+                case DIVASSIGN_OP:
+                    std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(n))->value /= std::dynamic_pointer_cast<IntLiteral>(newValues[0])->value;
+                    break;
+                default:
+                    // Error: wrong operator
+                    break;
+            }
         }
     }
     else
@@ -170,7 +207,27 @@ void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
             // Update each n'th variable with the n'th value
             for(int i = 0; i < operandNames.size(); i++)
             {
-                env.updateVar(operandNames[i], newValues[i]);
+                 switch (assignOp)
+                {
+                    case ASSIGN_OP:
+                        env.updateVar(operandNames[i], newValues[i]);
+                        break;
+                    case PLUSASSIGN_OP:
+                        std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(operandNames[i]))->value += std::dynamic_pointer_cast<IntLiteral>(newValues[i])->value;
+                        break;
+                    case MINASSIGN_OP:
+                        std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(operandNames[i]))->value -= std::dynamic_pointer_cast<IntLiteral>(newValues[i])->value;
+                        break;
+                    case MULASSIGN_OP:
+                        std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(operandNames[i]))->value *= std::dynamic_pointer_cast<IntLiteral>(newValues[i])->value;
+                        break;
+                    case DIVASSIGN_OP:
+                        std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(operandNames[i]))->value /= std::dynamic_pointer_cast<IntLiteral>(newValues[i])->value;
+                        break;
+                    default:
+                        // Error: wrong operator
+                        break;
+                }
             }
         }
         else

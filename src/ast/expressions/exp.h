@@ -40,6 +40,7 @@ struct FunctionCall:Exp{
 
 	FunctionCall(Exp* primExp, ExpList* expList);
 	std::string getOperandName() override;
+	std::vector<std::shared_ptr<Literal>> executeFunction(ScopedEnv& env, FunctionEnv& funcEnv);
 	std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 

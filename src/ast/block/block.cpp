@@ -1,5 +1,6 @@
 #include "block.h"
 #include "../../environment/interp/env.h"
+#include <iostream>
 
 Block::Block(StmList* stmList): statements{stmList}{};
 

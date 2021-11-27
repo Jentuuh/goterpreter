@@ -7,16 +7,14 @@ VarDecl::VarDecl(VarSpec* varspec): varspec{varspec}{};
 
 void VarDecl::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-        // TODO: implement
+        // Get variable identifiers on the left
         std::vector<std::string> identifiers;
-        std::cout << "Getting identifier strings..." << std::endl;
         varspec->idList->getIdentifierStrings(identifiers);
 
+        // Get values from the expression list on the right
         std::vector<std::shared_ptr<Literal>> values;
-        std::cout << "Evaluating var expression list..." << std::endl;
         varspec->expList->interp(env, funcEnv, values);
 
-        std::cout << "Done evaluating vardecl expressions!" << std::endl;
 
         for (int i = 0; i < identifiers.size(); i++)
         {

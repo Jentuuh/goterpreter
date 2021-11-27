@@ -53,19 +53,15 @@ std::shared_ptr<Literal> UnaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
 FunctionCall::FunctionCall(Exp* primExp, ExpList* expList): primaryExp{primExp}, arguments{expList}{}
 
-std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Typechecker: Check if function exists + if parameters have correct type!!
-
-    std::cout << "In function call!" << std::endl;
 
     // Get the name of the function that's being called 
     std::string funcName = primaryExp->getOperandName();
 
     // Push function on the call stack
     funcEnv.pushFunc(funcName);
-
-    std::cout << "Function name: " << funcName <<  std::endl;
 
     // Evaluate the parameters
     std::vector<std::shared_ptr<Literal>> argValues;
@@ -77,7 +73,6 @@ std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcE
 
     // We are entering the function's scope
     env.pushScope();
-    std::cout << "New scope!" << std::endl;
 
     // Add arguments to this scope
     std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> argNamesAndTypes;
@@ -99,15 +94,20 @@ std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcE
     // Execute the function's body
     funcEnv.lookupVar(funcName)->funcDecl->funcBody->interp(env, funcEnv);
 
-    std::cout << "Executed function " << funcName << "!" << std::endl;
     // Pop function from call stack
     funcEnv.popFunc();
 
     // Pop scope after the function has been executed
-    env.printScopes();
+    env.popScope();
 
-    // TODO: This function does not return a literal pointer, that's why I get a segmentation fault!
+    return funcEnv.lookupVar(funcName)->returnValues;
 };
+
+std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+{
+    // Does nothing
+}
+
 
 std::string FunctionCall::getOperandName() 
 {
@@ -140,27 +140,46 @@ std::string BinaryExp::getOperandName()
 
 std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    std::cout << "Interpreting binary expression... " << std::endl;
     // TODO: TYPECHECKING!!
     switch (op)
     {
-    // BOOLEANS
-    case EQ_BIN:
-        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value == std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);
-        break;
-    case NE_BIN:
-        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value != std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);
-        break;
+        // BOOLEANS
+
+        // EQ_BIN and NE_BIN can be used on both integers and booleans
+        case EQ_BIN:
+            if(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv)) != nullptr)
+            {
+                return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value == std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);
+            }
+            if(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv)) != nullptr)
+            {
+                return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv))->value == std::dynamic_pointer_cast<IntLiteral>(right->interp(env, funcEnv))->value);
+            }
+            break;
+
+        case NE_BIN:
+            if(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv)) != nullptr)
+            {
+                return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value != std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);
+            }
+            if(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv)) != nullptr)
+            {
+                return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv))->value != std::dynamic_pointer_cast<IntLiteral>(right->interp(env, funcEnv))->value);
+            }
+            break;
+
     case LT_BIN:
-        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value < std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);
+        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv))->value < std::dynamic_pointer_cast<IntLiteral>(right->interp(env, funcEnv))->value);
         break;
     case LE_BIN:
-        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value <= std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);
+        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv))->value <= std::dynamic_pointer_cast<IntLiteral>(right->interp(env, funcEnv))->value);
         break;
     case GT_BIN:
-        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value > std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);
+        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv))->value > std::dynamic_pointer_cast<IntLiteral>(right->interp(env, funcEnv))->value);
         break;
     case GE_BIN:
-        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value >= std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);
+        return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv))->value >= std::dynamic_pointer_cast<IntLiteral>(right->interp(env, funcEnv))->value);
         break;
     case OR_BIN:
         return std::make_shared<BoolLiteral>(std::dynamic_pointer_cast<BoolLiteral>(left->interp(env, funcEnv))->value || std::dynamic_pointer_cast<BoolLiteral>(right->interp(env, funcEnv))->value);

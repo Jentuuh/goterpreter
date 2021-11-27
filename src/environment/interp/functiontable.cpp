@@ -11,7 +11,6 @@ FunctionTable::FunctionTable()
 
 void FunctionTable::add(std::string i, std::shared_ptr<FunctionDecl> f)
 {
-    std::cout << "Adding new function entry..." << std::endl;
     FuncTableEntry entry = FuncTableEntry{f};
     entries.insert(std::pair<std::string, FuncTableEntry>(i, entry));
 }
