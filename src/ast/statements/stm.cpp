@@ -272,18 +272,18 @@ void PrintStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         {
             if(std::dynamic_pointer_cast<BoolLiteral>(v)->value)
             {
-                std::cout << "true" << std::endl;
+                std::cout << "true ";
             }
             else
             {
-                std::cout << "false" << std::endl;
+                std::cout << "false ";
             }
         }
 
         // Integers
         if(std::dynamic_pointer_cast<IntLiteral>(v) != nullptr)
         {
-            std::cout << std::dynamic_pointer_cast<IntLiteral>(v)->value << std::endl;
+            std::cout << std::dynamic_pointer_cast<IntLiteral>(v)->value << " ";
         }
     }
 }
