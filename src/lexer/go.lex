@@ -22,6 +22,7 @@ integer "int"
 boolean "bool"
 package "package"
 return "return"
+print "print"
 var "var"
 if "if"
 for "for"
@@ -66,6 +67,7 @@ else "else"
 {package} { ADJUST(); return PACKAGE; }
 {return} { ADJUST(); return RETURN; }
 {import} {ADJUST(); return IMPORT; }
+{print} {ADJUST(); return PRINT; }
 {var} { ADJUST(); return VAR; }
 {if} { ADJUST(); return IF; }
 {else} {ADJUST(); return ELSE; }

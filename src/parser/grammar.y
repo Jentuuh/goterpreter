@@ -59,7 +59,7 @@
     PLUSASSIGN MINASSIGN MULASSIGN DIVASSIGN
     AND OR NOT INC DEC GT GE LT LE EQ NE
     ASSIGN FUNC NEWLINE IMPORT COMMA ELSE 
-    SHORTVARASSIGN
+    SHORTVARASSIGN PRINT
 
 %token <id> IDENTIFIER
 %token <boollit> BOOLLITERAL
@@ -97,6 +97,7 @@
 %type <stm> ifstatement
 %type <stm> incdecstatement
 %type <stm> returnstatement
+%type <stm> printstatement
 %type <forclause> forclause
 %type <exp> condition
 %type <assignoperator> assign_op
@@ -293,7 +294,8 @@ statement: declaration                   { $$ = new DeclStm($1); }
         | ifstatement                    { $$ = $1; }
         | forstatement                   { $$ = $1; }
         | returnstatement                { $$ = $1; }
-        | simplestatement                { $$ = $1; }                   
+        | simplestatement                { $$ = $1; }  
+        | printstatement                 { $$ = $1; }                 
         ;
 
 simplestatement: expressionstatement     { $$ = $1; }
@@ -343,6 +345,10 @@ forclause: initstatement SEMICOLON condition SEMICOLON poststatement    { $$ = n
 initstatement: simplestatement  { $$ = $1; };
 
 poststatement: simplestatement   { $$ = $1; };
+
+printstatement: PRINT LPAREN expressionlist RPAREN { $$ = new PrintStm($3); }
+              ;
+
 
 returnstatement: RETURN expressionlist   { $$ = new ReturnStm($2); }
                 | RETURN                 { $$ = new ReturnStm(nullptr); }

@@ -22,5 +22,5 @@ bison: parser/grammar.y
 bison_counter: parser/grammar.y
 	bison -o ./parser/parser.cpp ./parser/grammar.y -dv -Wcounterexamples
 
-interpreter_test: main.cpp 
+interpreter_test: main.cpp ast/*/*.cpp
 	$(CXX) $(FLAGS) -o interpreter_test main.cpp lexer/lexer.cpp parser/parser.cpp ast/*/*.cpp environment/*/*.cpp

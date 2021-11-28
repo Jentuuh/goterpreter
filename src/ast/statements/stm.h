@@ -118,3 +118,10 @@ struct ExprStm:SimpleStm{
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 };
 
+struct PrintStm:Stm{
+    std::shared_ptr<ExpList> expressions; 
+
+    PrintStm(ExpList* expList);
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+};
+

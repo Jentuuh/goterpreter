@@ -1,5 +1,6 @@
 #include "stm.h"
 #include "../../environment/interp/env.h"
+#include <algorithm>
 #include <iostream>
 
 // ============= DeclStm =============
@@ -255,5 +256,36 @@ void ExprStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     exp->interp(env, funcEnv);
 }
 
+// ============= PrintStm =============
+PrintStm::PrintStm(ExpList* expList): expressions{expList}{}
+
+void PrintStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+{
+    std::vector<std::shared_ptr<Literal>> values;
+    expressions->interp(env, funcEnv, values);
+    std::reverse(values.begin(), values.end());
+
+    for (std::shared_ptr<Literal> v : values)
+    {
+        // Booleans
+        if(std::dynamic_pointer_cast<BoolLiteral>(v) != nullptr)
+        {
+            if(std::dynamic_pointer_cast<BoolLiteral>(v)->value)
+            {
+                std::cout << "true" << std::endl;
+            }
+            else
+            {
+                std::cout << "false" << std::endl;
+            }
+        }
+
+        // Integers
+        if(std::dynamic_pointer_cast<IntLiteral>(v) != nullptr)
+        {
+            std::cout << std::dynamic_pointer_cast<IntLiteral>(v)->value << std::endl;
+        }
+    }
+}
 
 
