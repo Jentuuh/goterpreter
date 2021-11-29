@@ -29,10 +29,7 @@ void LastExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::
             valueContainer.push_back(r);
         }
     }
-
 }
-
-
 
 // ============= PairExpList =============
 PairExpList::PairExpList(Exp* h, ExpList* t): head{h}, tail{t}{}

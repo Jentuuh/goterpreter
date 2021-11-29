@@ -22,5 +22,5 @@ ExprOperand::ExprOperand(Exp* exp): exp{exp}{};
 
 std::shared_ptr<Literal> ExprOperand::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: Implement
+    return exp->interp(env, funcEnv);
 }

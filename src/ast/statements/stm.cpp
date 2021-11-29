@@ -104,7 +104,7 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // TODO: Typecheck! Check if type matches return type of function!
     std::string funcName = funcEnv.currentFunc();
     FuncTableEntry* funcDetails = funcEnv.lookupVar(funcName);
-    
+
     // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
     if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
     {

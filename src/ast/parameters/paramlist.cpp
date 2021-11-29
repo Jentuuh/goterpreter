@@ -1,4 +1,5 @@
 #include "paramlist.h"
+#include <iostream>
 
 // ============= LastParamList =============
 LastParamList::LastParamList(ParameterDecl* last):last{last}{}
@@ -13,14 +14,14 @@ void LastParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // TODO: implement
 }
 
-void LastParamList::getIdentifiersWithTypes(std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> container)
+void LastParamList::getIdentifiersWithTypes(std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>>& container)
 {
     std::vector<std::string> ids;
     last->identifiers->getIdentifierStrings(ids);
     container.push_back(std::pair<std::vector<std::string>, std::shared_ptr<Type>>(ids, last->type));
 }
 
-void LastParamList::getIdentifiers(std::vector<std::string> container)
+void LastParamList::getIdentifiers(std::vector<std::string>& container)
 {
     last->identifiers->getIdentifierStrings(container);
 }
@@ -38,7 +39,7 @@ void PairParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // TODO: implement
 }
 
-void PairParamList::getIdentifiersWithTypes(std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> container)
+void PairParamList::getIdentifiersWithTypes(std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>>& container)
 {
     // Head
     std::vector<std::string> ids;
@@ -49,7 +50,7 @@ void PairParamList::getIdentifiersWithTypes(std::vector<std::pair<std::vector<st
     tail->getIdentifiersWithTypes(container);
 }
 
-void PairParamList::getIdentifiers(std::vector<std::string> container)
+void PairParamList::getIdentifiers(std::vector<std::string>& container)
 {
     head->identifiers->getIdentifierStrings(container);
     tail->getIdentifiers(container);

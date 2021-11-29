@@ -49,7 +49,7 @@ lessthan "<"
 lessthanequal "<="
 equal "=="
 notequal "!=" 
-integerlit 0|-?([1-9]+)(_[1-9]|[1-9])*
+integerlit 0|-?([1-9]+)(_[0-9]|[0-9])*
 boollit ("true"|"false")
 assign "="
 shortvarassign ":="

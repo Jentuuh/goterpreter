@@ -240,7 +240,6 @@ expressionlist: expressionlist COMMA expr       { $$ = new PairExpList($3, $1); 
               | expr                            { $$ = new LastExpList($1); }
               ;
 
-/* TODO: Make separate rule? So 'new Identifier() can be called separately?*/
 identifierlist: identifier RCOMMA identifierlist         { $$ = new PairIdentifierList($1, $3); }
               | identifier                               { $$ = new LastIdentifierList($1); }
               ;

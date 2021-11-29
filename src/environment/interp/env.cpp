@@ -34,16 +34,18 @@ SymbolTable* ScopedEnv::currentScope()
 std::shared_ptr<Literal> ScopedEnv::lookupVar(std::string id)
 {
     int scopeDepth = scopeSymbolTables.size();
-    // Loop through the environment back-to-front to find a definition of the variable
-    for (int i = scopeDepth - 1; i > -1; i--)
-    {   
-        if(scopeSymbolTables[i].entries.count(id))
-        {
-            // If we find the symbol in any higher scope
-            return scopeSymbolTables[i].entries.at(id).value;
-        }
-    }
 
+    if(scopeSymbolTables[scopeDepth - 1].entries.count(id))
+    {
+        // If we find the symbol in the current scope
+        return scopeSymbolTables[scopeDepth - 1].entries.at(id).value;
+    }  
+    if (scopeSymbolTables[0].entries.count(id))
+    {
+        // If we find the symbol in the global environment
+        return scopeSymbolTables[0].entries.at(id).value;
+    }
+    
     // In case we found nothing, we return NULL
     return nullptr;
 }
@@ -77,6 +79,8 @@ void ScopedEnv::pushScope()
 
 void ScopedEnv::printScopes()
 {
+    std::cout << std::endl;
+    
     int scopeLevel = 0;
     for (SymbolTable s : scopeSymbolTables)
     {

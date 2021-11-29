@@ -56,7 +56,6 @@ FunctionCall::FunctionCall(Exp* primExp, ExpList* expList): primaryExp{primExp},
 std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: Typechecker: Check if function exists + if parameters have correct type!!
-
     // Get the name of the function that's being called 
     std::string funcName = primaryExp->getOperandName();
 
@@ -68,7 +67,6 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
     if(arguments.get() != nullptr)
     {
         arguments->interp(env, funcEnv, argValues);
-        std::cout << "Got argument values!" << std::endl;
     }
 
     // We are entering the function's scope
@@ -105,7 +103,8 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
 
 std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // Does nothing
+    // TODO: This is quite a dirty solution, find something better
+    return this->executeFunction(env, funcEnv)[0];
 }
 
 
@@ -192,7 +191,7 @@ std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     case DIV_BIN:
         return std::make_shared<IntLiteral>(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv))->value / std::dynamic_pointer_cast<IntLiteral>(right->interp(env, funcEnv))->value);
         break;
-    case PLUS_BIN:
+    case PLUS_BIN:    
         return std::make_shared<IntLiteral>(std::dynamic_pointer_cast<IntLiteral>(left->interp(env, funcEnv))->value + std::dynamic_pointer_cast<IntLiteral>(right->interp(env, funcEnv))->value);
         break;
     case MIN_BIN:

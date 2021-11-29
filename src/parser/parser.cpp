@@ -585,13 +585,13 @@ static const yytype_int16 yyrline[] =
      194,   195,   198,   199,   202,   203,   204,   207,   208,   211,
      212,   213,   216,   217,   220,   221,   224,   225,   226,   227,
      228,   229,   230,   231,   232,   233,   234,   235,   236,   239,
-     240,   244,   245,   248,   250,   251,   254,   255,   256,   259,
-     260,   261,   264,   267,   268,   271,   274,   275,   279,   280,
-     281,   285,   288,   289,   292,   293,   294,   295,   296,   297,
-     298,   301,   302,   303,   304,   305,   308,   310,   312,   314,
-     315,   316,   317,   318,   321,   322,   326,   327,   328,   329,
-     330,   333,   334,   335,   338,   340,   341,   342,   345,   347,
-     349,   353,   354
+     240,   243,   244,   247,   249,   250,   253,   254,   255,   258,
+     259,   260,   263,   266,   267,   270,   273,   274,   278,   279,
+     280,   284,   287,   288,   291,   292,   293,   294,   295,   296,
+     297,   300,   301,   302,   303,   304,   307,   309,   311,   313,
+     314,   315,   316,   317,   320,   321,   325,   326,   327,   328,
+     329,   332,   333,   334,   337,   339,   340,   341,   344,   346,
+     348,   352,   353
 };
 #endif
 
@@ -1622,373 +1622,373 @@ yyreduce:
     break;
 
   case 51: /* identifierlist: identifier RCOMMA identifierlist  */
-#line 244 "./parser/grammar.y"
+#line 243 "./parser/grammar.y"
                                                          { (yyval.identifierlist) = new PairIdentifierList((yyvsp[-2].identifier), (yyvsp[0].identifierlist)); }
 #line 1628 "./parser/parser.cpp"
     break;
 
   case 52: /* identifierlist: identifier  */
-#line 245 "./parser/grammar.y"
+#line 244 "./parser/grammar.y"
                                                          { (yyval.identifierlist) = new LastIdentifierList((yyvsp[0].identifier)); }
 #line 1634 "./parser/parser.cpp"
     break;
 
   case 53: /* identifier: IDENTIFIER  */
-#line 248 "./parser/grammar.y"
+#line 247 "./parser/grammar.y"
                                { (yyval.identifier) = new Identifier((yyvsp[0].id)); }
 #line 1640 "./parser/parser.cpp"
     break;
 
   case 54: /* unaryexpr: primaryexpr  */
-#line 250 "./parser/grammar.y"
+#line 249 "./parser/grammar.y"
                                { (yyval.exp) = (yyvsp[0].exp); }
 #line 1646 "./parser/parser.cpp"
     break;
 
   case 55: /* unaryexpr: unary_op unaryexpr  */
-#line 251 "./parser/grammar.y"
+#line 250 "./parser/grammar.y"
                                { (yyval.exp) = new UnaryExp((yyvsp[0].exp), (yyvsp[-1].unaryoperator)); }
 #line 1652 "./parser/parser.cpp"
     break;
 
   case 56: /* unary_op: PLUS  */
-#line 254 "./parser/grammar.y"
+#line 253 "./parser/grammar.y"
                                 { (yyval.unaryoperator) = PLUS_UNARY; }
 #line 1658 "./parser/parser.cpp"
     break;
 
   case 57: /* unary_op: UMINUS  */
-#line 255 "./parser/grammar.y"
+#line 254 "./parser/grammar.y"
                                 { (yyval.unaryoperator) = MIN_UNARY; }
 #line 1664 "./parser/parser.cpp"
     break;
 
   case 58: /* unary_op: NOT  */
-#line 256 "./parser/grammar.y"
+#line 255 "./parser/grammar.y"
                                 { (yyval.unaryoperator) = NOT_UNARY; }
 #line 1670 "./parser/parser.cpp"
     break;
 
   case 59: /* operand: literal  */
-#line 259 "./parser/grammar.y"
+#line 258 "./parser/grammar.y"
                                 { (yyval.operand) = new LiteralOperand((yyvsp[0].literal)); }
 #line 1676 "./parser/parser.cpp"
     break;
 
   case 60: /* operand: operandname  */
-#line 260 "./parser/grammar.y"
+#line 259 "./parser/grammar.y"
                                 { (yyval.operand) = new VariableOperand((yyvsp[0].identifier)); }
 #line 1682 "./parser/parser.cpp"
     break;
 
   case 61: /* operand: LPAREN expr RPAREN  */
-#line 261 "./parser/grammar.y"
+#line 260 "./parser/grammar.y"
                                 { (yyval.operand) = new ExprOperand((yyvsp[-1].exp)); }
 #line 1688 "./parser/parser.cpp"
     break;
 
   case 62: /* literal: basiclit  */
-#line 264 "./parser/grammar.y"
+#line 263 "./parser/grammar.y"
                                 { (yyval.literal) = (yyvsp[0].literal); }
 #line 1694 "./parser/parser.cpp"
     break;
 
   case 63: /* basiclit: INTLITERAL  */
-#line 267 "./parser/grammar.y"
+#line 266 "./parser/grammar.y"
                                 { (yyval.literal) = new IntLiteral(*(yyvsp[0].intlit)); }
 #line 1700 "./parser/parser.cpp"
     break;
 
   case 64: /* basiclit: BOOLLITERAL  */
-#line 268 "./parser/grammar.y"
+#line 267 "./parser/grammar.y"
                                 { (yyval.literal) = new BoolLiteral(*(yyvsp[0].boollit)); }
 #line 1706 "./parser/parser.cpp"
     break;
 
   case 65: /* operandname: IDENTIFIER  */
-#line 271 "./parser/grammar.y"
+#line 270 "./parser/grammar.y"
                                 { (yyval.identifier) = new Identifier((yyvsp[0].id)); }
 #line 1712 "./parser/parser.cpp"
     break;
 
   case 66: /* primaryexpr: operand  */
-#line 274 "./parser/grammar.y"
+#line 273 "./parser/grammar.y"
                                                   { (yyval.exp) = new OperandExp((yyvsp[0].operand)); }
 #line 1718 "./parser/parser.cpp"
     break;
 
   case 67: /* primaryexpr: primaryexpr arguments  */
-#line 275 "./parser/grammar.y"
+#line 274 "./parser/grammar.y"
                                                   { (yyval.exp) = new FunctionCall((yyvsp[-1].exp), (yyvsp[0].explist)); }
 #line 1724 "./parser/parser.cpp"
     break;
 
   case 68: /* arguments: LPAREN RPAREN  */
-#line 279 "./parser/grammar.y"
+#line 278 "./parser/grammar.y"
                                                                   { (yyval.explist) = nullptr; }
 #line 1730 "./parser/parser.cpp"
     break;
 
   case 69: /* arguments: LPAREN expressionlist RPAREN  */
-#line 280 "./parser/grammar.y"
+#line 279 "./parser/grammar.y"
                                                                   { (yyval.explist) = (yyvsp[-1].explist); }
 #line 1736 "./parser/parser.cpp"
     break;
 
   case 70: /* arguments: LPAREN expressionlist RCOMMA RPAREN  */
-#line 281 "./parser/grammar.y"
+#line 280 "./parser/grammar.y"
                                                                   { (yyval.explist) = (yyvsp[-2].explist); }
 #line 1742 "./parser/parser.cpp"
     break;
 
   case 71: /* block: LBRACE statementlist RBRACE  */
-#line 285 "./parser/grammar.y"
+#line 284 "./parser/grammar.y"
                                         { (yyval.block) = new Block((yyvsp[-1].stmlist)); }
 #line 1748 "./parser/parser.cpp"
     break;
 
   case 72: /* statementlist: statement SEMICOLON  */
-#line 288 "./parser/grammar.y"
+#line 287 "./parser/grammar.y"
                                                         { (yyval.stmlist) = new LastStmList((yyvsp[-1].stm)); }
 #line 1754 "./parser/parser.cpp"
     break;
 
   case 73: /* statementlist: statement SEMICOLON statementlist  */
-#line 289 "./parser/grammar.y"
+#line 288 "./parser/grammar.y"
                                                         { (yyval.stmlist) = new PairStmList((yyvsp[-2].stm), (yyvsp[0].stmlist));}
 #line 1760 "./parser/parser.cpp"
     break;
 
   case 74: /* statement: declaration  */
-#line 292 "./parser/grammar.y"
+#line 291 "./parser/grammar.y"
                                          { (yyval.stm) = new DeclStm((yyvsp[0].toplvldecl)); }
 #line 1766 "./parser/parser.cpp"
     break;
 
   case 75: /* statement: block  */
-#line 293 "./parser/grammar.y"
+#line 292 "./parser/grammar.y"
                                          { (yyval.stm) = new BlockStm((yyvsp[0].block)); }
 #line 1772 "./parser/parser.cpp"
     break;
 
   case 76: /* statement: ifstatement  */
-#line 294 "./parser/grammar.y"
+#line 293 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1778 "./parser/parser.cpp"
     break;
 
   case 77: /* statement: forstatement  */
-#line 295 "./parser/grammar.y"
+#line 294 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1784 "./parser/parser.cpp"
     break;
 
   case 78: /* statement: returnstatement  */
-#line 296 "./parser/grammar.y"
+#line 295 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1790 "./parser/parser.cpp"
     break;
 
   case 79: /* statement: simplestatement  */
-#line 297 "./parser/grammar.y"
+#line 296 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1796 "./parser/parser.cpp"
     break;
 
   case 80: /* statement: printstatement  */
-#line 298 "./parser/grammar.y"
+#line 297 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1802 "./parser/parser.cpp"
     break;
 
   case 81: /* simplestatement: expressionstatement  */
-#line 301 "./parser/grammar.y"
+#line 300 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1808 "./parser/parser.cpp"
     break;
 
   case 82: /* simplestatement: assignment  */
-#line 302 "./parser/grammar.y"
+#line 301 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1814 "./parser/parser.cpp"
     break;
 
   case 83: /* simplestatement: incdecstatement  */
-#line 303 "./parser/grammar.y"
+#line 302 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1820 "./parser/parser.cpp"
     break;
 
   case 84: /* simplestatement: emptystatement  */
-#line 304 "./parser/grammar.y"
+#line 303 "./parser/grammar.y"
                                          { (yyval.stm) = (yyvsp[0].stm); }
 #line 1826 "./parser/parser.cpp"
     break;
 
   case 85: /* simplestatement: shortvardecl  */
-#line 305 "./parser/grammar.y"
+#line 304 "./parser/grammar.y"
                                          {puts("shortvardecl");}
 #line 1832 "./parser/parser.cpp"
     break;
 
   case 86: /* emptystatement: %empty  */
-#line 308 "./parser/grammar.y"
+#line 307 "./parser/grammar.y"
                 { (yyval.stm) = new EmptyStm();}
 #line 1838 "./parser/parser.cpp"
     break;
 
   case 87: /* expressionstatement: expr  */
-#line 310 "./parser/grammar.y"
+#line 309 "./parser/grammar.y"
                           { (yyval.stm) = new ExprStm((yyvsp[0].exp)); }
 #line 1844 "./parser/parser.cpp"
     break;
 
   case 88: /* assignment: expressionlist assign_op expressionlist  */
-#line 312 "./parser/grammar.y"
+#line 311 "./parser/grammar.y"
                                                     { (yyval.stm) = new AssignmentStm((yyvsp[-2].explist), (yyvsp[0].explist), (yyvsp[-1].assignoperator)); }
 #line 1850 "./parser/parser.cpp"
     break;
 
   case 89: /* assign_op: ASSIGN  */
-#line 314 "./parser/grammar.y"
+#line 313 "./parser/grammar.y"
                                                     { (yyval.assignoperator) = ASSIGN_OP;}
 #line 1856 "./parser/parser.cpp"
     break;
 
   case 90: /* assign_op: PLUSASSIGN  */
-#line 315 "./parser/grammar.y"
+#line 314 "./parser/grammar.y"
                                                     { (yyval.assignoperator) = PLUSASSIGN_OP; }
 #line 1862 "./parser/parser.cpp"
     break;
 
   case 91: /* assign_op: MINASSIGN  */
-#line 316 "./parser/grammar.y"
+#line 315 "./parser/grammar.y"
                                                     { (yyval.assignoperator) = MINASSIGN_OP; }
 #line 1868 "./parser/parser.cpp"
     break;
 
   case 92: /* assign_op: MULASSIGN  */
-#line 317 "./parser/grammar.y"
+#line 316 "./parser/grammar.y"
                                                     { (yyval.assignoperator) = MULASSIGN_OP; }
 #line 1874 "./parser/parser.cpp"
     break;
 
   case 93: /* assign_op: DIVASSIGN  */
-#line 318 "./parser/grammar.y"
+#line 317 "./parser/grammar.y"
                                                     { (yyval.assignoperator) = DIVASSIGN_OP;}
 #line 1880 "./parser/parser.cpp"
     break;
 
   case 94: /* incdecstatement: expr INC  */
-#line 321 "./parser/grammar.y"
+#line 320 "./parser/grammar.y"
                                                     { (yyval.stm) = new IncDecStm((yyvsp[-1].exp), PLUSPLUS); }
 #line 1886 "./parser/parser.cpp"
     break;
 
   case 95: /* incdecstatement: expr DEC  */
-#line 322 "./parser/grammar.y"
+#line 321 "./parser/grammar.y"
                                                     { (yyval.stm) = new IncDecStm((yyvsp[-1].exp), MINMIN); }
 #line 1892 "./parser/parser.cpp"
     break;
 
   case 96: /* ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement  */
-#line 326 "./parser/grammar.y"
+#line 325 "./parser/grammar.y"
                                                                         { (yyval.stm) = new IfStm((yyvsp[-5].stm), (yyvsp[-3].exp), (yyvsp[-2].block), nullptr, (yyvsp[0].stm)); }
 #line 1898 "./parser/parser.cpp"
     break;
 
   case 97: /* ifstatement: IF simplestatement SEMICOLON expr block ELSE block  */
-#line 327 "./parser/grammar.y"
+#line 326 "./parser/grammar.y"
                                                                         { (yyval.stm) = new IfStm((yyvsp[-5].stm), (yyvsp[-3].exp), (yyvsp[-2].block), (yyvsp[0].block), nullptr); }
 #line 1904 "./parser/parser.cpp"
     break;
 
   case 98: /* ifstatement: IF expr block ELSE ifstatement  */
-#line 328 "./parser/grammar.y"
+#line 327 "./parser/grammar.y"
                                                                         { (yyval.stm) = new IfStm(nullptr, (yyvsp[-3].exp), (yyvsp[-2].block), nullptr, (yyvsp[0].stm)); }
 #line 1910 "./parser/parser.cpp"
     break;
 
   case 99: /* ifstatement: IF expr block ELSE block  */
-#line 329 "./parser/grammar.y"
+#line 328 "./parser/grammar.y"
                                                                         { (yyval.stm) = new IfStm(nullptr, (yyvsp[-3].exp), (yyvsp[-2].block), (yyvsp[0].block), nullptr); }
 #line 1916 "./parser/parser.cpp"
     break;
 
   case 100: /* ifstatement: IF expr block  */
-#line 330 "./parser/grammar.y"
+#line 329 "./parser/grammar.y"
                                                                         { (yyval.stm) = new IfStm(nullptr, (yyvsp[-1].exp), (yyvsp[0].block), nullptr, nullptr); }
 #line 1922 "./parser/parser.cpp"
     break;
 
   case 101: /* forstatement: FOR condition block  */
-#line 333 "./parser/grammar.y"
+#line 332 "./parser/grammar.y"
                                         { (yyval.stm) = new ForCondStm((yyvsp[-1].exp), (yyvsp[0].block)); }
 #line 1928 "./parser/parser.cpp"
     break;
 
   case 102: /* forstatement: FOR forclause block  */
-#line 334 "./parser/grammar.y"
+#line 333 "./parser/grammar.y"
                                         { (yyval.stm) = new ForClauseStm((yyvsp[-1].forclause), (yyvsp[0].block)); }
 #line 1934 "./parser/parser.cpp"
     break;
 
   case 103: /* forstatement: FOR block  */
-#line 335 "./parser/grammar.y"
+#line 334 "./parser/grammar.y"
                                         { (yyval.stm) = new ForStm((yyvsp[0].block)); }
 #line 1940 "./parser/parser.cpp"
     break;
 
   case 104: /* condition: expr  */
-#line 338 "./parser/grammar.y"
+#line 337 "./parser/grammar.y"
                                         { (yyval.exp) = (yyvsp[0].exp); }
 #line 1946 "./parser/parser.cpp"
     break;
 
   case 105: /* forclause: initstatement SEMICOLON condition SEMICOLON poststatement  */
-#line 340 "./parser/grammar.y"
+#line 339 "./parser/grammar.y"
                                                                         { (yyval.forclause) = new ForClause((yyvsp[-4].stm), (yyvsp[-2].exp), (yyvsp[0].stm)); }
 #line 1952 "./parser/parser.cpp"
     break;
 
   case 106: /* forclause: initstatement SEMICOLON condition RSEMICOL  */
-#line 341 "./parser/grammar.y"
+#line 340 "./parser/grammar.y"
                                                                         { (yyval.forclause) = new ForClause((yyvsp[-3].stm), (yyvsp[-1].exp), nullptr); }
 #line 1958 "./parser/parser.cpp"
     break;
 
   case 107: /* forclause: RSEMICOL condition RSEMICOL poststatement  */
-#line 342 "./parser/grammar.y"
+#line 341 "./parser/grammar.y"
                                                                         { (yyval.forclause) = new ForClause(nullptr, (yyvsp[-2].exp), (yyvsp[0].stm)); }
 #line 1964 "./parser/parser.cpp"
     break;
 
   case 108: /* initstatement: simplestatement  */
-#line 345 "./parser/grammar.y"
+#line 344 "./parser/grammar.y"
                                 { (yyval.stm) = (yyvsp[0].stm); }
 #line 1970 "./parser/parser.cpp"
     break;
 
   case 109: /* poststatement: simplestatement  */
-#line 347 "./parser/grammar.y"
+#line 346 "./parser/grammar.y"
                                  { (yyval.stm) = (yyvsp[0].stm); }
 #line 1976 "./parser/parser.cpp"
     break;
 
   case 110: /* printstatement: PRINT LPAREN expressionlist RPAREN  */
-#line 349 "./parser/grammar.y"
+#line 348 "./parser/grammar.y"
                                                    { (yyval.stm) = new PrintStm((yyvsp[-1].explist)); }
 #line 1982 "./parser/parser.cpp"
     break;
 
   case 111: /* returnstatement: RETURN expressionlist  */
-#line 353 "./parser/grammar.y"
+#line 352 "./parser/grammar.y"
                                          { (yyval.stm) = new ReturnStm((yyvsp[0].explist)); }
 #line 1988 "./parser/parser.cpp"
     break;
 
   case 112: /* returnstatement: RETURN  */
-#line 354 "./parser/grammar.y"
+#line 353 "./parser/grammar.y"
                                          { (yyval.stm) = new ReturnStm(nullptr); }
 #line 1994 "./parser/parser.cpp"
     break;
@@ -2187,4 +2187,4 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 357 "./parser/grammar.y"
+#line 356 "./parser/grammar.y"
