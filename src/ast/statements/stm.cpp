@@ -16,8 +16,9 @@ BlockStm::BlockStm(Block* block): block{block}{}
 
 void BlockStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    env.pushScope();
+    env.pushScope(false);
     block->interp(env, funcEnv);
+    env.popScope(false);
 }
 
 // ============= IfStm =============
@@ -31,6 +32,7 @@ void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         simpleStm->interp(env, funcEnv);
     }
 
+    env.pushScope(false);
     // Check if condition is true
     if(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value)
     {
@@ -49,6 +51,7 @@ void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
             nestedIfStm->interp(env, funcEnv);
         }
     }
+    env.popScope(false);
 }
 
 // ============= ForCondStm =============
@@ -56,11 +59,13 @@ ForCondStm::ForCondStm(Exp* cond, Block* body): condition{cond}, body{body}{}
 
 void ForCondStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    env.pushScope(false);
     // The for-loop can be executed as long as the condition evaluates to true
     while(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value)
     {
         body->interp(env, funcEnv);
     }
+    env.popScope(false);
 }
 
 // ============= ForClauseStm =============
@@ -71,7 +76,8 @@ void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // We execute the init statement once before evaluating the condition (if there is one)
     if(forclause->initStm.get() != nullptr)
         forclause->initStm->interp(env, funcEnv);
-
+    
+    env.pushScope(false);
     while(std::dynamic_pointer_cast<BoolLiteral>(forclause->condition->interp(env, funcEnv))->value)
     {
         // Execute the body of the for-loop
@@ -81,17 +87,20 @@ void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         if(forclause->postStm.get() != nullptr)
             forclause->postStm->interp(env, funcEnv);
     }
+    env.popScope(false);
 }
 
 // ============= ForStm =============
 ForStm::ForStm(Block* body): body{body}{}
 
 void ForStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
-{
+{   
+    env.pushScope(false);
     while(true)
     {
         body->interp(env, funcEnv);
     }
+    env.popScope(false);
 }
 
 // ============= ReturnStm =============

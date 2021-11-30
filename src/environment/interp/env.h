@@ -9,7 +9,7 @@ struct Env{
 };
 
 struct GlobalEnv:Env{
-    SymbolTable globals;
+    SymbolTable globals{0};
 
     GlobalEnv();
     std::shared_ptr<Literal> lookupVar(std::string id) override;
@@ -18,13 +18,14 @@ struct GlobalEnv:Env{
 
 struct ScopedEnv:Env{
     std::vector<SymbolTable> scopeSymbolTables;
+    int scopeLevel = 0;
 
     ScopedEnv();
     std::shared_ptr<Literal> lookupVar(std::string id) override;
     SymbolTable* currentScope();
     void updateVar(std::string id, std::shared_ptr<Literal> newVal);
-    void popScope();
-    void pushScope();
+    void popScope(bool decScopeLevel = true);
+    void pushScope(bool incScopeLevel = true);
     void printScopes();
 };
 

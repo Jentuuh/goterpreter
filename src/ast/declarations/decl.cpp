@@ -13,7 +13,30 @@ void VarDecl::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
         // Get values from the expression list on the right
         std::vector<std::shared_ptr<Literal>> values;
-        varspec->expList->interp(env, funcEnv, values);
+        if(varspec->expList.get() != nullptr)
+        {
+                varspec->expList->interp(env, funcEnv, values);
+        }
+        else
+        {
+                // Default value for integers (0)
+                if(std::dynamic_pointer_cast<IntegerType>(varspec->type) != nullptr)
+                {
+                        for (int i = 0; i < identifiers.size(); i++)
+                        {
+                                values.push_back(std::make_shared<IntLiteral>(0));
+                        }
+                }
+
+                // Default value for booleans (false)
+                if(std::dynamic_pointer_cast<BooleanType>(varspec->type) != nullptr)
+                {
+                        for (int i = 0; i < identifiers.size(); i++)
+                        {
+                                values.push_back(std::make_shared<BoolLiteral>(false));
+                        }
+                }       
+        }
 
 
         for (int i = 0; i < identifiers.size(); i++)

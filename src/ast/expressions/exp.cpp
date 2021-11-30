@@ -139,7 +139,7 @@ std::string BinaryExp::getOperandName()
 
 std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: TYPECHECKING!!
+    // TODO: TYPECHECKING, also check, in case there are functions, that the function doesn't return more than 2 values!!!
     switch (op)
     {
         // EQ_BIN and NE_BIN can be used on both integers and booleans

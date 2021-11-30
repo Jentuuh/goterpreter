@@ -15,8 +15,9 @@ struct TableEntry{
 
 struct SymbolTable{
     std::map<std::string, TableEntry> entries;
+    int localScopeId;
 
-    SymbolTable();
+    SymbolTable(int localScopeId);
     void add(std::string i, std::shared_ptr<Type> t, std::shared_ptr<Literal> v);
     void update(std::string i, std::shared_ptr<Literal> v);
     void printValues();

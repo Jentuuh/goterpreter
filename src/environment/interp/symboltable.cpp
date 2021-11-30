@@ -19,7 +19,7 @@ void SymbolTable::update(std::string i, std::shared_ptr<Literal> v)
     }
 }
 
-SymbolTable::SymbolTable()
+SymbolTable::SymbolTable(int localScopeId): localScopeId{localScopeId}
 {
     entries = {};
 }
