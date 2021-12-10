@@ -49,6 +49,46 @@ std::shared_ptr<Literal> UnaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     return intermediateResult;
 }
 
+std::shared_ptr<Type> UnaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    std::shared_ptr<Type> resultType = unaryExp->typecheck(env, funcEnv, typeErrors);
+
+    // Typecheck for booleans
+    if(std::dynamic_pointer_cast<BooleanType>(resultType) != nullptr)
+    {
+        switch (op)
+        {
+            case NOT_UNARY:
+                // Everything is fine
+                break;
+            default:
+                typeErrors.push_back("Tried to use non-valid unary operator on boolean unary expression!");
+                break;
+        }
+    }
+
+    // Typecheck for integers
+    if(std::dynamic_pointer_cast<IntegerType>(resultType) != nullptr)
+    {
+        switch (op)
+        {
+        case PLUS_UNARY:
+            // Everything is fine
+            break;
+        case MIN_UNARY:
+            // Everything is fine
+            break;
+        default:
+            typeErrors.push_back("Tried to use non-valid unary operator on integer unary expression!");
+            break;
+        }
+    }
+
+    return resultType;
+}
+
+
+
 // ============= FunctionCall =============
 
 FunctionCall::FunctionCall(Exp* primExp, ExpList* expList): primaryExp{primExp}, arguments{expList}{}
@@ -101,6 +141,91 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
     return funcEnv.lookupVar(funcName)->returnValues;
 };
 
+
+std::vector<std::shared_ptr<Type>> FunctionCall::typeCheckFunction(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    std::string funcName = primaryExp->getOperandName();
+
+    FuncTableEntry* functionEntry = funcEnv.lookupVar(funcName);
+
+    // Check if function exists
+    if(functionEntry == nullptr)
+    {
+        typeErrors.push_back("Trying to call non-existing function: " + funcName);
+        std::vector<std::shared_ptr<Type>> empty{};
+        return empty;
+    }
+
+    // Push function on the call stack
+    funcEnv.pushFunc(funcName);
+
+    // Typecheck the arguments!
+    std::vector<std::shared_ptr<Type>> argTypes;
+    if(arguments.get() != nullptr)
+    {
+        arguments->typecheck(env, funcEnv, argTypes, typeErrors);
+    }
+
+    // Get parameter types
+    std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> idsAndTypes;
+    functionEntry->funcDecl->funcSign->parameters->getIdentifiersWithTypes(idsAndTypes);
+
+    // Check argument types with parameter types (signature)!
+    int argCounter = 0;
+    for (auto t : idsAndTypes)
+    {
+        for (int i = 0; i < t.first.size(); i++)
+        {
+            // Integer and non-integer
+            if(std::dynamic_pointer_cast<IntegerType>(t.second) != nullptr && std::dynamic_pointer_cast<IntegerType>(argTypes[argCounter]) == nullptr)
+            {
+                typeErrors.push_back("Function argument " + std::to_string(argCounter) + " is non-integer and function was expecting integer.");
+            }
+
+            // Boolean and non-boolean
+            if(std::dynamic_pointer_cast<BooleanType>(t.second) != nullptr && std::dynamic_pointer_cast<BooleanType>(argTypes[argCounter]) == nullptr)
+            {
+                typeErrors.push_back("Function argument " + std::to_string(argCounter) + " is non-boolean and function was expecting boolean.");
+            }
+            
+            argCounter++;
+        }
+    }
+
+    // We are entering the function's scope
+    env.pushScope();
+
+    // Add argument types to function scope
+    int valueIndex = 0;
+    for(int i = 0; i < idsAndTypes.size(); i++)
+    {
+        for(int j = 0; j < idsAndTypes.at(i).first.size(); j++)
+        {
+             env.currentScope()->add(idsAndTypes.at(i).first.at(j), idsAndTypes.at(i).second, nullptr);
+             valueIndex++;
+        }
+    }
+
+    // Typecheck the function's body
+    //funcEnv.lookupVar(funcName)->funcDecl->funcBody->typecheck(env, funcEnv, typeErrors);
+
+    // Pop function from call stack
+    funcEnv.popFunc();
+
+    // Pop scope after the function has been executed
+    env.popScope();
+
+    // TODO: typecheck return statement with getTypes()!!!
+    return funcEnv.lookupVar(funcName)->funcDecl->funcSign->result->getTypes();
+}
+
+
+std::shared_ptr<Type> FunctionCall::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    // TODO: This is quite a dirty solution, find something better
+    return this->typeCheckFunction(env, funcEnv, typeErrors)[0];
+}
+
 std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: This is quite a dirty solution, find something better
@@ -127,6 +252,11 @@ std::string OperandExp::getOperandName()
     if(std::dynamic_pointer_cast<VariableOperand>(operand) != nullptr)
         return std::dynamic_pointer_cast<VariableOperand>(operand)->operandName->name;
     return std::string("NO_OPERAND_EXPRESSION");
+}
+
+std::shared_ptr<Type> OperandExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    return operand->typecheck(env, funcEnv, typeErrors);
 }
 
 // ============= BinaryExp =============
@@ -200,6 +330,134 @@ std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
     default:
         // TODO: Throw error(wrong operator?) in typecheck!
+        break;
+    }
+}
+
+
+std::shared_ptr<Type> BinaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+     // TODO: TYPECHECKING, also check, in case there are functions, that the function doesn't return more than 2 values!!!
+    switch (op)
+    {
+        // EQ_BIN and NE_BIN can be used on both integers and booleans
+        case EQ_BIN:
+            // Boolean type check on left and right operand
+            if((std::dynamic_pointer_cast<BooleanType>(left->typecheck(env, funcEnv, typeErrors)) != nullptr 
+                && std::dynamic_pointer_cast<BooleanType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr) ||
+                (std::dynamic_pointer_cast<BooleanType>(right->typecheck(env, funcEnv, typeErrors)) != nullptr 
+                && std::dynamic_pointer_cast<BooleanType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr))
+                {
+                    typeErrors.push_back("Type error in BinExp: If left operand of EQ_BIN is boolean, right operand should be boolean as well, and vice versa.");
+                }
+
+            // Integer type check on left and right operand
+            if((std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) != nullptr 
+                && std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr) ||
+                (std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) != nullptr 
+                && std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr))
+                {
+                    typeErrors.push_back("Type error in BinExp: If left operand of EQ_BIN is integer, right operand should be integer as well, and vice versa.");
+                }
+            return std::make_shared<BooleanType>();
+            break;
+
+        case NE_BIN:
+            // Boolean type check on left and right operand
+            if((std::dynamic_pointer_cast<BooleanType>(left->typecheck(env, funcEnv, typeErrors)) != nullptr 
+                && std::dynamic_pointer_cast<BooleanType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr) ||
+                (std::dynamic_pointer_cast<BooleanType>(right->typecheck(env, funcEnv, typeErrors)) != nullptr 
+                && std::dynamic_pointer_cast<BooleanType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr))
+                {
+                    typeErrors.push_back("Type error in BinExp: If left operand of NE_BIN is boolean, right operand should be boolean as well, and vice versa.");
+                }
+                
+            // Integer type check on left and right operand
+            if((std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) != nullptr 
+                && std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr) ||
+                (std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) != nullptr 
+                && std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr))
+                {
+                    typeErrors.push_back("Type error in BinExp: If left operand of NE_BIN is integer, right operand should be integer as well, and vice versa.");
+                }
+            return std::make_shared<BooleanType>();
+            break;
+
+    case LT_BIN:
+        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator LT_BIN is only defined for integer literal operands.");
+        }
+        return std::make_shared<BooleanType>();
+        break;
+    case LE_BIN:
+        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator LE_BIN is only defined for integer literal operands.");
+        }
+        return std::make_shared<BooleanType>();
+        break;
+    case GT_BIN:
+        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator GT_BIN is only defined for integer literal operands.");
+        }
+        return std::make_shared<BooleanType>();
+        break;
+    case GE_BIN:
+        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator GE_BIN is only defined for integer literal operands");
+        }
+        return std::make_shared<BooleanType>();
+        break;
+    case OR_BIN:
+        if(std::dynamic_pointer_cast<BooleanType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<BooleanType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator OR_BIN is only defined for boolean literal operands.");
+        }
+        return std::make_shared<BooleanType>();
+        break;
+    case AND_BIN:
+        if(std::dynamic_pointer_cast<BooleanType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<BooleanType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator AND_BIN is only defined for boolean literal operands.");
+        }
+        return std::make_shared<BooleanType>();
+        break;
+
+    // INTEGERS
+    case MUL_BIN:
+        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator MUL_BIN is only defined for integer literal operands.");
+        }
+        return std::make_shared<IntegerType>();
+        break;
+    case DIV_BIN:
+        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator DIV_BIN is only defined for integer literal operands.");
+        }
+        return std::make_shared<IntegerType>();
+        break;
+    case PLUS_BIN:  
+        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator PLUS_BIN is only defined for integer literal operands.");
+        }
+        return std::make_shared<IntegerType>();  
+        break;
+    case MIN_BIN:
+        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        {
+            typeErrors.push_back("Type error in BinExp: Operator MIN_BIN is only defined for integer literal operands.");
+        }
+        return std::make_shared<IntegerType>();
+        break;
+
+    default:
+        typeErrors.push_back("Type error in BinExp: Unknown operator.");
         break;
     }
 }

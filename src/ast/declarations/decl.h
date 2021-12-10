@@ -13,10 +13,12 @@ struct VarSpec;
 
 struct TopLevelDecl{
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
 };
 
 struct Decl:TopLevelDecl{
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
 };
 
 struct VarDecl:Decl{
@@ -25,6 +27,7 @@ struct VarDecl:Decl{
 
     VarDecl(VarSpec* varspec);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct FunctionDecl:public std::enable_shared_from_this<FunctionDecl>, TopLevelDecl{
@@ -34,4 +37,5 @@ struct FunctionDecl:public std::enable_shared_from_this<FunctionDecl>, TopLevelD
 
     FunctionDecl(Identifier* funcName, Signature* sign, Block* body);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };

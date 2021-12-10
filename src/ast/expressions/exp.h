@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <utility>
+#include <vector>
 #include "./operand.h"
 #include "./explist.h"
 
@@ -19,6 +20,7 @@ enum BinaryOperator { EQ_BIN, NE_BIN, LT_BIN, LE_BIN, GT_BIN, GE_BIN, MUL_BIN, D
 
 struct Exp{
 	virtual std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+	virtual std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
 	virtual std::string getOperandName() = 0;
 };
 
@@ -32,6 +34,7 @@ struct OperandExp:Exp{
 	OperandExp(Operand* operand);
 	std::string getOperandName() override;
 	std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+	std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct FunctionCall:Exp{
@@ -41,7 +44,10 @@ struct FunctionCall:Exp{
 	FunctionCall(Exp* primExp, ExpList* expList);
 	std::string getOperandName() override;
 	std::vector<std::shared_ptr<Literal>> executeFunction(ScopedEnv& env, FunctionEnv& funcEnv);
+	std::vector<std::shared_ptr<Type>> typeCheckFunction(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors);
+
 	std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+	std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct UnaryExp:Exp{
@@ -52,6 +58,7 @@ struct UnaryExp:Exp{
 	UnaryExp(Exp* unaryExp, UnaryOperator op);
 	std::string getOperandName() override;
 	std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+	std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 
@@ -64,4 +71,5 @@ struct BinaryExp:Exp{
 	BinaryExp(Exp* left, Exp* right, BinaryOperator op);
 	std::string getOperandName() override;
 	std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+	std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };

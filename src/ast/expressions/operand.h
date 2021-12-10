@@ -4,6 +4,7 @@
 #include "./exp.h"
 #include "../identifiers/identifier.h"
 #include "../literals/literal.h"
+#include "../types/type.h"
 
 struct ScopedEnv;
 struct FunctionEnv;
@@ -11,9 +12,11 @@ struct FunctionEnv;
 struct Exp;
 struct Literal;
 struct Identifier;
+struct Type;
 
 struct Operand{
     virtual std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
 };
 
 struct LiteralOperand: Operand{
@@ -21,6 +24,7 @@ struct LiteralOperand: Operand{
 
     LiteralOperand(Literal* lit);
     std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct VariableOperand: Operand{
@@ -28,6 +32,7 @@ struct VariableOperand: Operand{
 
     VariableOperand(Identifier* operandName);
     std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct ExprOperand: Operand{
@@ -35,5 +40,6 @@ struct ExprOperand: Operand{
 
     ExprOperand(Exp* exp);
     std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 

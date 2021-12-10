@@ -27,3 +27,13 @@ void SrcFile::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
     return;
 }
+
+void SrcFile::typecheck(ScopedEnv& varTypeEnv, FunctionEnv& funcTypeEnv, std::vector<std::string>& typeErrors)
+{
+    // We only need to typecheck topLevelDeclarations (imports and packageclause cannot have type errors)
+
+    if(topLvlDeclarations != NULL)
+    {
+        topLvlDeclarations->typecheck(varTypeEnv, funcTypeEnv, typeErrors);
+    }
+}

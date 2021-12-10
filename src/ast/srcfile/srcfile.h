@@ -16,4 +16,5 @@ struct SrcFile{
 
     SrcFile(PackageClause* packageClause, ImportDeclList* imports, DeclList* topLvlDecls);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv);
+    void typecheck(ScopedEnv& varTypeEnv, FunctionEnv& funcTypeEnv, std::vector<std::string>& typeErrors);
 };

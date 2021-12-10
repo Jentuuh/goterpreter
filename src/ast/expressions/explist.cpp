@@ -31,6 +31,23 @@ void LastExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::
     }
 }
 
+void LastExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer, std::vector<std::string>& typeErrors)
+{
+    if(std::dynamic_pointer_cast<FunctionCall>(last) == nullptr)
+    {
+        typeContainer.push_back(last->typecheck(env, funcEnv, typeErrors));
+    }
+    else
+    {
+        std::vector<std::shared_ptr<Type>> returnTypes = std::dynamic_pointer_cast<FunctionCall>(last)->typeCheckFunction(env, funcEnv, typeErrors);
+        for (std::shared_ptr<Type> r : returnTypes)
+        {
+            typeContainer.push_back(r);
+        }
+    }
+}
+
+
 // ============= PairExpList =============
 PairExpList::PairExpList(Exp* h, ExpList* t): head{h}, tail{t}{}
 
@@ -60,6 +77,23 @@ void PairExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::
         }
     }
     tail->interp(env, funcEnv, valueContainer);
+}
+
+void PairExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer, std::vector<std::string>& typeErrors)
+{
+    if(std::dynamic_pointer_cast<FunctionCall>(head) == nullptr)
+    {
+        typeContainer.push_back(head->typecheck(env, funcEnv, typeErrors));
+    }
+    else
+    {
+        std::vector<std::shared_ptr<Type>> returnTypes = std::dynamic_pointer_cast<FunctionCall>(head)->typeCheckFunction(env, funcEnv, typeErrors);
+        for (std::shared_ptr<Type> r : returnTypes)
+        {
+            typeContainer.push_back(r);
+        }
+    }
+    tail->typecheck(env, funcEnv, typeContainer, typeErrors);
 }
 
 
