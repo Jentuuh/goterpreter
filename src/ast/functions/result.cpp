@@ -8,19 +8,15 @@ void ParametersResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // TODO: Implement
 }
 
-std::vector<std::shared_ptr<Type>> ParametersResult::getTypes()
+void ParametersResult::getTypes(std::vector<std::shared_ptr<Type>>& typeContainer)
 {
     std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> idsAndTypes;
     parameters->getIdentifiersWithTypes(idsAndTypes);
 
-    std::vector<std::shared_ptr<Type>> types{};
-
     for(auto it : idsAndTypes)
     {
-        types.push_back(it.second);
+        typeContainer.push_back(it.second);
     }
-
-    return types;
 }
 
 // ============= TypeResult =============
@@ -31,11 +27,8 @@ void TypeResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // TODO: Implement
 }
 
-std::vector<std::shared_ptr<Type>> TypeResult::getTypes()
+void TypeResult::getTypes(std::vector<std::shared_ptr<Type>>& typeContainer)
 {
-    std::vector<std::shared_ptr<Type>> types;
-    types.push_back(type);
-
-    return types;
+    typeContainer.push_back(type);
 }
 

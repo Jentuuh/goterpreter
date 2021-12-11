@@ -19,6 +19,7 @@ struct FunctionTable{
     FunctionTable();
     void add(std::string i, std::shared_ptr<FunctionDecl> f);
     void addReturnValues(std::string i, std::vector<std::shared_ptr<Literal>> values);
+    void getReturnTypes(std::string i, std::vector<std::shared_ptr<Type>>& typeContainer);
     void printValues();
 };   
 

@@ -11,6 +11,12 @@ void DeclStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     declaration->interp(env, funcEnv);
 }
 
+void DeclStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    declaration->typecheck(env, funcEnv, typeErrors);
+}
+
+
 // ============= BlockStm =============
 BlockStm::BlockStm(Block* block): block{block}{}
 
@@ -18,6 +24,13 @@ void BlockStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     env.pushScope(false);
     block->interp(env, funcEnv);
+    env.popScope(false);
+}
+
+void BlockStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    env.pushScope(false);
+    block->typecheck(env, funcEnv, typeErrors);
     env.popScope(false);
 }
 
@@ -54,6 +67,37 @@ void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     env.popScope(false);
 }
 
+void IfStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+
+    if(simpleStm.get() != nullptr)
+    {
+        simpleStm->typecheck(env, funcEnv, typeErrors);
+    }
+
+    env.pushScope(false);
+    // Check if condition has boolean type
+    if(std::dynamic_pointer_cast<BooleanType>(condition->typecheck(env, funcEnv, typeErrors)) == nullptr) 
+    {
+        typeErrors.push_back("Type error in IfStm: Condition needs to be a boolean type!");
+    }
+
+    // Typecheck if-block
+    ifBlock->typecheck(env, funcEnv, typeErrors);
+    // Typecheck else-block and nested stm (if there are any)
+    if(elseBlock.get() != nullptr)
+    {
+        elseBlock->typecheck(env, funcEnv, typeErrors);
+    }
+    if(nestedIfStm.get() != nullptr)
+    {
+        nestedIfStm->typecheck(env, funcEnv, typeErrors);
+    }
+
+    env.popScope(false);
+}
+
+
 // ============= ForCondStm =============
 ForCondStm::ForCondStm(Exp* cond, Block* body): condition{cond}, body{body}{}
 
@@ -65,6 +109,18 @@ void ForCondStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     {
         body->interp(env, funcEnv);
     }
+    env.popScope(false);
+}
+
+void ForCondStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    env.pushScope(false);
+    // Check if condition has boolean type 
+    if(std::dynamic_pointer_cast<BooleanType>(condition->typecheck(env, funcEnv, typeErrors)) == nullptr) 
+    {
+        typeErrors.push_back("Type error in ForCondStm: Condition needs to be a boolean type!");
+    }
+    body->typecheck(env, funcEnv, typeErrors);
     env.popScope(false);
 }
 
@@ -90,6 +146,28 @@ void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     env.popScope(false);
 }
 
+void ForClauseStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    // Typecheck init statement (if there is one)
+    if(forclause->initStm.get() != nullptr)
+        forclause->initStm->typecheck(env, funcEnv, typeErrors);
+
+    env.pushScope(false);
+      // Check if condition has boolean type 
+    if(std::dynamic_pointer_cast<BooleanType>(forclause->condition->typecheck(env, funcEnv, typeErrors)) == nullptr) 
+    {
+        typeErrors.push_back("Type error in ForCondStm: Condition needs to be a boolean type!");
+    }
+
+    body->typecheck(env, funcEnv, typeErrors);
+
+    // Typecheck post statement (if there is one)
+    if(forclause->postStm.get() != nullptr)
+        forclause->postStm->typecheck(env, funcEnv, typeErrors);
+
+    env.popScope(false);
+}
+
 // ============= ForStm =============
 ForStm::ForStm(Block* body): body{body}{}
 
@@ -100,6 +178,13 @@ void ForStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     {
         body->interp(env, funcEnv);
     }
+    env.popScope(false);
+}
+
+void ForStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    env.pushScope(false);
+    body->typecheck(env, funcEnv, typeErrors);
     env.popScope(false);
 }
 
@@ -140,6 +225,80 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     }
 }
 
+void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+
+    std::string funcName = funcEnv.currentFunc();
+    FuncTableEntry* funcDetails = funcEnv.lookupVar(funcName);
+   
+    std::vector<std::shared_ptr<Type>> returnTypes;
+    funcEnv.declaredFunctions.getReturnTypes(funcName, returnTypes);
+
+    // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
+    if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
+    {
+        // 2. If so, retrieve these values from the environment, and return them
+        std::vector<std::string> returnValueIdentifiers;
+        std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);
+
+        if(returnValueIdentifiers.size() != returnTypes.size())
+        {
+            typeErrors.push_back("Type error in ReturnStm: " + std::to_string(returnTypes.size()) + " return values expected for function " + funcName + " but " + std::to_string(returnValueIdentifiers.size()) + " return values found.");
+        }
+
+        int typeCounter = 0;
+        for(std::string r : returnValueIdentifiers)
+        {
+            // Check if return values are defined
+            if(!env.varExists(r))
+            {
+                typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + r + "' but '" + r + "' is not defined.");
+            }
+
+            // Check if return values have the correct type 
+            if(std::dynamic_pointer_cast<IntegerType>(returnTypes[typeCounter]) != nullptr && std::dynamic_pointer_cast<IntegerType>(env.getVarType(r)) == nullptr)
+            {
+                typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + r + "' of type Integer, but a non-integer was returned.");
+            }
+            if(std::dynamic_pointer_cast<BooleanType>(returnTypes[typeCounter]) != nullptr && std::dynamic_pointer_cast<BooleanType>(env.getVarType(r)) == nullptr)
+            {
+                typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + r + "' of type Boolean, but a non-boolean was returned.");
+            }
+        }
+    }
+        else
+    {
+        // 3. If not, return whatever expressionlist is behind the return statement
+        // 4. If there isn't anything, return an empty list
+        if(expressionList.get() != nullptr)
+        {  
+            std::vector<std::shared_ptr<Type>> expTypes;
+            expressionList->typecheck(env, funcEnv, expTypes, typeErrors);
+
+            if(expTypes.size() != returnTypes.size())
+            {
+                typeErrors.push_back("Type error in ReturnStm: " + std::to_string(returnTypes.size()) + " return values expected for function " + funcName + " but " + std::to_string(expTypes.size()) + " return values found.");
+            } else {
+
+                int typeCounter = 0;
+                // Check if type corresponds with function signature
+                for(auto t : expTypes)
+                {
+                    if(std::dynamic_pointer_cast<IntegerType>(returnTypes[typeCounter]) != nullptr && std::dynamic_pointer_cast<IntegerType>(t) == nullptr)
+                    {
+                        typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + std::to_string(typeCounter) + "' of type Integer, but a non-integer was returned.");
+                    }
+
+                    if(std::dynamic_pointer_cast<BooleanType>(returnTypes[typeCounter]) != nullptr && std::dynamic_pointer_cast<BooleanType>(t) == nullptr)
+                    {
+                        typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + std::to_string(typeCounter) + "' of type Integer, but a non-integer was returned.");
+                    }
+                }
+            }
+        }
+    }
+}
+
 // ============= EmptyStm =============
 EmptyStm::EmptyStm(){}
 
@@ -149,13 +308,16 @@ void EmptyStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     return;
 }
 
+void EmptyStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    return;
+}
+
 // ============= AssignmentStm =============
 AssignmentStm::AssignmentStm(ExpList* left, ExpList* right, AssignOperator assign_op): leftExpList{left}, rightExpList{right}, assignOp{assign_op}{}
 
 void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: different assignment operators!!!
-
     // Evaluate the right side of the assignment to get the values that we will assign
     std::vector<std::shared_ptr<Literal>> newValues;
     rightExpList->interp(env, funcEnv, newValues);
@@ -231,14 +393,137 @@ void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     }
 }
 
+void AssignmentStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    // Evaluate the right side of the assignment to get the values that we will assign
+    std::vector<std::shared_ptr<Type>> rightTypes;
+    rightExpList->typecheck(env, funcEnv, rightTypes, typeErrors);
+
+    // Get the variable names (identifiers) of the left side of the assignment
+    std::vector<std::string> leftOperandNames;
+    leftExpList->getOperandNames(leftOperandNames);
+
+    int leftCounter = 0;
+    for(auto n: leftOperandNames)
+    {
+        // Check if left-hand expressions are addressable
+        if(n == "NO_OPERAND_EXPRESSION")
+        {
+            typeErrors.push_back("Type error in AssignmentStm: Left-hand expression " + std::to_string(leftCounter) + " should be an addressable expression (e.g. Operand Expression).");
+        }
+        else{
+            // Check if left-hand expressions are defined in this scope
+            if(!env.varExists(n))
+            {
+                typeErrors.push_back("Type error in AssignmentStm: variable " + n + " was not defined.");
+            }
+        }
+        leftCounter++;
+    }
+
+    // TODO: Check that BLANK OPERATOR is not used in operator assignment!
+    switch (assignOp)
+    {
+        case ASSIGN_OP:
+        {
+
+            if(rightTypes.size() != leftOperandNames.size())
+            {
+                typeErrors.push_back("Type error in AssignmentStm: ASSIGN_OP expects an equal amount of expressions on the left and right hand side of the operator.");
+            }
+
+            int typeCounter = 0;
+            for(auto n : leftOperandNames)
+            {
+                // Check if we are trying to assign a non-integer to an integer variable
+                if(std::dynamic_pointer_cast<IntegerType>(env.getVarType(n)) != nullptr && std::dynamic_pointer_cast<IntegerType>(rightTypes[typeCounter]) == nullptr)
+                {
+                    typeErrors.push_back("Type error in AssignmentStm: Trying to assign non-integer to variable " + n + " but " + n + " is of type Integer.");
+                }
+
+                // Check if we are trying to assign a non-boolean to an boolean variable
+                if(std::dynamic_pointer_cast<BooleanType>(env.getVarType(n)) != nullptr && std::dynamic_pointer_cast<BooleanType>(rightTypes[typeCounter]) == nullptr)
+                {
+                    typeErrors.push_back("Type error in AssignmentStm: Trying to assign non-boolean to variable " + n + " but " + n + " is of type Boolean.");
+                }
+                typeCounter++;
+            }
+            break;
+        }
+        case PLUSASSIGN_OP:
+        {
+
+            if(rightTypes.size() != 1 || leftOperandNames.size() != 1)
+            {
+                typeErrors.push_back("Type error in AssignmentStm: An operator assignment can only have 1 left-hand and 1 right-hand expression.");
+            }
+            
+            // Operator assignments are only allowed on integers
+            if(std::dynamic_pointer_cast<IntegerType>(env.getVarType(leftOperandNames[0])) == nullptr || std::dynamic_pointer_cast<IntegerType>(rightTypes[0]) == nullptr)
+            {
+                typeErrors.push_back("Type error in AssignmentStm: An operator assignment is only allowed on integers. Either variable " + leftOperandNames[0] + " is not an Integer or its corresponding right-hand expression does not evaluate to an Integer.");
+            }
+            
+            break;
+        }
+
+        case MINASSIGN_OP:
+        {
+            if(rightTypes.size() != 1 || leftOperandNames.size() != 1)
+            {
+                typeErrors.push_back("Type error in AssignmentStm: An operator assignment can only have 1 left-hand and 1 right-hand expression.");
+            }
+            
+            // Operator assignments are only allowed on integers
+            if(std::dynamic_pointer_cast<IntegerType>(env.getVarType(leftOperandNames[0])) == nullptr || std::dynamic_pointer_cast<IntegerType>(rightTypes[0]) == nullptr)
+            {
+                typeErrors.push_back("Type error in AssignmentStm: An operator assignment is only allowed on integers. Either variable " + leftOperandNames[0] + " is not an Integer or its corresponding right-hand expression does not evaluate to an Integer.");
+            }            
+            break;
+        }
+        case MULASSIGN_OP:
+        {
+            if(rightTypes.size() != 1 || leftOperandNames.size() != 1)
+            {
+                typeErrors.push_back("Type error in AssignmentStm: An operator assignment can only have 1 left-hand and 1 right-hand expression.");
+            }
+            
+            // Operator assignments are only allowed on integers
+            if(std::dynamic_pointer_cast<IntegerType>(env.getVarType(leftOperandNames[0])) == nullptr || std::dynamic_pointer_cast<IntegerType>(rightTypes[0]) == nullptr)
+            {
+                typeErrors.push_back("Type error in AssignmentStm: An operator assignment is only allowed on integers. Either variable " + leftOperandNames[0] + " is not an Integer or its corresponding right-hand expression does not evaluate to an Integer.");
+            }
+            break;
+        }
+
+        case DIVASSIGN_OP:
+        {
+            if(rightTypes.size() != 1 || leftOperandNames.size() != 1)
+            {
+                typeErrors.push_back("Type error in AssignmentStm: An operator assignment can only have 1 left-hand and 1 right-hand expression.");
+            }
+            
+            // Operator assignments are only allowed on integers
+            if(std::dynamic_pointer_cast<IntegerType>(env.getVarType(leftOperandNames[0])) == nullptr || std::dynamic_pointer_cast<IntegerType>(rightTypes[0]) == nullptr)
+            {
+                typeErrors.push_back("Type error in AssignmentStm: An operator assignment is only allowed on integers. Either variable " + leftOperandNames[0] + " is not an Integer or its corresponding right-hand expression does not evaluate to an Integer.");
+            }            
+            break;
+        }
+        default:
+        {
+            typeErrors.push_back("Type error in AssignmentStm: Unknown operator.");
+            break;
+        }
+    }
+}
+
 // ============= IncDecStm =============
 IncDecStm::IncDecStm(Exp* exp, IncDecOperator op): exp{exp}, op{op}{}
 
 void IncDecStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: Typechecker: check if expression has type int (and if it is a addressable variable)!
     std::string varName = exp->getOperandName();
-    // std::shared_ptr<IntLiteral> updatedVal;
 
     switch (op)
     {
@@ -257,12 +542,40 @@ void IncDecStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // env.updateVar(varName, updatedVal);
 }
 
+void IncDecStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+        std::string varName = exp->getOperandName();
+
+        // Check if left-hand expressions are addressable
+        if(varName == "NO_OPERAND_EXPRESSION")
+        {
+            typeErrors.push_back("Type error in IncDecStm: Expression should be an addressable expression (e.g. Operand Expression).");
+        }
+        else{
+            // Check if left-hand expressions are defined in this scope
+            if(!env.varExists(varName))
+            {
+                typeErrors.push_back("Type error in IncDecStm: variable " + varName + " was not defined.");
+            }
+        }
+
+        if(std::dynamic_pointer_cast<IntegerType>(env.getVarType(varName)) == nullptr)
+        {
+            typeErrors.push_back("Type error in IncDecStm: PLUSPLUS and MINMIN are only defined on Integer variables. Variable " + varName + " was found not to be of type Integer.");
+        }
+}
+
 // ============= ExprStm =============
 ExprStm::ExprStm(Exp* exp): exp{exp}{}
 
 void ExprStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     exp->interp(env, funcEnv);
+}
+
+void ExprStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    exp->typecheck(env, funcEnv, typeErrors);
 }
 
 // ============= PrintStm =============
@@ -297,4 +610,11 @@ void PrintStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     }
 }
 
+void PrintStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    std::vector<std::shared_ptr<Type>> types;
+    expressions->typecheck(env, funcEnv, types, typeErrors);
+
+    // TODO: check if type is supported for printing (for now all types can be printed)
+}
 

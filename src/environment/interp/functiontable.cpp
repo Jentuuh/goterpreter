@@ -20,6 +20,27 @@ void FunctionTable::addReturnValues(std::string i, std::vector<std::shared_ptr<L
     entries.at(i).returnValues = values;
 }
 
+void FunctionTable::getReturnTypes(std::string i, std::vector<std::shared_ptr<Type>>& typeContainer)
+{
+    for (auto const& [key, val] : entries)
+    {
+        if(key == i)
+        {
+            if (val.funcDecl->funcSign->result != nullptr)
+            {
+                std::vector<std::shared_ptr<Type>> returnTypes{};
+                val.funcDecl->funcSign->result->getTypes(returnTypes);
+                for(auto t : returnTypes)
+                {
+                    typeContainer.push_back(t);
+                }
+            } else{
+                return;
+            }
+        }
+    }
+}
+
 
 void FunctionTable::printValues()
 {
@@ -29,4 +50,5 @@ void FunctionTable::printValues()
         std::cout << key << " : " << val.funcDecl->funcName->name << std::endl;
     }
 }
+
 

@@ -6,6 +6,7 @@
 
 struct Env{
     virtual std::shared_ptr<Literal> lookupVar(std::string id) = 0;
+    virtual bool varExists(std::string id) = 0;
 };
 
 struct GlobalEnv:Env{
@@ -13,6 +14,7 @@ struct GlobalEnv:Env{
 
     GlobalEnv();
     std::shared_ptr<Literal> lookupVar(std::string id) override;
+    bool varExists(std::string id) override;
 
 };
 
@@ -22,6 +24,9 @@ struct ScopedEnv:Env{
 
     ScopedEnv();
     std::shared_ptr<Literal> lookupVar(std::string id) override;
+    bool varExists(std::string id) override;    
+    std::shared_ptr<Type> getVarType(std::string id);
+
     SymbolTable* currentScope();
     void updateVar(std::string id, std::shared_ptr<Literal> newVal);
     void popScope(bool decScopeLevel = true);

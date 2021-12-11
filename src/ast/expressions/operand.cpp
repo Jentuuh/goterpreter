@@ -14,6 +14,7 @@ std::shared_ptr<Type> LiteralOperand::typecheck(ScopedEnv& env, FunctionEnv& fun
     // Integer literal operand
     if(std::dynamic_pointer_cast<IntLiteral>(literal) != nullptr)
     {
+
         return std::make_shared<IntegerType>();
     }
 
@@ -34,17 +35,24 @@ std::shared_ptr<Literal> VariableOperand::interp(ScopedEnv& env, FunctionEnv& fu
 
 std::shared_ptr<Type> VariableOperand::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
-    // Integer variable operand
-    if(std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(operandName->name)) != nullptr)
+    if(!env.varExists(operandName->name))
     {
-        return std::make_shared<IntegerType>();
+        typeErrors.push_back("Type error in VariableOperand: Variable " + operandName->name + " is not defined.");
     }
 
-    // Boolean variable operand
-    if(std::dynamic_pointer_cast<BoolLiteral>(env.lookupVar(operandName->name)) != nullptr)
-    {
-        return std::make_shared<BooleanType>();
-    }
+    return env.getVarType(operandName->name);
+
+    // // Integer variable operand
+    // if(std::dynamic_pointer_cast<IntegerType>(env.getVarType(operandName->name)) != nullptr)
+    // {
+    //     return std::make_shared<IntegerType>();
+    // }
+
+    // // Boolean variable operand
+    // if(std::dynamic_pointer_cast<BoolLiteral>(env.lookupVar(operandName->name)) != nullptr)
+    // {
+    //     return std::make_shared<BooleanType>();
+    // }
 }
 
 

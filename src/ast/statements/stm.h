@@ -26,10 +26,12 @@ enum IncDecOperator{ PLUSPLUS, MINMIN };
 struct Stm
 {
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
 };
 
 struct SimpleStm:Stm{
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
+    virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
 };
 
 struct DeclStm:Stm{
@@ -37,6 +39,7 @@ struct DeclStm:Stm{
 
     DeclStm(TopLevelDecl* decl);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct BlockStm:Stm{
@@ -44,6 +47,7 @@ struct BlockStm:Stm{
 
     BlockStm(Block* block);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct IfStm:Stm{
@@ -57,6 +61,7 @@ struct IfStm:Stm{
 
     IfStm(Stm* simpleStm, Exp* cond, Block* ifBlock, Block* elseBlock, Stm* nestedIf);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct ForCondStm:Stm{
@@ -65,6 +70,7 @@ struct ForCondStm:Stm{
 
     ForCondStm(Exp* cond, Block* body);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct ForClauseStm:Stm{
@@ -73,6 +79,7 @@ struct ForClauseStm:Stm{
 
     ForClauseStm(ForClause* forclause, Block* body);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct ForStm:Stm{
@@ -80,6 +87,7 @@ struct ForStm:Stm{
 
     ForStm(Block* body);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct ReturnStm:Stm{
@@ -87,11 +95,13 @@ struct ReturnStm:Stm{
 
     ReturnStm(ExpList* expList);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct EmptyStm:SimpleStm{
     EmptyStm();
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct AssignmentStm:SimpleStm{
@@ -101,6 +111,7 @@ struct AssignmentStm:SimpleStm{
 
     AssignmentStm(ExpList* left, ExpList* right, AssignOperator assign_op);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct IncDecStm:SimpleStm{
@@ -109,6 +120,7 @@ struct IncDecStm:SimpleStm{
 
     IncDecStm(Exp* exp, IncDecOperator op);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct ExprStm:SimpleStm{
@@ -116,6 +128,7 @@ struct ExprStm:SimpleStm{
 
     ExprStm(Exp* exp);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
 struct PrintStm:Stm{
@@ -123,5 +136,6 @@ struct PrintStm:Stm{
 
     PrintStm(ExpList* expList);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 

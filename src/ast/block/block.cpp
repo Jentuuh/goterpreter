@@ -9,3 +9,8 @@ void Block::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     statements->interp(env, funcEnv);
 };
+
+void Block::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    statements->typecheck(env, funcEnv, typeErrors);
+}

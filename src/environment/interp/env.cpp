@@ -1,6 +1,7 @@
 #include "./env.h"
 #include <iostream>
 
+// ============= GlobalEnv =============
 GlobalEnv::GlobalEnv(){}
 
 std::shared_ptr<Literal> GlobalEnv::lookupVar(std::string id)
@@ -15,7 +16,19 @@ std::shared_ptr<Literal> GlobalEnv::lookupVar(std::string id)
         return nullptr;
 }
 
+bool GlobalEnv::varExists(std::string id)
+{
+        // Check if table contains the id we're looking for
+        if(globals.entries.count(id))
+        {
+            return true;
+        }
 
+        // If not, we return false
+        return false;
+}
+
+// ============= ScopedEnv =============
 ScopedEnv::ScopedEnv()
 {
     // Init highest level scope
@@ -40,21 +53,43 @@ std::shared_ptr<Literal> ScopedEnv::lookupVar(std::string id)
             return scopeSymbolTables[i].entries.at(id).value;
         }
     }
-
-    // if(scopeSymbolTables[scopeDepth - 1].entries.count(id))
-    // {
-    //     // If we find the symbol in the current scope
-    //     return scopeSymbolTables[scopeDepth - 1].entries.at(id).value;
-    // }  
-    // if (scopeSymbolTables[0].entries.count(id))
-    // {
-    //     // If we find the symbol in the global environment
-    //     return scopeSymbolTables[0].entries.at(id).value;
-    // }
     
     // In case we found nothing, we return NULL
     return nullptr;
 }
+
+bool ScopedEnv::varExists(std::string id)
+{
+    int scopeDepth = scopeSymbolTables.size();
+
+    for(int i = scopeDepth - 1; i >= 0; i--)
+    {
+        // We can only look up variables from the same scope level (same function), and globals!
+        if(scopeSymbolTables[i].entries.count(id) && (scopeSymbolTables[i].localScopeId == scopeLevel || i == 0))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::shared_ptr<Type> ScopedEnv::getVarType(std::string id)
+{
+    int scopeDepth = scopeSymbolTables.size();
+
+    for(int i = scopeDepth - 1; i >= 0; i--)
+    {
+        // We can only look up variables from the same scope level (same function), and globals!
+        if(scopeSymbolTables[i].entries.count(id) && (scopeSymbolTables[i].localScopeId == scopeLevel || i == 0))
+        {
+            return scopeSymbolTables[i].entries.at(id).type;
+        }
+    }
+
+    // If we found no variable in the current scope with this ID, return nullptr
+    return nullptr;
+}
+
 
 void ScopedEnv::updateVar(std::string id, std::shared_ptr<Literal> newVal)
 {
@@ -106,6 +141,7 @@ void ScopedEnv::printScopes()
     }
 }
 
+// ============= FunctionEnv =============
 FuncTableEntry* FunctionEnv::lookupVar(std::string id)
 {
         // Check if table contains the id we're looking for

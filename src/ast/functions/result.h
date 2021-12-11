@@ -9,7 +9,7 @@ struct FunctionEnv;
 
 struct Result{
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
-    virtual std::vector<std::shared_ptr<Type>> getTypes() = 0;
+    virtual void getTypes(std::vector<std::shared_ptr<Type>>& typeContainer) = 0;
 };
 
 struct ParametersResult:Result{
@@ -17,7 +17,7 @@ struct ParametersResult:Result{
 
     ParametersResult(ParameterList* params);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
-    std::vector<std::shared_ptr<Type>> getTypes() override;
+    void getTypes(std::vector<std::shared_ptr<Type>>& typeContainer) override;
 };
 
 struct TypeResult:Result{
@@ -25,5 +25,5 @@ struct TypeResult:Result{
 
     TypeResult(Type* type);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
-    std::vector<std::shared_ptr<Type>> getTypes() override;
+    void getTypes(std::vector<std::shared_ptr<Type>>& typeContainer) override;
 };

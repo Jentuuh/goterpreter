@@ -13,4 +13,5 @@ struct Block
 
     Block(StmList* stmList);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv);
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors);
 };

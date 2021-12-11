@@ -45,26 +45,19 @@ int main(int argc, char* argv[])
   //   printf("\n");
 
   yyparse();
+  fclose(inputFile);
 
-
-  // // Test of scoped environment
-  // scopeEnvironment.currentScope()->add("Test integer", std::make_shared<IntegerType>(), std::make_shared<IntLiteral>(2));
-  // scopeEnvironment.currentScope()->add("Test boolean", std::make_shared<BooleanType>(), std::make_shared<BoolLiteral>(true));
-  // scopeEnvironment.printScopes();
-
-  // // Test of function environment
-  // char* funcName = "TestFunction";
-  // functionEnvironment.declaredFunctions.add("Test function", std::make_shared<FunctionDecl>(std::make_shared<Identifier>(funcName).get(), std::shared_ptr<Signature>(nullptr).get(), std::shared_ptr<Block>(nullptr).get()));
-  // functionEnvironment.declaredFunctions.printValues();
   ScopedEnv scopeTypeEnvironment{};
   FunctionEnv functionTypeEnvironment{};
   std::vector<std::string> typeErrors{};
+
 
   ast->typecheck(scopeTypeEnvironment, functionTypeEnvironment, typeErrors);
 
   // If there were type errors, print them out
   if(!typeErrors.empty())
   {
+    std::cout << "Type error found!" << std::endl;
     for (std::string e : typeErrors)
     {
       std::cout << e << std::endl;
@@ -75,10 +68,14 @@ int main(int argc, char* argv[])
     // If there were no type errors, we can interpret the program
     ScopedEnv scopeEnvironment{};
     FunctionEnv functionEnvironment{};
-    ast->interp(scopeEnvironment, functionEnvironment);
+    // yyrestart(inputFile);
+    // yyparse();
 
-    scopeEnvironment.printScopes();
-    functionEnvironment.declaredFunctions.printValues();
+    ast->interp(scopeEnvironment, functionEnvironment);
+    std::cout << std::endl;
+    // scopeEnvironment.printScopes();
+    // functionEnvironment.declaredFunctions.printValues();
+
   }
 
   return 0;

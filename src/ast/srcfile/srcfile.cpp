@@ -24,7 +24,6 @@ void SrcFile::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     funcEnv.lookupVar(std::string("main"))->funcDecl->funcBody->interp(env, funcEnv);
     funcEnv.popFunc();
     env.popScope();
-
     return;
 }
 

@@ -42,6 +42,7 @@ void LastExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<st
         std::vector<std::shared_ptr<Type>> returnTypes = std::dynamic_pointer_cast<FunctionCall>(last)->typeCheckFunction(env, funcEnv, typeErrors);
         for (std::shared_ptr<Type> r : returnTypes)
         {
+            if(std::dynamic_pointer_cast<BooleanType>(r) != nullptr)
             typeContainer.push_back(r);
         }
     }

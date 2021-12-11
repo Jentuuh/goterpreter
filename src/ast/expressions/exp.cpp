@@ -144,6 +144,7 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
 
 std::vector<std::shared_ptr<Type>> FunctionCall::typeCheckFunction(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
+
     std::string funcName = primaryExp->getOperandName();
 
     FuncTableEntry* functionEntry = funcEnv.lookupVar(funcName);
@@ -162,13 +163,16 @@ std::vector<std::shared_ptr<Type>> FunctionCall::typeCheckFunction(ScopedEnv& en
     // Typecheck the arguments!
     std::vector<std::shared_ptr<Type>> argTypes;
     if(arguments.get() != nullptr)
-    {
+    {  
         arguments->typecheck(env, funcEnv, argTypes, typeErrors);
     }
 
     // Get parameter types
     std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> idsAndTypes;
-    functionEntry->funcDecl->funcSign->parameters->getIdentifiersWithTypes(idsAndTypes);
+    if(funcEnv.lookupVar(funcName)->funcDecl->funcSign->parameters != nullptr)
+    {
+        functionEntry->funcDecl->funcSign->parameters->getIdentifiersWithTypes(idsAndTypes);
+    }
 
     // Check argument types with parameter types (signature)!
     int argCounter = 0;
@@ -192,31 +196,20 @@ std::vector<std::shared_ptr<Type>> FunctionCall::typeCheckFunction(ScopedEnv& en
         }
     }
 
-    // We are entering the function's scope
-    env.pushScope();
-
-    // Add argument types to function scope
-    int valueIndex = 0;
-    for(int i = 0; i < idsAndTypes.size(); i++)
-    {
-        for(int j = 0; j < idsAndTypes.at(i).first.size(); j++)
-        {
-             env.currentScope()->add(idsAndTypes.at(i).first.at(j), idsAndTypes.at(i).second, nullptr);
-             valueIndex++;
-        }
-    }
-
-    // Typecheck the function's body
-    //funcEnv.lookupVar(funcName)->funcDecl->funcBody->typecheck(env, funcEnv, typeErrors);
-
     // Pop function from call stack
     funcEnv.popFunc();
 
-    // Pop scope after the function has been executed
-    env.popScope();
-
     // TODO: typecheck return statement with getTypes()!!!
-    return funcEnv.lookupVar(funcName)->funcDecl->funcSign->result->getTypes();
+    if(funcEnv.lookupVar(funcName)->funcDecl->funcSign->result == nullptr)
+    {
+        std::vector<std::shared_ptr<Type>> empty {};
+        return empty;
+    } else {
+        
+        std::vector<std::shared_ptr<Type>> returnTypes{};
+        funcEnv.lookupVar(funcName)->funcDecl->funcSign->result->getTypes(returnTypes);
+        return returnTypes;
+    }
 }
 
 
@@ -391,7 +384,7 @@ std::shared_ptr<Type> BinaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv,
         return std::make_shared<BooleanType>();
         break;
     case LE_BIN:
-        if(std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr)
+        if((std::dynamic_pointer_cast<IntegerType>(left->typecheck(env, funcEnv, typeErrors)) == nullptr ||  std::dynamic_pointer_cast<IntegerType>(right->typecheck(env, funcEnv, typeErrors)) == nullptr))
         {
             typeErrors.push_back("Type error in BinExp: Operator LE_BIN is only defined for integer literal operands.");
         }
