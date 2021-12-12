@@ -1,5 +1,6 @@
 #include "explist.h"
 #include <iostream>
+#include <algorithm>
 
 // ============= LastExpList =============
 LastExpList::LastExpList(Exp* l): last{l}{}
@@ -78,6 +79,9 @@ void PairExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::
         }
     }
     tail->interp(env, funcEnv, valueContainer);
+
+    // Reverse so values are in expected order
+    std::reverse(valueContainer.begin(), valueContainer.end());
 }
 
 void PairExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer, std::vector<std::string>& typeErrors)
@@ -95,6 +99,7 @@ void PairExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<st
         }
     }
     tail->typecheck(env, funcEnv, typeContainer, typeErrors);
+    std::reverse(typeContainer.begin(), typeContainer.end());
 }
 
 

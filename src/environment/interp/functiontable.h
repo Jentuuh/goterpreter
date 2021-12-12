@@ -13,8 +13,9 @@ struct FuncTableEntry{
 
     FuncTableEntry(std::shared_ptr<FunctionDecl> f);
 };
+
 struct FunctionTable{
-    std::map<std::string, FuncTableEntry> entries;
+    std::map<std::string, std::shared_ptr<FuncTableEntry>> entries;
 
     FunctionTable();
     void add(std::string i, std::shared_ptr<FunctionDecl> f);

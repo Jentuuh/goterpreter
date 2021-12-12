@@ -151,6 +151,7 @@ union YYSTYPE
         Decl* decl;
         VarDecl* vardecl;
         VarSpec* varspec;
+        VarSpecList* varspeclist;
         FunctionDecl* funcdecl;
         Signature* signature;
         Result* result;
@@ -164,7 +165,7 @@ union YYSTYPE
 
         PackageClause* packageclause;
 
-#line 168 "./parser/parser.hpp"
+#line 169 "./parser/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

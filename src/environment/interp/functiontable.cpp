@@ -11,13 +11,12 @@ FunctionTable::FunctionTable()
 
 void FunctionTable::add(std::string i, std::shared_ptr<FunctionDecl> f)
 {
-    FuncTableEntry entry = FuncTableEntry{f};
-    entries.insert(std::pair<std::string, FuncTableEntry>(i, entry));
+    entries.insert(std::pair<std::string, std::shared_ptr<FuncTableEntry>>(i,std::make_shared<FuncTableEntry>(f)));
 }
 
 void FunctionTable::addReturnValues(std::string i, std::vector<std::shared_ptr<Literal>> values)
 {
-    entries.at(i).returnValues = values;
+    entries.at(i)->returnValues = values;
 }
 
 void FunctionTable::getReturnTypes(std::string i, std::vector<std::shared_ptr<Type>>& typeContainer)
@@ -26,10 +25,10 @@ void FunctionTable::getReturnTypes(std::string i, std::vector<std::shared_ptr<Ty
     {
         if(key == i)
         {
-            if (val.funcDecl->funcSign->result != nullptr)
+            if (val->funcDecl->funcSign->result != nullptr)
             {
                 std::vector<std::shared_ptr<Type>> returnTypes{};
-                val.funcDecl->funcSign->result->getTypes(returnTypes);
+                val->funcDecl->funcSign->result->getTypes(returnTypes);
                 for(auto t : returnTypes)
                 {
                     typeContainer.push_back(t);
@@ -47,7 +46,7 @@ void FunctionTable::printValues()
     std::cout << "================ Functions ================" << std::endl;
     for (auto const& [key, val] : entries)
     {
-        std::cout << key << " : " << val.funcDecl->funcName->name << std::endl;
+        std::cout << key << " : " << val->funcDecl->funcName->name << std::endl;
     }
 }
 

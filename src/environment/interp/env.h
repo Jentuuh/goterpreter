@@ -19,7 +19,7 @@ struct GlobalEnv:Env{
 };
 
 struct ScopedEnv:Env{
-    std::vector<SymbolTable> scopeSymbolTables;
+    std::vector<std::shared_ptr<SymbolTable>> scopeSymbolTables;
     int scopeLevel = 0;
 
     ScopedEnv();
@@ -27,7 +27,8 @@ struct ScopedEnv:Env{
     bool varExists(std::string id) override;    
     std::shared_ptr<Type> getVarType(std::string id);
 
-    SymbolTable* currentScope();
+    std::shared_ptr<SymbolTable> currentScope();
+    void reset();
     void updateVar(std::string id, std::shared_ptr<Literal> newVal);
     void popScope(bool decScopeLevel = true);
     void pushScope(bool incScopeLevel = true);
@@ -38,8 +39,9 @@ struct FunctionEnv{
     FunctionTable declaredFunctions;
     std::vector<std::string> callStack;    
 
-    FuncTableEntry* lookupVar(std::string id);
+    std::shared_ptr<FuncTableEntry> lookupVar(std::string id);
     std::string currentFunc();
+    void reset();
     void pushFunc(std::string funcName);
     void popFunc();
 };

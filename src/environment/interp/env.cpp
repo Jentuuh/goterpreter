@@ -32,13 +32,21 @@ bool GlobalEnv::varExists(std::string id)
 ScopedEnv::ScopedEnv()
 {
     // Init highest level scope
-    scopeSymbolTables.push_back(SymbolTable{0});
+    scopeSymbolTables.push_back(std::make_shared<SymbolTable>(0));
 }
 
-SymbolTable* ScopedEnv::currentScope()
+void ScopedEnv::reset()
+{
+    // Reinit environment
+    scopeSymbolTables.clear();
+    scopeSymbolTables.push_back(std::make_shared<SymbolTable>(0));
+}
+
+
+std::shared_ptr<SymbolTable> ScopedEnv::currentScope()
 {
     // Return address of top of stack
-    return &scopeSymbolTables.back();
+    return scopeSymbolTables.back();
 }
 
 std::shared_ptr<Literal> ScopedEnv::lookupVar(std::string id)
@@ -48,9 +56,9 @@ std::shared_ptr<Literal> ScopedEnv::lookupVar(std::string id)
     for(int i = scopeDepth - 1; i >= 0; i--)
     {
         // We can only look up variables from the same scope level (same function), and globals!
-        if(scopeSymbolTables[i].entries.count(id) && (scopeSymbolTables[i].localScopeId == scopeLevel || i == 0))
+        if(scopeSymbolTables[i]->entries.count(id) && (scopeSymbolTables[i]->localScopeId == scopeLevel || i == 0))
         {
-            return scopeSymbolTables[i].entries.at(id).value;
+            return scopeSymbolTables[i]->entries.at(id).value;
         }
     }
     
@@ -65,7 +73,7 @@ bool ScopedEnv::varExists(std::string id)
     for(int i = scopeDepth - 1; i >= 0; i--)
     {
         // We can only look up variables from the same scope level (same function), and globals!
-        if(scopeSymbolTables[i].entries.count(id) && (scopeSymbolTables[i].localScopeId == scopeLevel || i == 0))
+        if(scopeSymbolTables[i]->entries.count(id) && (scopeSymbolTables[i]->localScopeId == scopeLevel || i == 0))
         {
             return true;
         }
@@ -80,9 +88,9 @@ std::shared_ptr<Type> ScopedEnv::getVarType(std::string id)
     for(int i = scopeDepth - 1; i >= 0; i--)
     {
         // We can only look up variables from the same scope level (same function), and globals!
-        if(scopeSymbolTables[i].entries.count(id) && (scopeSymbolTables[i].localScopeId == scopeLevel || i == 0))
+        if(scopeSymbolTables[i]->entries.count(id) && (scopeSymbolTables[i]->localScopeId == scopeLevel || i == 0))
         {
-            return scopeSymbolTables[i].entries.at(id).type;
+            return scopeSymbolTables[i]->entries.at(id).type;
         }
     }
 
@@ -97,10 +105,10 @@ void ScopedEnv::updateVar(std::string id, std::shared_ptr<Literal> newVal)
     {
 
         // Check if the symbol is defined anywhere
-        if(scopeSymbolTables[i].entries.count(id))
+        if(scopeSymbolTables[i]->entries.count(id))
         {
             // Update the value
-            scopeSymbolTables[i].entries.at(id).value = newVal;
+            scopeSymbolTables[i]->entries.at(id).value = newVal;
             return;
         }
     }
@@ -123,7 +131,7 @@ void ScopedEnv::pushScope(bool incScopeLevel)
         scopeLevel++;
     }
     // Push a fresh symbol table on top of the stack
-    scopeSymbolTables.push_back(SymbolTable{scopeLevel});
+    scopeSymbolTables.push_back(std::make_shared<SymbolTable>(scopeLevel));
 
 }
 
@@ -132,22 +140,22 @@ void ScopedEnv::printScopes()
     std::cout << std::endl;
     
     int scopeLevel = 0;
-    for (SymbolTable s : scopeSymbolTables)
+    for (std::shared_ptr<SymbolTable> s : scopeSymbolTables)
     {
         std::cout << "================ Scope Depth: " << scopeLevel << " ================"  << std::endl;
-        s.printValues();
+        s->printValues();
         std::cout << std::endl;
         scopeLevel++;
     }
 }
 
 // ============= FunctionEnv =============
-FuncTableEntry* FunctionEnv::lookupVar(std::string id)
+std::shared_ptr<FuncTableEntry> FunctionEnv::lookupVar(std::string id)
 {
         // Check if table contains the id we're looking for
         if(declaredFunctions.entries.count(id))
         {
-            return &declaredFunctions.entries.at(id);
+            return declaredFunctions.entries.at(id);
         }
 
         // If not, we return NULL
@@ -157,6 +165,11 @@ FuncTableEntry* FunctionEnv::lookupVar(std::string id)
 std::string FunctionEnv::currentFunc()
 {
     return callStack.back();
+}
+
+void FunctionEnv::reset()
+{
+    declaredFunctions.entries.clear();
 }
 
 void FunctionEnv::pushFunc(std::string funcName)

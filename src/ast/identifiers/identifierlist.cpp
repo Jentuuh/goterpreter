@@ -1,5 +1,6 @@
 #include "identifierlist.h"
 #include <iostream>
+#include <algorithm>
 
 // ============= LastIdentifierList =============
 LastIdentifierList::LastIdentifierList(Identifier* l): last{l}{}

@@ -12,6 +12,7 @@
  #include "./ast/declarations/decllist.h"
  #include "./ast/declarations/decl.h"
  #include "./ast/declarations/varspec.h"
+ #include "./ast/declarations/varspeclist.h"
 
  #include "./ast/functions/signature.h"
  #include "./ast/functions/result.h"

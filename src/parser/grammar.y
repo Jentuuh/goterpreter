@@ -38,6 +38,7 @@
         Decl* decl;
         VarDecl* vardecl;
         VarSpec* varspec;
+        VarSpecList* varspeclist;
         FunctionDecl* funcdecl;
         Signature* signature;
         Result* result;
@@ -76,6 +77,7 @@
 %type <toplvldecl> declaration
 %type <toplvldecl> vardecl
 %type <varspec> varspec
+%type <varspeclist> varspeclist
 
 %type <exp> expr
 %type <exp> unaryexpr
@@ -172,13 +174,16 @@ topleveldecl: declaration          {$$ = $1; }
 declaration: vardecl     {$$ = $1; }
            ;
 
-/* TODO: HIER MOET EEN VARSPEC LIST GESCHEIDEN DOOR SEMICOLONS STAAN! */
-vardecl: VAR varspec                                        {$$ = new VarDecl($2); }
-        | VAR LPAREN varspec SEMICOLON RPAREN               {$$ = new VarDecl($3); }
+vardecl: VAR LPAREN varspeclist RPAREN                       {$$ = new VarDecl($3); }
+        | VAR varspec                                        {$$ = new VarDecl(new LastVarSpecList($2)); }
         ;
 
-shortvardecl: identifierlist SHORTVARASSIGN expressionlist  {puts("identifierlist SHORTVARASSIGN expressionlist"); }
-            ;
+varspeclist: varspec                                         {$$ = new LastVarSpecList($1); }
+           | varspec SEMICOLON varspeclist                   {$$ = new PairVarSpecList($1, $3); }
+           ;
+             
+// shortvardecl: identifierlist SHORTVARASSIGN expressionlist  {puts("identifierlist SHORTVARASSIGN expressionlist"); }
+//             ;
 
 varspec: identifierlist type ASSIGN expressionlist      {$$ = new VarSpec($1, $2, $4); }
         | identifierlist type                           {$$ = new VarSpec($1, $2, nullptr);}
@@ -199,8 +204,7 @@ type: typename                  { $$ = $1; }
     | LPAREN type RPAREN        { $$ = $2; }
     ;
 
-typename: IDENTIFIER            { puts("IDENTIFIER"); }
-        | INTEGER               { $$ = new IntegerType(); } 
+typename: INTEGER               { $$ = new IntegerType(); } 
         | BOOLEAN               { $$ = new BooleanType(); }
         ;
 
@@ -240,8 +244,8 @@ expressionlist: expressionlist COMMA expr       { $$ = new PairExpList($3, $1); 
               | expr                            { $$ = new LastExpList($1); }
               ;
 
-identifierlist: identifier RCOMMA identifierlist         { $$ = new PairIdentifierList($1, $3); }
-              | identifier                               { $$ = new LastIdentifierList($1); }
+identifierlist: identifier COMMA identifierlist                     { $$ = new PairIdentifierList($1, $3); }
+              | identifier                                          { $$ = new LastIdentifierList($1); }
               ;
 
 identifier: IDENTIFIER         { $$ = new Identifier($1); };
@@ -251,7 +255,7 @@ unaryexpr: primaryexpr         { $$ = $1; }
           ;
 
 unary_op: PLUS                  { $$ = PLUS_UNARY; }
-        | UMINUS                { $$ = MIN_UNARY; }
+        | MIN   %prec UMINUS    { $$ = MIN_UNARY; }
         | NOT                   { $$ = NOT_UNARY; }
         ;
 
@@ -301,7 +305,7 @@ simplestatement: expressionstatement     { $$ = $1; }
                 | assignment             { $$ = $1; }
                 | incdecstatement        { $$ = $1; }
                 | emptystatement         { $$ = $1; }
-                | shortvardecl           {puts("shortvardecl");}
+                // | shortvardecl           {puts("shortvardecl");}
                 ;
 
 emptystatement: { $$ = new EmptyStm();} ;

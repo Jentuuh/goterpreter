@@ -51,9 +51,7 @@ int main(int argc, char* argv[])
   FunctionEnv functionTypeEnvironment{};
   std::vector<std::string> typeErrors{};
 
-
   ast->typecheck(scopeTypeEnvironment, functionTypeEnvironment, typeErrors);
-
   // If there were type errors, print them out
   if(!typeErrors.empty())
   {
@@ -62,20 +60,15 @@ int main(int argc, char* argv[])
     {
       std::cout << e << std::endl;
     }
-  }
-  else{
+  } else {
     std::cout << "Typecheck succeeded!" << std::endl;
-    // If there were no type errors, we can interpret the program
     ScopedEnv scopeEnvironment{};
     FunctionEnv functionEnvironment{};
-    // yyrestart(inputFile);
-    // yyparse();
-
+    // If there were no type errors, we can interpret the program
     ast->interp(scopeEnvironment, functionEnvironment);
-    std::cout << std::endl;
-    // scopeEnvironment.printScopes();
-    // functionEnvironment.declaredFunctions.printValues();
 
+    scopeEnvironment.printScopes();
+    functionEnvironment.declaredFunctions.printValues();
   }
 
   return 0;

@@ -3,102 +3,107 @@
 #include "../../environment/interp/env.h"
 
 // ============= VarDecl =============
-VarDecl::VarDecl(VarSpec* varspec): varspec{varspec}{};
+VarDecl::VarDecl(VarSpecList* varspecs): varspecs{varspecs}{};
 
 void VarDecl::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-        // Get variable identifiers on the left
-        std::vector<std::string> identifiers;
-        varspec->idList->getIdentifierStrings(identifiers);
+        varspecs->interp(env, funcEnv);
+        // // Get variable identifiers on the left
+        // std::vector<std::string> identifiers;
+        // varspec->idList->getIdentifierStrings(identifiers);
 
-        // Get values from the expression list on the right
-        std::vector<std::shared_ptr<Literal>> values;
-        if(varspec->expList.get() != nullptr)
-        {
-                varspec->expList->interp(env, funcEnv, values);
-        }
-        else
-        {
-                // Default value for integers (0)
-                if(std::dynamic_pointer_cast<IntegerType>(varspec->type) != nullptr)
-                {
-                        for (int i = 0; i < identifiers.size(); i++)
-                        {
-                                values.push_back(std::make_shared<IntLiteral>(0));
-                        }
-                }
-
-                // Default value for booleans (false)
-                if(std::dynamic_pointer_cast<BooleanType>(varspec->type) != nullptr)
-                {
-                        for (int i = 0; i < identifiers.size(); i++)
-                        {
-                                values.push_back(std::make_shared<BoolLiteral>(false));
-                        }
-                }       
-        }
-
-        // Add variables to the current scope
-        for (int i = 0; i < identifiers.size(); i++)
-        {
-                env.currentScope()->add(identifiers[i], varspec->type, values[i]);
-        }
-        // for (auto v : values)
+        // // Get values from the expression list on the right
+        // std::vector<std::shared_ptr<Literal>> values;
+        // if(varspec->expList.get() != nullptr)
         // {
-        //       v->printValue();
+        //         varspec->expList->interp(env, funcEnv, values);
         // }
-        // for(auto s : identifiers)
+        // else
         // {
-        //         env.currentScope()->add(s, varspec->type, );
-        //         std::cout << s << std::endl;
+        //         // Default value for integers (0)
+        //         if(std::dynamic_pointer_cast<IntegerType>(varspec->type) != nullptr)
+        //         {
+        //                 for (int i = 0; i < identifiers.size(); i++)
+        //                 {
+        //                         values.push_back(std::make_shared<IntLiteral>(0));
+        //                 }
+        //         }
+
+        //         // Default value for booleans (false)
+        //         if(std::dynamic_pointer_cast<BooleanType>(varspec->type) != nullptr)
+        //         {
+        //                 for (int i = 0; i < identifiers.size(); i++)
+        //                 {
+        //                         values.push_back(std::make_shared<BoolLiteral>(false));
+        //                 }
+        //         }       
+        // }
+
+        // // Add variables to the current scope
+        // for (int i = 0; i < identifiers.size(); i++)
+        // {
+        //         env.currentScope()->add(identifiers[i], varspec->type, values[i]);
         // }
 }
 
 void VarDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
-        // Get variable identifiers on the left
-        std::vector<std::string> identifiers;
-        varspec->idList->getIdentifierStrings(identifiers);
+        varspecs->typecheck(env, funcEnv,typeErrors);
+        // // Get variable identifiers on the left
+        // std::vector<std::string> identifiers;
+        // varspec->idList->getIdentifierStrings(identifiers);
 
-        // TODO: CHECK IF IDENTIFIERS DIDN'T ALREADY EXIST IN CURRENT/GLOBAL SCOPE!
+        // // TODO: CHECK IF IDENTIFIERS DIDN'T ALREADY EXIST IN CURRENT/GLOBAL SCOPE!
+        // for (std::string i : identifiers)
+        // {
+        //         if(env.varExists(i))
+        //                 typeErrors.push_back("Type error in VarDecl: Variable '" + i + "' was already declared in the current scope.");
+        // }
 
-        // Get values from the expression list on the right
-        std::vector<std::shared_ptr<Type>> types;
-        if(varspec->expList.get() != nullptr)
-        {
-                varspec->expList->typecheck(env, funcEnv, types, typeErrors);
-        }         
 
-        // Check if type in var decl corresponds to types in expression list
-        for(std::shared_ptr<Type> t : types)
-        {
-                // Integer and non-integer
-                if(std::dynamic_pointer_cast<IntegerType>(varspec->type) != nullptr && std::dynamic_pointer_cast<IntegerType>(t) == nullptr)
-                {
-                        typeErrors.push_back("Type error in VarDecl: Trying to assign non-integer to integer type variable " + identifiers[0] + ".");
-                }
+        // // Get values from the expression list on the right
+        // std::vector<std::shared_ptr<Type>> types;
+        // if(varspec->expList.get() != nullptr)
+        // {
+        //         varspec->expList->typecheck(env, funcEnv, types, typeErrors);
+        // }
 
-                // Boolean and non-boolean
-                if(std::dynamic_pointer_cast<BooleanType>(varspec->type) != nullptr && std::dynamic_pointer_cast<BooleanType>(t) == nullptr)
-                {
-                        typeErrors.push_back("Type error in VarDecl: Trying to assign non-boolean to boolean type variable " + identifiers[0] + ".");
-                }
-        }
+        // if(identifiers.size() != types.size() && types.size() != 0)
+        // {
+        //         typeErrors.push_back("Type error in VarDecl: The amount of variables on the left side of the assignment operator should be equal to the amount of expressions on the right.");  
+        // }         
 
-        // Add variables to the current scope (without values)
-        for (int i = 0; i < identifiers.size(); i++)
-        {
-                env.currentScope()->add(identifiers[i], varspec->type, nullptr);
-        }
+        // // Check if type in var decl corresponds to types in expression list
+        // for(std::shared_ptr<Type> t : types)
+        // {
+        //         // Integer and non-integer
+        //         if(std::dynamic_pointer_cast<IntegerType>(varspec->type) != nullptr && std::dynamic_pointer_cast<IntegerType>(t) == nullptr)
+        //         {
+        //                 typeErrors.push_back("Type error in VarDecl: Trying to assign non-integer to integer type variable " + identifiers[0] + ".");
+        //         }
+
+        //         // Boolean and non-boolean
+        //         if(std::dynamic_pointer_cast<BooleanType>(varspec->type) != nullptr && std::dynamic_pointer_cast<BooleanType>(t) == nullptr)
+        //         {
+        //                 typeErrors.push_back("Type error in VarDecl: Trying to assign non-boolean to boolean type variable " + identifiers[0] + ".");
+        //         }
+        // }
+
+        // // Add variables to the current scope (without values)
+        // for (int i = 0; i < identifiers.size(); i++)
+        // {
+        //         env.currentScope()->add(identifiers[i], varspec->type, nullptr);
+        // }
 }
 
 // ============= FunctionDecl =============
 FunctionDecl::FunctionDecl(Identifier* funcName, Signature* sign, Block* body): funcName{funcName}, funcSign{sign}, funcBody{body}{}
+FunctionDecl::FunctionDecl(std::shared_ptr<Identifier> funcName, std::shared_ptr<Signature> sign, std::shared_ptr<Block> body): funcName{funcName}, funcSign{sign}, funcBody{body}{}
 
 void FunctionDecl::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
         // Add the function declaration to our function environment
-        funcEnv.declaredFunctions.add(funcName->name, std::make_shared<FunctionDecl>(funcName.get(), funcSign.get(), funcBody.get()));
+        funcEnv.declaredFunctions.add(funcName->name, std::make_shared<FunctionDecl>(funcName, funcSign, funcBody));
         return;
 }
 
@@ -138,7 +143,7 @@ void FunctionDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
         }
         
         // We also need to add the function to the declared functions BEFORE typechecking the body (otherwise the typechecker can't find the function's information)
-        funcEnv.declaredFunctions.add(funcName->name, std::make_shared<FunctionDecl>(funcName.get(), funcSign.get(), funcBody.get()));
+        funcEnv.declaredFunctions.add(funcName->name, std::make_shared<FunctionDecl>(funcName, funcSign, funcBody));
 
         // Typecheck the function's body
         funcBody->typecheck(env, funcEnv, typeErrors);

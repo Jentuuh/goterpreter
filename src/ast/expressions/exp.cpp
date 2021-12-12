@@ -147,7 +147,7 @@ std::vector<std::shared_ptr<Type>> FunctionCall::typeCheckFunction(ScopedEnv& en
 
     std::string funcName = primaryExp->getOperandName();
 
-    FuncTableEntry* functionEntry = funcEnv.lookupVar(funcName);
+    std::shared_ptr<FuncTableEntry> functionEntry = funcEnv.lookupVar(funcName);
 
     // Check if function exists
     if(functionEntry == nullptr)
