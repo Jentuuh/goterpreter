@@ -62,6 +62,8 @@ struct IfStm:Stm{
     IfStm(Stm* simpleStm, Exp* cond, Block* ifBlock, Block* elseBlock, Stm* nestedIf);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+    int amountPaths();
+    int countReturnStatements();
 };
 
 struct ForCondStm:Stm{
@@ -71,6 +73,8 @@ struct ForCondStm:Stm{
     ForCondStm(Exp* cond, Block* body);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+    int amountPaths();
+    int countReturnStatements();
 };
 
 struct ForClauseStm:Stm{
@@ -80,6 +84,8 @@ struct ForClauseStm:Stm{
     ForClauseStm(ForClause* forclause, Block* body);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+    int amountPaths();
+    int countReturnStatements();
 };
 
 struct ForStm:Stm{
@@ -88,6 +94,8 @@ struct ForStm:Stm{
     ForStm(Block* body);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+    int amountPaths();
+    int countReturnStatements();
 };
 
 struct ReturnStm:Stm{

@@ -97,6 +97,32 @@ void IfStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::str
     env.popScope(false);
 }
 
+int IfStm::amountPaths()
+{
+    if(elseBlock != nullptr)
+    {
+        return 1;
+    } else {
+
+        if(nestedIfStm != nullptr)
+            return std::dynamic_pointer_cast<IfStm>(nestedIfStm)->amountPaths();
+    }
+    return 0;
+}
+
+int IfStm::countReturnStatements()
+{
+    if(elseBlock != nullptr)
+    {
+        return ifBlock->countReturnStatements() + elseBlock->countReturnStatements();
+    } else {
+
+        if(nestedIfStm != nullptr)
+            return  ifBlock->countReturnStatements() + std::dynamic_pointer_cast<IfStm>(nestedIfStm)->countReturnStatements();
+    }
+    return ifBlock->countReturnStatements();
+}
+
 
 // ============= ForCondStm =============
 ForCondStm::ForCondStm(Exp* cond, Block* body): condition{cond}, body{body}{}
@@ -122,6 +148,16 @@ void ForCondStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std
     }
     body->typecheck(env, funcEnv, typeErrors);
     env.popScope(false);
+}
+
+int ForCondStm::amountPaths()
+{
+    return body->amountPaths();
+}
+
+int ForCondStm::countReturnStatements()
+{
+    return body->countReturnStatements();
 }
 
 // ============= ForClauseStm =============
@@ -168,6 +204,16 @@ void ForClauseStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
     env.popScope(false);
 }
 
+int ForClauseStm::amountPaths()
+{
+    return body->amountPaths();
+}
+
+int ForClauseStm::countReturnStatements()
+{
+    return body->countReturnStatements();
+}
+
 // ============= ForStm =============
 ForStm::ForStm(Block* body): body{body}{}
 
@@ -188,6 +234,15 @@ void ForStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::st
     env.popScope(false);
 }
 
+int ForStm::amountPaths()
+{
+    return body->amountPaths();
+}
+
+int ForStm::countReturnStatements()
+{
+    return body->countReturnStatements();
+}
 // ============= ReturnStm =============
 ReturnStm::ReturnStm(ExpList* expList): expressionList{expList}{}
 

@@ -14,3 +14,14 @@ void Block::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::str
 {
     statements->typecheck(env, funcEnv, typeErrors);
 }
+
+int Block::amountPaths()
+{
+    return statements->amountPaths();
+}
+
+int Block::countReturnStatements()
+{
+    return statements->countReturnStatements();
+}
+
