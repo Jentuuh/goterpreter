@@ -97,6 +97,7 @@ void IfStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::str
     env.popScope(false);
 }
 
+
 int IfStm::amountPaths()
 {
     if(elseBlock != nullptr)
@@ -114,11 +115,21 @@ int IfStm::countReturnStatements()
 {
     if(elseBlock != nullptr)
     {
+        // If the if-else blocks do not both contain return statements, return 0 (because they both should)
+        if(ifBlock->countReturnStatements() < 1 || elseBlock->countReturnStatements() < 1 )
+            return 0;
+
         return ifBlock->countReturnStatements() + elseBlock->countReturnStatements();
     } else {
 
-        if(nestedIfStm != nullptr)
+        if(nestedIfStm != nullptr){
+            // If the nested if statements do not pass the test, let the whole if statement fail
+            if(std::dynamic_pointer_cast<IfStm>(nestedIfStm)->countReturnStatements() < std::dynamic_pointer_cast<IfStm>(nestedIfStm)->amountPaths())
+                return 0;
+
+
             return  ifBlock->countReturnStatements() + std::dynamic_pointer_cast<IfStm>(nestedIfStm)->countReturnStatements();
+        }
     }
     return ifBlock->countReturnStatements();
 }
