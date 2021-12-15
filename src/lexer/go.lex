@@ -11,7 +11,10 @@ go.lex: lex-file for go basisniveau
   int line_nr = 1;
   int col_nr = 1; 
   int lexPos = 1;
-  void ADJUST() { col_nr = lexPos; lexPos += yyleng; }
+  bool insert_semicolon = false;
+  void ADJUST(bool insert_semicol = false) { col_nr = lexPos; 
+                                             lexPos += yyleng; 
+                                             if(insert_semicol) insert_semicolon = insert_semicol; }
 
 %}
 whitespace (" "|"\t"|"\n")
@@ -59,26 +62,26 @@ comma ","
 else "else"
 
 %%
-\n { line_nr++; col_nr = 0; lexPos = 1;}
+\n { line_nr++; col_nr = 0; lexPos = 1; if(insert_semicolon){ insert_semicolon = false; return SEMICOLON; } }
 {semicolon} { ADJUST(); return SEMICOLON; }
 {integer} { ADJUST(); return INTEGER; }
 {boolean} { ADJUST(); return BOOLEAN; }
 {function} { ADJUST(); return FUNC; }
 {package} { ADJUST(); return PACKAGE; }
-{return} { ADJUST(); return RETURN; }
+{return} { ADJUST(true); return RETURN; }
 {import} {ADJUST(); return IMPORT; }
 {print} {ADJUST(); return PRINT; }
 {var} { ADJUST(); return VAR; }
 {if} { ADJUST(); return IF; }
 {else} {ADJUST(); return ELSE; }
 {for} { ADJUST(); return FOR; }
-{integerlit} { ADJUST(); 
+{integerlit} { ADJUST(true); 
             char* s = strdup(yytext);
             long int value = strtol(s, NULL, 10);
             *yylval.intlit = value;
             return INTLITERAL;
             }
-{boollit} { ADJUST(); 
+{boollit} { ADJUST(true); 
                char* s = strdup(yytext);
                if(strcmp(s, "true") == 0){
                 *yylval.boollit = true;
@@ -88,15 +91,15 @@ else "else"
                }
               return BOOLLITERAL; 
           }
-{identifier} { ADJUST(); 
+{identifier} { ADJUST(true); 
                char* s = strdup(yytext);
                yylval.id = s; 
                return IDENTIFIER; 
               }
 {lparen} { ADJUST(); return LPAREN; }
-{rparen} { ADJUST(); return RPAREN; }
+{rparen} { ADJUST(true); return RPAREN; }
 {lbrace} { ADJUST(); return LBRACE; }
-{rbrace} { ADJUST(); return RBRACE; }
+{rbrace} { ADJUST(true); return RBRACE; }
 {plus} { ADJUST(); return PLUS; }
 {minus} { ADJUST(); return MIN; }
 {multiplication} { ADJUST(); return MUL; }
@@ -108,8 +111,8 @@ else "else"
 {and} { ADJUST(); return AND; }
 {or} { ADJUST(); return OR; }
 {not} { ADJUST(); return NOT; }
-{increment} { ADJUST(); return INC; }
-{decrement} { ADJUST(); return DEC; }
+{increment} { ADJUST(true); return INC; }
+{decrement} { ADJUST(true); return DEC; }
 {greaterthan} { ADJUST(); return GT; }
 {greaterthanequal} { ADJUST(); return GE; }
 {lessthan} { ADJUST(); return LT; }

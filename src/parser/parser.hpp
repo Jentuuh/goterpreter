@@ -162,10 +162,11 @@ union YYSTYPE
         ParameterDecl* paramdecl;
 
         Type* type; 
+        TypeList* typelist;
 
         PackageClause* packageclause;
 
-#line 169 "./parser/parser.hpp"
+#line 170 "./parser/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

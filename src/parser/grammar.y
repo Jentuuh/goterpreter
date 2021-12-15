@@ -49,6 +49,7 @@
         ParameterDecl* paramdecl;
 
         Type* type; 
+        TypeList* typelist;
 
         PackageClause* packageclause;
 }
@@ -116,6 +117,7 @@
 
 %type <type> type
 %type <type> typename
+%type <typelist> typelist
 
 %type <paramlist> parameters
 %type <paramlist> parameterlist
@@ -204,12 +206,16 @@ type: typename                  { $$ = $1; }
     | LPAREN type RPAREN        { $$ = $2; }
     ;
 
+typelist: type                                   {$$ = new LastTypeList($1); }
+        | LPAREN typename COMMA typelist RPAREN  {$$ = new PairTypeList($2, $4); }
+        ;
+
 typename: INTEGER               { $$ = new IntegerType(); } 
         | BOOLEAN               { $$ = new BooleanType(); }
         ;
 
-result: parameters              { $$ = new ParametersResult($1); }
-        | type                  { $$ = new TypeResult($1); }
+result: parameters                  { $$ = new ParametersResult($1); }
+        | typelist                  { $$ = new TypeResult($1); }
         ;
 
 parameters: LPAREN RPAREN                         { $$ = nullptr; }

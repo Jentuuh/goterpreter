@@ -26,13 +26,9 @@ void FunctionTable::getReturnTypes(std::string i, std::vector<std::shared_ptr<Ty
         if(key == i)
         {
             if (val->funcDecl->funcSign->result != nullptr)
-            {
+            {                
                 std::vector<std::shared_ptr<Type>> returnTypes{};
-                val->funcDecl->funcSign->result->getTypes(returnTypes);
-                for(auto t : returnTypes)
-                {
-                    typeContainer.push_back(t);
-                }
+                val->funcDecl->funcSign->result->getTypes(typeContainer);
             } else{
                 return;
             }

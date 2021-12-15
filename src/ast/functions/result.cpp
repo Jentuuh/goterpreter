@@ -1,4 +1,5 @@
 #include "result.h"
+#include <iostream>
 
 // ============= ParametersResult =============
 ParametersResult::ParametersResult(ParameterList* params): parameters{params}{}
@@ -20,7 +21,7 @@ void ParametersResult::getTypes(std::vector<std::shared_ptr<Type>>& typeContaine
 }
 
 // ============= TypeResult =============
-TypeResult::TypeResult(Type* type): type{type}{}
+TypeResult::TypeResult(TypeList* typelist): types{typelist}{}
 
 void TypeResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
@@ -29,6 +30,6 @@ void TypeResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
 void TypeResult::getTypes(std::vector<std::shared_ptr<Type>>& typeContainer)
 {
-    typeContainer.push_back(type);
+    types->getTypes(typeContainer);
 }
 

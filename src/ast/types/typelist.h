@@ -1,30 +1,32 @@
 #pragma once
 #include <memory>
 #include <utility>
-#include "../types/typelist.h"
-#include "../types/type.h"
-#include "../parameters/paramlist.h"
+#include <vector>
+#include <string>
+#include "./type.h"
 
 struct ScopedEnv;
 struct FunctionEnv;
+struct Type; 
 
-struct Result{
+struct TypeList{
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
     virtual void getTypes(std::vector<std::shared_ptr<Type>>& typeContainer) = 0;
 };
 
-struct ParametersResult:Result{
-    std::shared_ptr<ParameterList> parameters;
+struct LastTypeList:TypeList{
+    std::shared_ptr<Type> last;
 
-    ParametersResult(ParameterList* params);
+    LastTypeList(Type* l);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void getTypes(std::vector<std::shared_ptr<Type>>& typeContainer) override;
 };
 
-struct TypeResult:Result{
-    std::shared_ptr<TypeList> types;
+struct PairTypeList:TypeList{
+    std::shared_ptr<Type> head;
+    std::shared_ptr<TypeList> tail;
 
-    TypeResult(TypeList* typelist);
+    PairTypeList(Type* h, TypeList* t);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void getTypes(std::vector<std::shared_ptr<Type>>& typeContainer) override;
 };

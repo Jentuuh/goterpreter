@@ -29,6 +29,7 @@
  #include "./ast/parameters/paramlist.h"
 
  #include "./ast/types/type.h"
+ #include "./ast/types/typelist.h"
 
  #include "./environment/interp/symboltable.h"
  #include "./environment/interp/functiontable.h"
