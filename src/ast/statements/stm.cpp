@@ -333,7 +333,7 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
             }
         }
     }
-        else
+    else
     {
         // 3. If not, return whatever expressionlist is behind the return statement
         // 4. If there isn't anything, return an empty list
@@ -361,6 +361,12 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
                         typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + std::to_string(typeCounter) + "' of type Integer, but a non-integer was returned.");
                     }
                 }
+            }
+        } else {
+            // If the function is expecting return values but the return expression is empty, there's a type error
+            if(returnTypes.size() != 0)
+            {
+                typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting a return value(s), but one of the return paths return no value(s).");
             }
         }
     }
