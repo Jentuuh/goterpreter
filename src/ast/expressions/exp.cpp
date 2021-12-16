@@ -228,7 +228,7 @@ std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcE
 
 std::string FunctionCall::getOperandName() 
 {
-    return std::string("NO_OPERAND_EXPRESSION");
+    return std::string("FUNCTION_CALL");
 }
 
 // ============= OperandExp =============

@@ -10,6 +10,7 @@ struct DeclList{
     virtual int length() = 0;
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
     virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
+    virtual void refAnalysis(std::vector<std::pair<std::string, std::string>>& referenceGraph) = 0;
 };
 
 struct PairDeclList:DeclList{
@@ -21,6 +22,8 @@ struct PairDeclList:DeclList{
     int length() override;
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+    void refAnalysis(std::vector<std::pair<std::string, std::string>>& referenceGraph) override;
+
 };
 
 struct LastDeclList:DeclList{
@@ -30,4 +33,5 @@ struct LastDeclList:DeclList{
     int length() override;
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+    void refAnalysis(std::vector<std::pair<std::string, std::string>>& referenceGraph) override;
 };

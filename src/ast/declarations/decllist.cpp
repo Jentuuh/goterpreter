@@ -22,6 +22,16 @@ void PairDeclList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
     tail->typecheck(env, funcEnv, typeErrors);
 }
 
+void PairDeclList::refAnalysis(std::vector<std::pair<std::string, std::string>>& referenceGraph) 
+{
+     if(std::dynamic_pointer_cast<VarDecl>(head) != nullptr)
+    {
+        std::dynamic_pointer_cast<VarDecl>(head)->varspecs->buildReferenceGraph(referenceGraph);
+    }
+
+    tail->refAnalysis(referenceGraph);
+}
+
 // ============= LastDeclList =============
 LastDeclList::LastDeclList(TopLevelDecl* l): last{l}{}
 
@@ -40,3 +50,10 @@ void LastDeclList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
     last->typecheck(env, funcEnv, typeErrors);
 }
 
+void LastDeclList::refAnalysis(std::vector<std::pair<std::string, std::string>>& referenceGraph) 
+{
+    if(std::dynamic_pointer_cast<VarDecl>(last) != nullptr)
+    {
+        std::dynamic_pointer_cast<VarDecl>(last)->varspecs->buildReferenceGraph(referenceGraph);
+    }
+}

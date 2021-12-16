@@ -12,7 +12,7 @@ struct VarSpecList{
     virtual int length() = 0;
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
     virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
-
+    virtual void buildReferenceGraph(std::vector<std::pair<std::string, std::string>>& referenceGraph) = 0;
 };
 
 struct LastVarSpecList:VarSpecList{
@@ -22,6 +22,7 @@ struct LastVarSpecList:VarSpecList{
     int length() override;
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+    void buildReferenceGraph(std::vector<std::pair<std::string, std::string>>& referenceGraph) override;
 };
 
 struct PairVarSpecList:VarSpecList{
@@ -32,4 +33,5 @@ struct PairVarSpecList:VarSpecList{
     int length() override;
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+    void buildReferenceGraph(std::vector<std::pair<std::string, std::string>>& referenceGraph) override;
 };

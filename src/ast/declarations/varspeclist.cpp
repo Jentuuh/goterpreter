@@ -102,6 +102,13 @@ void PairVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
     tail->typecheck(env, funcEnv, typeErrors);
 }
 
+ void PairVarSpecList::buildReferenceGraph(std::vector<std::pair<std::string, std::string>>& referenceGraph)
+ {
+        head->getReferencePairs(referenceGraph);
+        tail->buildReferenceGraph(referenceGraph);
+ }
+
+
 // ============= LastVarSpecList =============
 LastVarSpecList::LastVarSpecList(VarSpec* l): last{l}{}
 
@@ -198,3 +205,9 @@ void LastVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
             env.currentScope()->add(identifiers[i], last->type, nullptr);
     }
 }
+
+ void LastVarSpecList::buildReferenceGraph(std::vector<std::pair<std::string, std::string>>& referenceGraph)
+ {
+        last->getReferencePairs(referenceGraph);
+ }
+

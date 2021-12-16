@@ -480,7 +480,7 @@ void AssignmentStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<
     for(auto n: leftOperandNames)
     {
         // Check if left-hand expressions are addressable
-        if(n == "NO_OPERAND_EXPRESSION")
+        if(n == "NO_OPERAND_EXPRESSION" || n == "FUNCTION_CALL")
         {
             typeErrors.push_back("Type error in AssignmentStm: Left-hand expression " + std::to_string(leftCounter) + " should be an addressable expression (e.g. Operand Expression).");
         }
@@ -620,7 +620,7 @@ void IncDecStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
         std::string varName = exp->getOperandName();
 
         // Check if left-hand expressions are addressable
-        if(varName == "NO_OPERAND_EXPRESSION")
+        if(varName == "NO_OPERAND_EXPRESSION" || varName == "FUNCTION_CALL")
         {
             typeErrors.push_back("Type error in IncDecStm: Expression should be an addressable expression (e.g. Operand Expression).");
         }

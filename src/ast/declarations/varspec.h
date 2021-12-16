@@ -17,4 +17,5 @@ struct VarSpec{
 
     VarSpec(IdentifierList* idList, Type* type, ExpList* expList);
     void interp(ScopedEnv& env, FunctionEnv& funcEnv);
+    void getReferencePairs(std::vector<std::pair<std::string, std::string>>& referenceGraph);
 };

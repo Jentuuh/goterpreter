@@ -30,9 +30,16 @@ void SrcFile::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 void SrcFile::typecheck(ScopedEnv& varTypeEnv, FunctionEnv& funcTypeEnv, std::vector<std::string>& typeErrors)
 {
     // We only need to typecheck topLevelDeclarations (imports and packageclause cannot have type errors)
-
     if(topLvlDeclarations != NULL)
     {
+        std::vector<std::pair<std::string, std::string>> refGraph;
+        topLvlDeclarations->refAnalysis(refGraph);
+
+        for(auto p: refGraph)
+        {
+            std::cout << p.first << "-->" << p.second << std::endl;
+        }
+
         topLvlDeclarations->typecheck(varTypeEnv, funcTypeEnv, typeErrors);
     }
 }
