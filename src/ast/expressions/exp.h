@@ -22,6 +22,7 @@ struct Exp{
 	virtual std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
 	virtual std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
 	virtual std::string getOperandName() = 0;
+	virtual void getRefNames(std::vector<std::string>& refContainer) = 0;
 };
 
 // struct PrimaryExp:Exp{
@@ -33,6 +34,7 @@ struct OperandExp:Exp{
 
 	OperandExp(Operand* operand);
 	std::string getOperandName() override;
+	void getRefNames(std::vector<std::string>& refContainer) override;
 	std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 	std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
@@ -43,6 +45,7 @@ struct FunctionCall:Exp{
 
 	FunctionCall(Exp* primExp, ExpList* expList);
 	std::string getOperandName() override;
+	void getRefNames(std::vector<std::string>& refContainer) override;
 	std::vector<std::shared_ptr<Literal>> executeFunction(ScopedEnv& env, FunctionEnv& funcEnv);
 	std::vector<std::shared_ptr<Type>> typeCheckFunction(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors);
 
@@ -57,6 +60,7 @@ struct UnaryExp:Exp{
 
 	UnaryExp(Exp* unaryExp, UnaryOperator op);
 	std::string getOperandName() override;
+	void getRefNames(std::vector<std::string>& refContainer) override;
 	std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 	std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
@@ -70,6 +74,7 @@ struct BinaryExp:Exp{
 
 	BinaryExp(Exp* left, Exp* right, BinaryOperator op);
 	std::string getOperandName() override;
+	void getRefNames(std::vector<std::string>& refContainer) override;
 	std::shared_ptr<Literal> interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
 	std::shared_ptr<Type> typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };

@@ -15,6 +15,12 @@ void LastExpList::getOperandNames(std::vector<std::string>& names)
     names.push_back(last->getOperandName());
 }
 
+void LastExpList::getRefNames(std::vector<std::vector<std::string>>& refContainer)
+{
+    std::vector<std::string> newReferences{};
+    last->getRefNames(newReferences);
+    refContainer.push_back(newReferences);
+}
 
 void LastExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer)
 {
@@ -62,6 +68,14 @@ void PairExpList::getOperandNames(std::vector<std::string>& names)
 {
     names.push_back(head->getOperandName());
     tail->getOperandNames(names);
+}
+
+void PairExpList::getRefNames(std::vector<std::vector<std::string>>& refContainer)
+{
+    std::vector<std::string> newReferences{};
+    head->getRefNames(newReferences);
+    refContainer.push_back(newReferences);
+    tail->getRefNames(refContainer);
 }
 
 void PairExpList::interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer)

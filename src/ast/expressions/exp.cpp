@@ -10,6 +10,11 @@ std::string UnaryExp::getOperandName()
     return std::string("NO_OPERAND_EXPRESSION");
 }
 
+void UnaryExp::getRefNames(std::vector<std::string>& refContainer)
+{
+    unaryExp->getRefNames(refContainer);
+}
+
 
 std::shared_ptr<Literal> UnaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
@@ -231,6 +236,11 @@ std::string FunctionCall::getOperandName()
     return std::string("FUNCTION_CALL");
 }
 
+void FunctionCall::getRefNames(std::vector<std::string>& refContainer)
+{
+    refContainer.push_back("FUNCTION_CALL");
+}
+
 // ============= OperandExp =============
 
 OperandExp::OperandExp(Operand* operand): operand{operand}{}
@@ -247,6 +257,15 @@ std::string OperandExp::getOperandName()
     return std::string("NO_OPERAND_EXPRESSION");
 }
 
+void OperandExp::getRefNames(std::vector<std::string>& refContainer)
+{
+    if(std::dynamic_pointer_cast<VariableOperand>(operand) != nullptr)
+        refContainer.push_back(std::dynamic_pointer_cast<VariableOperand>(operand)->operandName->name);
+    else{
+        refContainer.push_back(std::string("NO_OPERAND_EXPRESSION"));
+    }
+}
+
 std::shared_ptr<Type> OperandExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
     return operand->typecheck(env, funcEnv, typeErrors);
@@ -259,6 +278,13 @@ std::string BinaryExp::getOperandName()
 {
     return std::string("NO_OPERAND_EXPRESSION");
 }
+
+void BinaryExp::getRefNames(std::vector<std::string>& refContainer)
+{
+    left->getRefNames(refContainer);
+    right->getRefNames(refContainer);
+}
+
 
 std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
