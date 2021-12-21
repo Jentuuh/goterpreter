@@ -14,7 +14,8 @@ go.lex: lex-file for go basisniveau
   bool insert_semicolon = false;
   void ADJUST(bool insert_semicol = false) { col_nr = lexPos; 
                                              lexPos += yyleng; 
-                                             if(insert_semicol) insert_semicolon = insert_semicol; }
+                                             printf("%s ", yytext);
+                                             insert_semicolon = insert_semicol;}
 
 %}
 whitespace (" "|"\t"|"\n")
@@ -62,10 +63,10 @@ comma ","
 else "else"
 
 %%
-\n { line_nr++; col_nr = 0; lexPos = 1; if(insert_semicolon){ insert_semicolon = false; return SEMICOLON; } }
-{semicolon} { ADJUST(); return SEMICOLON; }
-{integer} { ADJUST(); return INTEGER; }
-{boolean} { ADJUST(); return BOOLEAN; }
+\n { line_nr++; col_nr = 1; lexPos = 1; if(insert_semicolon){ printf("INSERT "); insert_semicolon = false; return SEMICOLON; } }
+{semicolon} { ADJUST(); printf("%s", insert_semicolon ? "true" : "false"); return SEMICOLON; }
+{integer} { ADJUST(true); return INTEGER; }
+{boolean} { ADJUST(true); return BOOLEAN; }
 {function} { ADJUST(); return FUNC; }
 {package} { ADJUST(); return PACKAGE; }
 {return} { ADJUST(true); return RETURN; }

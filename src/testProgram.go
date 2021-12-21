@@ -1,7 +1,7 @@
 package main
 
 var reeeee, hehe int = 2, 3
-var b, d, e = a, c + x, 5
+var b, d, e = a, c + x, 5;
 var a = 3
 
 
@@ -47,7 +47,7 @@ func for_and_if_test() bool {
 }
 
 func main() {
-	var i bool = for_and_if_test();
+	var i bool = for_and_if_test()
 	print(i);
 	
 	var k int = 0;
@@ -59,5 +59,5 @@ func main() {
 }
 
 var reee int = test2()
-var lmao int
-var lmaobool bool;
+var lmao int;
+var lmaobool bool

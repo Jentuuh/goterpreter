@@ -527,10 +527,11 @@ go.lex: lex-file for go basisniveau
   bool insert_semicolon = false;
   void ADJUST(bool insert_semicol = false) { col_nr = lexPos; 
                                              lexPos += yyleng; 
-                                             if(insert_semicol) insert_semicolon = insert_semicol; }
+                                             printf("%s ", yytext);
+                                             insert_semicolon = insert_semicol;}
 
-#line 533 "./lexer/lexer.cpp"
 #line 534 "./lexer/lexer.cpp"
+#line 535 "./lexer/lexer.cpp"
 
 #define INITIAL 0
 
@@ -747,9 +748,9 @@ YY_DECL
 		}
 
 	{
-#line 64 "./lexer/go.lex"
+#line 65 "./lexer/go.lex"
 
-#line 753 "./lexer/lexer.cpp"
+#line 754 "./lexer/lexer.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -809,72 +810,72 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 65 "./lexer/go.lex"
-{ line_nr++; col_nr = 0; lexPos = 1; if(insert_semicolon){ insert_semicolon = false; return SEMICOLON; } }
+#line 66 "./lexer/go.lex"
+{ line_nr++; col_nr = 1; lexPos = 1; if(insert_semicolon){ printf("INSERT "); insert_semicolon = false; return SEMICOLON; } }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 66 "./lexer/go.lex"
-{ ADJUST(); return SEMICOLON; }
+#line 67 "./lexer/go.lex"
+{ ADJUST(); printf("%s", insert_semicolon ? "true" : "false"); return SEMICOLON; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 67 "./lexer/go.lex"
-{ ADJUST(); return INTEGER; }
+#line 68 "./lexer/go.lex"
+{ ADJUST(true); return INTEGER; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 68 "./lexer/go.lex"
-{ ADJUST(); return BOOLEAN; }
+#line 69 "./lexer/go.lex"
+{ ADJUST(true); return BOOLEAN; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 69 "./lexer/go.lex"
+#line 70 "./lexer/go.lex"
 { ADJUST(); return FUNC; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 70 "./lexer/go.lex"
+#line 71 "./lexer/go.lex"
 { ADJUST(); return PACKAGE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 71 "./lexer/go.lex"
+#line 72 "./lexer/go.lex"
 { ADJUST(true); return RETURN; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 72 "./lexer/go.lex"
+#line 73 "./lexer/go.lex"
 {ADJUST(); return IMPORT; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 73 "./lexer/go.lex"
+#line 74 "./lexer/go.lex"
 {ADJUST(); return PRINT; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 74 "./lexer/go.lex"
+#line 75 "./lexer/go.lex"
 { ADJUST(); return VAR; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 75 "./lexer/go.lex"
+#line 76 "./lexer/go.lex"
 { ADJUST(); return IF; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 76 "./lexer/go.lex"
+#line 77 "./lexer/go.lex"
 {ADJUST(); return ELSE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 77 "./lexer/go.lex"
+#line 78 "./lexer/go.lex"
 { ADJUST(); return FOR; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 78 "./lexer/go.lex"
+#line 79 "./lexer/go.lex"
 { ADJUST(true); 
             char* s = strdup(yytext);
             long int value = strtol(s, NULL, 10);
@@ -884,7 +885,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 84 "./lexer/go.lex"
+#line 85 "./lexer/go.lex"
 { ADJUST(true); 
                char* s = strdup(yytext);
                if(strcmp(s, "true") == 0){
@@ -898,7 +899,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 94 "./lexer/go.lex"
+#line 95 "./lexer/go.lex"
 { ADJUST(true); 
                char* s = strdup(yytext);
                yylval.id = s; 
@@ -907,143 +908,143 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 99 "./lexer/go.lex"
+#line 100 "./lexer/go.lex"
 { ADJUST(); return LPAREN; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 100 "./lexer/go.lex"
+#line 101 "./lexer/go.lex"
 { ADJUST(true); return RPAREN; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 101 "./lexer/go.lex"
+#line 102 "./lexer/go.lex"
 { ADJUST(); return LBRACE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 102 "./lexer/go.lex"
+#line 103 "./lexer/go.lex"
 { ADJUST(true); return RBRACE; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 103 "./lexer/go.lex"
+#line 104 "./lexer/go.lex"
 { ADJUST(); return PLUS; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 104 "./lexer/go.lex"
+#line 105 "./lexer/go.lex"
 { ADJUST(); return MIN; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 105 "./lexer/go.lex"
+#line 106 "./lexer/go.lex"
 { ADJUST(); return MUL; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 106 "./lexer/go.lex"
+#line 107 "./lexer/go.lex"
 { ADJUST(); return DIV; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 107 "./lexer/go.lex"
+#line 108 "./lexer/go.lex"
 { ADJUST(); return PLUSASSIGN; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 108 "./lexer/go.lex"
+#line 109 "./lexer/go.lex"
 { ADJUST(); return MINASSIGN; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 109 "./lexer/go.lex"
+#line 110 "./lexer/go.lex"
 { ADJUST(); return MULASSIGN; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 110 "./lexer/go.lex"
+#line 111 "./lexer/go.lex"
 { ADJUST(); return DIVASSIGN; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 111 "./lexer/go.lex"
+#line 112 "./lexer/go.lex"
 { ADJUST(); return AND; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 112 "./lexer/go.lex"
+#line 113 "./lexer/go.lex"
 { ADJUST(); return OR; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 113 "./lexer/go.lex"
+#line 114 "./lexer/go.lex"
 { ADJUST(); return NOT; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 114 "./lexer/go.lex"
+#line 115 "./lexer/go.lex"
 { ADJUST(true); return INC; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 115 "./lexer/go.lex"
+#line 116 "./lexer/go.lex"
 { ADJUST(true); return DEC; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 116 "./lexer/go.lex"
+#line 117 "./lexer/go.lex"
 { ADJUST(); return GT; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 117 "./lexer/go.lex"
+#line 118 "./lexer/go.lex"
 { ADJUST(); return GE; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 118 "./lexer/go.lex"
+#line 119 "./lexer/go.lex"
 { ADJUST(); return LT; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 119 "./lexer/go.lex"
+#line 120 "./lexer/go.lex"
 { ADJUST(); return LE; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 120 "./lexer/go.lex"
+#line 121 "./lexer/go.lex"
 { ADJUST(); return EQ; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 121 "./lexer/go.lex"
+#line 122 "./lexer/go.lex"
 { ADJUST(); return NE; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 122 "./lexer/go.lex"
+#line 123 "./lexer/go.lex"
 { ADJUST(); return ASSIGN; } 
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 123 "./lexer/go.lex"
+#line 124 "./lexer/go.lex"
 {ADJUST(); return SHORTVARASSIGN; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 124 "./lexer/go.lex"
+#line 125 "./lexer/go.lex"
 { ADJUST(); return COMMA; }
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 127 "./lexer/go.lex"
+#line 128 "./lexer/go.lex"
 {/* Do nothing */}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 128 "./lexer/go.lex"
+#line 129 "./lexer/go.lex"
 {
   if (yytext[0] < ' '){ /* non-printable char */
     /*yyerror*/ fprintf(stderr,"illegal character: ^%c",yytext[0] + '@'); 
@@ -1063,10 +1064,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 144 "./lexer/go.lex"
+#line 145 "./lexer/go.lex"
 ECHO;
 	YY_BREAK
-#line 1070 "./lexer/lexer.cpp"
+#line 1071 "./lexer/lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2071,7 +2072,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 144 "./lexer/go.lex"
+#line 145 "./lexer/go.lex"
 
 
 /* Function called by (f)lex when EOF is read. If yywrap returns a
