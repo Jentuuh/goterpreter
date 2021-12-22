@@ -60,4 +60,4 @@ func main() {
 
 var reee int = test2()
 var lmao int;
-var lmaobool bool
+var lmaobool bool;

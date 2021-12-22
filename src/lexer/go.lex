@@ -14,7 +14,6 @@ go.lex: lex-file for go basisniveau
   bool insert_semicolon = false;
   void ADJUST(bool insert_semicol = false) { col_nr = lexPos; 
                                              lexPos += yyleng; 
-                                             printf("%s ", yytext);
                                              insert_semicolon = insert_semicol;}
 
 %}
@@ -63,8 +62,8 @@ comma ","
 else "else"
 
 %%
-\n { line_nr++; col_nr = 1; lexPos = 1; if(insert_semicolon){ printf("INSERT "); insert_semicolon = false; return SEMICOLON; } }
-{semicolon} { ADJUST(); printf("%s", insert_semicolon ? "true" : "false"); return SEMICOLON; }
+\n { line_nr++; col_nr = 1; lexPos = 1; if(insert_semicolon){ insert_semicolon = false; return SEMICOLON; } }
+{semicolon} { ADJUST(); return SEMICOLON; }
 {integer} { ADJUST(true); return INTEGER; }
 {boolean} { ADJUST(true); return BOOLEAN; }
 {function} { ADJUST(); return FUNC; }
@@ -126,6 +125,7 @@ else "else"
 
 
 {comment}|{whitespace} {/* Do nothing */}
+
 .      {
   if (yytext[0] < ' '){ /* non-printable char */
     /*yyerror*/ fprintf(stderr,"illegal character: ^%c",yytext[0] + '@'); 
@@ -142,6 +142,12 @@ else "else"
   /* lex read exactly one char; the illegal one */
   fprintf(stderr," at line %d column %d\n", line_nr, (col_nr-1));
 			       }
+
+<<EOF>>  {
+  line_nr++; col_nr = 1; lexPos = 1; 
+  if(insert_semicolon){ printf("INSERT "); insert_semicolon = false; return SEMICOLON; }
+  yyterminate();
+}
 %%
 
 /* Function called by (f)lex when EOF is read. If yywrap returns a
