@@ -1,5 +1,6 @@
 #include "./varspeclist.h"
 #include "../../environment/interp/env.h"
+#include <iostream>
 
 // ============= PairVarSpecList =============
 PairVarSpecList::PairVarSpecList(VarSpec* h, VarSpecList* tail): head{h}, tail{tail}{}
@@ -80,23 +81,34 @@ void PairVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
     // Check if type in var decl corresponds to types in expression list
     for(std::shared_ptr<Type> t : types)
     {
-            // Integer and non-integer
-            if(std::dynamic_pointer_cast<IntegerType>(head->type) != nullptr && std::dynamic_pointer_cast<IntegerType>(t) == nullptr)
-            {
-                    typeErrors.push_back("Type error in VarDecl: Trying to assign non-integer to integer type variable " + identifiers[0] + ".");
-            }
+        // If no type is specified, we don't need to check types
+        if(head->type != nullptr)
+        {
+                // Integer and non-integer
+                if(std::dynamic_pointer_cast<IntegerType>(head->type) != nullptr && std::dynamic_pointer_cast<IntegerType>(t) == nullptr)
+                {
+                        typeErrors.push_back("Type error in VarDecl: Trying to assign non-integer to integer type variable " + identifiers[0] + ".");
+                }
 
-            // Boolean and non-boolean
-            if(std::dynamic_pointer_cast<BooleanType>(head->type) != nullptr && std::dynamic_pointer_cast<BooleanType>(t) == nullptr)
-            {
-                    typeErrors.push_back("Type error in VarDecl: Trying to assign non-boolean to boolean type variable " + identifiers[0] + ".");
-            }
+                // Boolean and non-boolean
+                if(std::dynamic_pointer_cast<BooleanType>(head->type) != nullptr && std::dynamic_pointer_cast<BooleanType>(t) == nullptr)
+                {
+                        typeErrors.push_back("Type error in VarDecl: Trying to assign non-boolean to boolean type variable " + identifiers[0] + ".");
+                }
+        } 
     }
 
     // Add variables to the current scope (without values)
     for (int i = 0; i < identifiers.size(); i++)
     {
-            env.currentScope()->add(identifiers[i], head->type, nullptr);
+            if(head->type != nullptr)
+            {
+                // If we specified a type, make sure we also pass it to the environment
+                env.currentScope()->add(identifiers[i], head->type, nullptr);
+            } else {
+                // If we didn't specify any type, we assign the type of the right-hand expression
+                env.currentScope()->add(identifiers[i], types[i], nullptr);
+            }
     }
 
     tail->typecheck(env, funcEnv, typeErrors);
@@ -186,6 +198,9 @@ void LastVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
     // Check if type in var decl corresponds to types in expression list
     for(std::shared_ptr<Type> t : types)
     {
+        // If no type is specified, we don't need to check types
+        if(last->type != nullptr)
+        {
             // Integer and non-integer
             if(std::dynamic_pointer_cast<IntegerType>(last->type) != nullptr && std::dynamic_pointer_cast<IntegerType>(t) == nullptr)
             {
@@ -197,12 +212,20 @@ void LastVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
             {
                     typeErrors.push_back("Type error in VarDecl: Trying to assign non-boolean to boolean type variable " + identifiers[0] + ".");
             }
+        }
     }
 
     // Add variables to the current scope (without values)
     for (int i = 0; i < identifiers.size(); i++)
     {
-            env.currentScope()->add(identifiers[i], last->type, nullptr);
+        if(last->type != nullptr)
+        {
+        // If we specified a type, make sure we also pass it to the environment
+        env.currentScope()->add(identifiers[i], last->type, nullptr);
+        } else {
+        // If we didn't specify any type, we assign the type of the right-hand expression
+        env.currentScope()->add(identifiers[i], types[i], nullptr);
+        }
     }
 }
 

@@ -27,28 +27,41 @@ void VarSpec::getReferencePairs(std::vector<std::pair<std::string, std::string>>
     // Correct the order of the right identifiers
     std::reverse(rightIdentifiers.begin(), rightIdentifiers.end());
 
-    int index = 0;
-    for (auto i : leftIdentifiers)
+    if(rightIdentifiers.size() == leftIdentifiers.size())
     {
-        for(auto j : rightIdentifiers[index])
+        int index = 0;
+        for (auto i : leftIdentifiers)
         {
-            if(j != "NO_OPERAND_EXPRESSION")
+            for(auto j : rightIdentifiers[index])
             {
-                if(j == "FUNCTION_CALL")
+                if(j != "NO_OPERAND_EXPRESSION")
                 {
-                    referenceGraph.push_back(std::make_pair(leftIdentifiers[index], "FUNC_CALL"));
+                    if(j == "FUNCTION_CALL")
+                    {
+                        referenceGraph.push_back(std::make_pair(i, "FUNC_CALL"));
+                    }
+                    else{
+                        // Add an edge left_id --> right_id to the reference graph
+                        referenceGraph.push_back(std::make_pair(i, j));
+                    }
                 }
                 else{
-                    // Add an edge left_id --> right_id to the reference graph
-                    referenceGraph.push_back(std::make_pair(leftIdentifiers[index], j));
+                    referenceGraph.push_back(std::make_pair(i, "LITERAL_OP"));
                 }
-            }
-            else{
-                referenceGraph.push_back(std::make_pair(leftIdentifiers[index], "LITERAL_OP"));
-            }
 
+            }
+        
+            index++;
         }
-      
-        index++;
     }
+    else if(rightIdentifiers[0][0] == "FUNCTION_CALL") {
+        for (auto i : leftIdentifiers)
+        {
+            referenceGraph.push_back(std::make_pair(i, "FUNC_CALL"));
+        }
+    }
+    else {
+        std::cout << "Error in building reference graph: size of left identifiers must be equal to size of right identifiers, or the right hand expression must be a single function call.";
+    }
+
 }

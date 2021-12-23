@@ -1,11 +1,12 @@
 package main
 
 var reeeee, hehe int = 2, 3
-var b, d, e = a, c + x, 5;
-var a = 3
-
+// var b, d, e = a, c + x, 5;
+var a = 2
+var b int = a
 
 func fibonacci(n int) int {
+
 	if n <= 1 {
 		return n;
 	} else {
@@ -25,9 +26,10 @@ func test2() (int) {
 	};
 }
 
-func test() int {
+func test() (int, int) {
 	fibonacci(3);
-	return 5;
+
+	return 5, 6;
 }
 
 func for_and_if_test() bool {
@@ -59,5 +61,6 @@ func main() {
 }
 
 var reee int = test2()
+var s,o int = test();
 var lmao int;
 var lmaobool bool;

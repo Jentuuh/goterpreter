@@ -299,7 +299,7 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
 
     std::vector<std::shared_ptr<Type>> returnTypes;
     funcEnv.declaredFunctions.getReturnTypes(funcName, returnTypes);
-
+    
 
     // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
     if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
