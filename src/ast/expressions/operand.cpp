@@ -25,6 +25,25 @@ std::shared_ptr<Type> LiteralOperand::typecheck(ScopedEnv& env, FunctionEnv& fun
     }
 }
 
+std::vector<std::shared_ptr<Type>> LiteralOperand::getType(ScopedEnv& env,FunctionEnv& funcEnv)
+{
+    std::vector<std::shared_ptr<Type>> result{};
+    // Integer literal operand
+    if(std::dynamic_pointer_cast<IntLiteral>(literal) != nullptr)
+    {
+        result.push_back(std::make_shared<IntegerType>())
+        return result;
+    }
+
+    // Boolean literal operand
+    if(std::dynamic_pointer_cast<BoolLiteral>(literal) != nullptr)
+    {
+        result.push_back(std::make_shared<BooleanType>());
+        return result;
+    }
+}
+
+
 // ============= VariableOperand =============
 VariableOperand::VariableOperand(Identifier* operandName): operandName{operandName}{}
 
@@ -55,6 +74,18 @@ std::shared_ptr<Type> VariableOperand::typecheck(ScopedEnv& env, FunctionEnv& fu
     // }
 }
 
+std::vector<std::shared_ptr<Type>> VariableOperand::getType(ScopedEnv& env,FunctionEnv& funcEnv)
+{
+    std::vector<std::shared_ptr<Type>> result;
+    if(!env.varExists(operandName->name))
+    {
+        // Return an empty result if the variable does not exist
+        return result;
+    }
+    result.push_back(env.getVarType(operandName->name));
+    return result;
+}
+
 
 // ============= ExprOperand =============
 ExprOperand::ExprOperand(Exp* exp): exp{exp}{};
@@ -67,4 +98,9 @@ std::shared_ptr<Literal> ExprOperand::interp(ScopedEnv& env, FunctionEnv& funcEn
 std::shared_ptr<Type> ExprOperand::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
     return exp->typecheck(env, funcEnv, typeErrors);
+}
+
+std::vector<std::shared_ptr<Type>> ExprOperand::getType(ScopedEnv& env,FunctionEnv& funcEnv)
+{
+    return exp->getType(funcEnv);
 }

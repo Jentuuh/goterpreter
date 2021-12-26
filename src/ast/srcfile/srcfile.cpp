@@ -13,6 +13,7 @@ void SrcFile::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     }
     if(topLvlDeclarations != NULL)
     {
+        topLvlDeclarations->preBuildFunctionEnvironment(funcEnv);
         topLvlDeclarations->interp(env, funcEnv);
     }
 
@@ -40,6 +41,8 @@ void SrcFile::typecheck(ScopedEnv& varTypeEnv, FunctionEnv& funcTypeEnv, std::ve
             std::cout << p.first << "-->" << p.second << std::endl;
         }
 
+        // Read in all function declarations first, these might be required for other top-level var declarations
+        topLvlDeclarations->preBuildFunctionEnvironment(funcTypeEnv);
         topLvlDeclarations->typecheck(varTypeEnv, funcTypeEnv, typeErrors);
     }
 }

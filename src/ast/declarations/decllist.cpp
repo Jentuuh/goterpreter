@@ -32,6 +32,19 @@ void PairDeclList::refAnalysis(std::vector<std::pair<std::string, std::string>>&
     tail->refAnalysis(referenceGraph);
 }
 
+void PairDeclList::preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv) 
+{
+    head->preBuildFunctionEnvironment(preBuiltEnv);
+    tail->preBuildFunctionEnvironment(preBuiltEnv);
+}
+
+void PairDeclList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+{
+
+}
+
+
+
 // ============= LastDeclList =============
 LastDeclList::LastDeclList(TopLevelDecl* l): last{l}{}
 
@@ -56,4 +69,15 @@ void LastDeclList::refAnalysis(std::vector<std::pair<std::string, std::string>>&
     {
         std::dynamic_pointer_cast<VarDecl>(last)->varspecs->buildReferenceGraph(referenceGraph);
     }
+}
+
+void LastDeclList::preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv) 
+{
+    last->preBuildFunctionEnvironment(preBuiltEnv);
+}
+
+
+void LastDeclList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+{
+
 }

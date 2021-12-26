@@ -4,6 +4,7 @@ var reeeee, hehe int = 2, 3
 // var b, d, e = a, c + x, 5;
 var a = 2
 var b int = a
+var e int = test2()
 
 func fibonacci(n int) int {
 

@@ -1,7 +1,10 @@
 #include "./functiontable.h"
 #include <iostream>
 
-FuncTableEntry::FuncTableEntry(std::shared_ptr<FunctionDecl> f): funcDecl{f}{}
+FuncTableEntry::FuncTableEntry(std::shared_ptr<FunctionDecl> f): funcDecl{f}
+{ 
+    count = 1; 
+}
 
 FunctionTable::FunctionTable()
 {
@@ -11,7 +14,14 @@ FunctionTable::FunctionTable()
 
 void FunctionTable::add(std::string i, std::shared_ptr<FunctionDecl> f)
 {
-    entries.insert(std::pair<std::string, std::shared_ptr<FuncTableEntry>>(i,std::make_shared<FuncTableEntry>(f)));
+    std::pair<std::map<std::string,std::shared_ptr<FuncTableEntry>>::iterator,bool> ret;
+    ret = entries.insert(std::pair<std::string, std::shared_ptr<FuncTableEntry>>(i,std::make_shared<FuncTableEntry>(f)));
+
+    if (ret.second==false)
+    {
+        std::cout << "Function " << i << " already existed, increasing appearance count." << std::endl;
+        entries.at(i)->count++;
+    }
 }
 
 void FunctionTable::addReturnValues(std::string i, std::vector<std::shared_ptr<Literal>> values)

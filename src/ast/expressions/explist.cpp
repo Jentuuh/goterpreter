@@ -55,6 +55,17 @@ void LastExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<st
     }
 }
 
+void LastExpList::getTypes(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer)
+{
+    std::vector<std::shared_ptr<Type> types = last->getType(env, funcEnv);
+    std::reverse(types.begin(), types.end());
+
+    for(auto t: types)
+    {
+        typeContainer.push_back(t);
+    }
+}
+
 
 // ============= PairExpList =============
 PairExpList::PairExpList(Exp* h, ExpList* t): head{h}, tail{t}{}
@@ -116,4 +127,16 @@ void PairExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<st
     std::reverse(typeContainer.begin(), typeContainer.end());
 }
 
+void PairExpList::getTypes(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer)
+{
+    std::vector<std::shared_ptr<Type> types = head->getType(env, funcEnv);
+    std::reverse(types.begin(), types.end());
+    
+    for(auto t: types)
+    {
+        typeContainer.push_back(t);
+    }
+
+    tail->getTypes(env, funcEnv, typeContainer);
+}
 

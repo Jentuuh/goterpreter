@@ -15,6 +15,18 @@ void VarDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::s
         varspecs->typecheck(env, funcEnv,typeErrors);
 }
 
+void VarDecl::preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv)
+{
+        // Do nothing (this is not a function declaration)
+        return;
+}
+
+void VarDecl::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+{
+      
+}
+
+
 // ============= FunctionDecl =============
 FunctionDecl::FunctionDecl(Identifier* funcName, Signature* sign, Block* body): funcName{funcName}, funcSign{sign}, funcBody{body}{}
 FunctionDecl::FunctionDecl(std::shared_ptr<Identifier> funcName, std::shared_ptr<Signature> sign, std::shared_ptr<Block> body): funcName{funcName}, funcSign{sign}, funcBody{body}{}
@@ -29,7 +41,7 @@ void FunctionDecl::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 void FunctionDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
         // Check if function is already defined
-        if(funcEnv.lookupVar(funcName->name) != nullptr)
+        if(funcEnv.lookupVar(funcName->name) != nullptr && funcEnv.lookupVar(funcName->name)->count > 1)
         {
                 typeErrors.push_back("Type error in FunctionDecl: Trying to declare function " + funcName->name + " but " + funcName->name + " was already declared.");
                 return;
@@ -73,5 +85,16 @@ void FunctionDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
 
         env.popScope();
         funcEnv.popFunc();
+}
 
+
+void FunctionDecl::preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv)
+{
+        preBuiltEnv.declaredFunctions.add(funcName->name, std::make_shared<FunctionDecl>(funcName, funcSign, funcBody));
+}
+
+void FunctionDecl::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+{
+        // Do nothing, a function declaration does not contribute to the global variable environment.
+        return;
 }

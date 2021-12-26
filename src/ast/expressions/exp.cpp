@@ -93,6 +93,14 @@ std::shared_ptr<Type> UnaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, 
 }
 
 
+std::vector<std::shared_ptr<Type>> UnaryExp::getType(ScopedEnv& env,FunctionEnv& funcEnv) override;
+{
+    std::shared_ptr<Type> resultType = unaryExp->getType(funcEnv);
+    std::vector<std::shared_ptr<Type>> result; 
+    result.push_back(resultType);
+    return result;
+}
+
 
 // ============= FunctionCall =============
 
@@ -241,6 +249,31 @@ void FunctionCall::getRefNames(std::vector<std::string>& refContainer)
     refContainer.push_back("FUNCTION_CALL");
 }
 
+std::vector<std::shared_ptr<Type>> FunctionCall::getType(ScopedEnv& env,FunctionEnv& funcEnv) override;
+{
+    std::string funcName = primaryExp->getOperandName();
+
+    std::shared_ptr<FuncTableEntry> functionEntry = funcEnv.lookupVar(funcName);
+
+    // Check if function exists
+    if(functionEntry == nullptr)
+    {
+        std::vector<std::shared_ptr<Type>> empty{};
+        return empty;
+    }
+
+    if(functionEntry->funcDecl->funcSign->result == nullptr)
+    {
+        std::vector<std::shared_ptr<Type>> empty {};
+        return empty;
+    } else {
+        std::vector<std::shared_ptr<Type>> returnTypes{};
+        functionEntry->funcDecl->funcSign->result->getTypes(returnTypes);
+        return returnTypes;
+    }
+}
+
+
 // ============= OperandExp =============
 
 OperandExp::OperandExp(Operand* operand): operand{operand}{}
@@ -270,6 +303,13 @@ std::shared_ptr<Type> OperandExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv
 {
     return operand->typecheck(env, funcEnv, typeErrors);
 }
+
+
+std::vector<std::shared_ptr<Type>> OperandExp::getType(ScopedEnv& env,FunctionEnv& funcEnv) override;
+{
+    return operand->
+}
+
 
 // ============= BinaryExp =============
 BinaryExp::BinaryExp(Exp* left, Exp* right, BinaryOperator op): left{left}, right{right}, op{op}{}
@@ -479,4 +519,10 @@ std::shared_ptr<Type> BinaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv,
         typeErrors.push_back("Type error in BinExp: Unknown operator.");
         break;
     }
+}
+
+
+std::vector<std::shared_ptr<Type>> BinaryExp::getType(ScopedEnv& env,FunctionEnv& funcEnv) override;
+{
+
 }
