@@ -4,15 +4,6 @@
 // ============= LastParamList =============
 LastParamList::LastParamList(ParameterDecl* last):last{last}{}
 
-int LastParamList::length()
-{
-    // TODO: implement
-}
-
-void LastParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
-{
-    // TODO: implement
-}
 
 void LastParamList::getIdentifiersWithTypes(std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>>& container)
 {
@@ -29,15 +20,6 @@ void LastParamList::getIdentifiers(std::vector<std::string>& container)
 // ============= PairParamList =============
 PairParamList::PairParamList(ParameterDecl* head, ParameterList* tail): head{head}, tail{tail}{};
 
-int PairParamList::length()
-{
-    // TODO: implement
-}
-
-void PairParamList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
-{
-    // TODO: implement
-}
 
 void PairParamList::getIdentifiersWithTypes(std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>>& container)
 {

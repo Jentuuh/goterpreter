@@ -16,6 +16,5 @@ struct VarSpec{
     std::shared_ptr<ExpList> expList;
 
     VarSpec(IdentifierList* idList, Type* type, ExpList* expList);
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
     void getReferencePairs(std::vector<std::pair<std::string, std::string>>& referenceGraph);
 };

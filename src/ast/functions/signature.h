@@ -12,5 +12,4 @@ struct Signature{
     std::shared_ptr<Result> result;
 
     Signature(ParameterList* params, Result* res);
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

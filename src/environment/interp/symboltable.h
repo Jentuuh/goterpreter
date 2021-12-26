@@ -4,11 +4,11 @@
 #include <memory>
 #include "../../ast/types/type.h"
 #include "../../ast/literals/literal.h"
-// TODO: Make sure you put in `Types` and `Literals` in this table instead of `ints`!
 
 struct TableEntry{
     std::shared_ptr<Type> type;
     std::shared_ptr<Literal> value;
+    int count;
 
     TableEntry(std::shared_ptr<Type> t, std::shared_ptr<Literal> v);
 };

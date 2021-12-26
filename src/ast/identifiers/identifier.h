@@ -9,5 +9,4 @@ struct Identifier{
     std::string name;
 
     Identifier(char* name);
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

@@ -5,10 +5,6 @@
 // ============= LastExpList =============
 LastExpList::LastExpList(Exp* l): last{l}{}
 
-int LastExpList::length()
-{
-    // TODO: implement
-}
 
 void LastExpList::getOperandNames(std::vector<std::string>& names)
 {
@@ -49,7 +45,6 @@ void LastExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<st
         std::vector<std::shared_ptr<Type>> returnTypes = std::dynamic_pointer_cast<FunctionCall>(last)->typeCheckFunction(env, funcEnv, typeErrors);
         for (std::shared_ptr<Type> r : returnTypes)
         {
-            if(std::dynamic_pointer_cast<BooleanType>(r) != nullptr)
             typeContainer.push_back(r);
         }
     }
@@ -57,7 +52,7 @@ void LastExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<st
 
 void LastExpList::getTypes(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer)
 {
-    std::vector<std::shared_ptr<Type> types = last->getType(env, funcEnv);
+    std::vector<std::shared_ptr<Type>> types = last->getType(env, funcEnv);
     std::reverse(types.begin(), types.end());
 
     for(auto t: types)
@@ -70,10 +65,6 @@ void LastExpList::getTypes(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std
 // ============= PairExpList =============
 PairExpList::PairExpList(Exp* h, ExpList* t): head{h}, tail{t}{}
 
-int PairExpList::length()
-{
-    // TODO: implement
-}
 
 void PairExpList::getOperandNames(std::vector<std::string>& names)
 {
@@ -129,7 +120,7 @@ void PairExpList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<st
 
 void PairExpList::getTypes(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer)
 {
-    std::vector<std::shared_ptr<Type> types = head->getType(env, funcEnv);
+    std::vector<std::shared_ptr<Type>> types = head->getType(env, funcEnv);
     std::reverse(types.begin(), types.end());
     
     for(auto t: types)

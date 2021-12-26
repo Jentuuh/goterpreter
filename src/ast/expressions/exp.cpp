@@ -29,7 +29,6 @@ std::shared_ptr<Literal> UnaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
                 std::dynamic_pointer_cast<BoolLiteral>(intermediateResult)->opposite();
                 break;
             default:
-            // TODO: Throw error(wrong operator?) in typecheck!
             break;
         }
     }
@@ -46,7 +45,6 @@ std::shared_ptr<Literal> UnaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
             std::dynamic_pointer_cast<IntLiteral>(intermediateResult)->opposite();
             break;
         default:
-            // TODO: Throw error(wrong operator?) in typecheck!
             break;
         }
     }
@@ -93,12 +91,9 @@ std::shared_ptr<Type> UnaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, 
 }
 
 
-std::vector<std::shared_ptr<Type>> UnaryExp::getType(ScopedEnv& env,FunctionEnv& funcEnv) override;
+std::vector<std::shared_ptr<Type>> UnaryExp::getType(ScopedEnv& env,FunctionEnv& funcEnv)
 {
-    std::shared_ptr<Type> resultType = unaryExp->getType(funcEnv);
-    std::vector<std::shared_ptr<Type>> result; 
-    result.push_back(resultType);
-    return result;
+    return unaryExp->getType(env, funcEnv);
 }
 
 
@@ -108,7 +103,6 @@ FunctionCall::FunctionCall(Exp* primExp, ExpList* expList): primaryExp{primExp},
 
 std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: Typechecker: Check if function exists + if parameters have correct type!!
     // Get the name of the function that's being called 
     std::string funcName = primaryExp->getOperandName();
 
@@ -117,7 +111,7 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
 
     // Evaluate the parameters
     std::vector<std::shared_ptr<Literal>> argValues;
-    if(arguments.get() != nullptr)
+    if(arguments != nullptr)
     {
         arguments->interp(env, funcEnv, argValues);
     }
@@ -175,7 +169,7 @@ std::vector<std::shared_ptr<Type>> FunctionCall::typeCheckFunction(ScopedEnv& en
 
     // Typecheck the arguments!
     std::vector<std::shared_ptr<Type>> argTypes;
-    if(arguments.get() != nullptr)
+    if(arguments != nullptr)
     {  
         arguments->typecheck(env, funcEnv, argTypes, typeErrors);
     }
@@ -212,7 +206,6 @@ std::vector<std::shared_ptr<Type>> FunctionCall::typeCheckFunction(ScopedEnv& en
     // Pop function from call stack
     funcEnv.popFunc();
 
-    // TODO: typecheck return statement with getTypes()!!!
     if(funcEnv.lookupVar(funcName)->funcDecl->funcSign->result == nullptr)
     {
         std::vector<std::shared_ptr<Type>> empty {};
@@ -249,7 +242,7 @@ void FunctionCall::getRefNames(std::vector<std::string>& refContainer)
     refContainer.push_back("FUNCTION_CALL");
 }
 
-std::vector<std::shared_ptr<Type>> FunctionCall::getType(ScopedEnv& env,FunctionEnv& funcEnv) override;
+std::vector<std::shared_ptr<Type>> FunctionCall::getType(ScopedEnv& env,FunctionEnv& funcEnv)
 {
     std::string funcName = primaryExp->getOperandName();
 
@@ -305,9 +298,9 @@ std::shared_ptr<Type> OperandExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv
 }
 
 
-std::vector<std::shared_ptr<Type>> OperandExp::getType(ScopedEnv& env,FunctionEnv& funcEnv) override;
+std::vector<std::shared_ptr<Type>> OperandExp::getType(ScopedEnv& env,FunctionEnv& funcEnv)
 {
-    return operand->
+    return operand->getType(env, funcEnv);
 }
 
 
@@ -328,7 +321,6 @@ void BinaryExp::getRefNames(std::vector<std::string>& refContainer)
 
 std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    // TODO: TYPECHECKING, also check, in case there are functions, that the function doesn't return more than 2 values!!!
     switch (op)
     {
         // EQ_BIN and NE_BIN can be used on both integers and booleans
@@ -388,9 +380,9 @@ std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         break;
 
     default:
-        // TODO: Throw error(wrong operator?) in typecheck!
         break;
     }
+    return nullptr;
 }
 
 
@@ -517,12 +509,74 @@ std::shared_ptr<Type> BinaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv,
 
     default:
         typeErrors.push_back("Type error in BinExp: Unknown operator.");
+        return nullptr;
         break;
     }
 }
 
 
-std::vector<std::shared_ptr<Type>> BinaryExp::getType(ScopedEnv& env,FunctionEnv& funcEnv) override;
+std::vector<std::shared_ptr<Type>> BinaryExp::getType(ScopedEnv& env,FunctionEnv& funcEnv)
 {
+    std::vector<std::shared_ptr<Type>> result{};
 
+    switch (op)
+    {
+       // EQ_BIN and NE_BIN can be used on both integers and booleans
+        case EQ_BIN:
+
+            result.push_back(std::make_shared<BooleanType>());
+            break;
+
+        case NE_BIN:
+
+            result.push_back(std::make_shared<BooleanType>());
+            break;
+
+    case LT_BIN:
+
+        result.push_back(std::make_shared<BooleanType>());
+        break;
+    case LE_BIN:
+    
+        result.push_back(std::make_shared<BooleanType>());
+        break;
+    case GT_BIN:
+
+        result.push_back(std::make_shared<BooleanType>());
+        break;
+    case GE_BIN:
+
+        result.push_back(std::make_shared<BooleanType>());
+        break;
+    case OR_BIN:
+
+        result.push_back(std::make_shared<BooleanType>());
+        break;
+    case AND_BIN:
+
+        result.push_back(std::make_shared<BooleanType>());
+        break;
+
+    // INTEGERS
+    case MUL_BIN:
+
+        result.push_back(std::make_shared<IntegerType>());
+        break;
+    case DIV_BIN:
+
+        result.push_back(std::make_shared<IntegerType>());
+        break;
+    case PLUS_BIN:  
+
+        result.push_back(std::make_shared<IntegerType>());
+        break;
+    case MIN_BIN:
+
+        result.push_back(std::make_shared<IntegerType>());
+        break;
+
+    default:
+        break;
+    }
+    return result;
 }

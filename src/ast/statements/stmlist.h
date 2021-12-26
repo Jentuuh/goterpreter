@@ -12,7 +12,6 @@ struct FunctionEnv;
 struct Stm;
 
 struct StmList{
-    virtual int length() = 0;
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
     virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
     virtual int amountPaths() = 0;
@@ -23,7 +22,7 @@ struct LastStmList:StmList{
     std::shared_ptr<Stm> last;
 
     LastStmList(Stm* last);
-    int length() override;
+    
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     int amountPaths() override;
@@ -35,7 +34,7 @@ struct PairStmList:StmList{
     std::shared_ptr<StmList> tail; 
 
     PairStmList(Stm* head, StmList* tail);
-    int length() override;
+
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     int amountPaths() override;

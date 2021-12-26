@@ -5,10 +5,6 @@
 // ============= PairDeclList =============
 PairDeclList::PairDeclList(TopLevelDecl* h, DeclList* t): head{h}, tail{t}{}
 
-int PairDeclList::length()
-{
-    // TODO: implement
-}
 
 void PairDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {    
@@ -38,9 +34,10 @@ void PairDeclList::preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv)
     tail->preBuildFunctionEnvironment(preBuiltEnv);
 }
 
-void PairDeclList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+void PairDeclList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv)
 {
-
+    head->preBuildGlobalsEnvironment(preBuiltEnv, funcEnv);
+    tail->preBuildGlobalsEnvironment(preBuiltEnv, funcEnv);
 }
 
 
@@ -48,10 +45,6 @@ void PairDeclList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
 // ============= LastDeclList =============
 LastDeclList::LastDeclList(TopLevelDecl* l): last{l}{}
 
-int LastDeclList::length()
-{
-    // TODO: implement
-}
 
 void LastDeclList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
@@ -77,7 +70,7 @@ void LastDeclList::preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv)
 }
 
 
-void LastDeclList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+void LastDeclList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv)
 {
-
+    last->preBuildGlobalsEnvironment(preBuiltEnv, funcEnv);
 }

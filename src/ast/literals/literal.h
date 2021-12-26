@@ -6,7 +6,6 @@ struct ScopedEnv;
 struct FunctionEnv;
 
 struct Literal{
-    virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
     virtual void opposite() = 0;
     virtual void printValue() = 0;
 };
@@ -17,7 +16,6 @@ struct BoolLiteral: Literal{
     BoolLiteral(bool value);
 
     void opposite() override;
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void printValue() override;
 };
 
@@ -27,7 +25,6 @@ struct IntLiteral: Literal{
     IntLiteral(int value);
 
     void opposite() override;
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void printValue() override;
 };
 

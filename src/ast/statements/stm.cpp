@@ -40,7 +40,7 @@ IfStm::IfStm(Stm* simpleStm, Exp* cond, Block* ifBlock, Block* elseBlock, Stm* n
 void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // First, execute simple statement if there is any
-    if(simpleStm.get() != nullptr)
+    if(simpleStm != nullptr)
     {
         simpleStm->interp(env, funcEnv);
     }
@@ -54,12 +54,12 @@ void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     else
     {
         // Execute else block (if there is one)
-        if(elseBlock.get() != nullptr)
+        if(elseBlock != nullptr)
         {
             elseBlock->interp(env, funcEnv);
         }
         // Execute nested if statement (if there is one)
-        if(nestedIfStm.get() != nullptr)
+        if(nestedIfStm != nullptr)
         {
             nestedIfStm->interp(env, funcEnv);
         }
@@ -70,7 +70,7 @@ void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 void IfStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
 
-    if(simpleStm.get() != nullptr)
+    if(simpleStm != nullptr)
     {
         simpleStm->typecheck(env, funcEnv, typeErrors);
     }
@@ -85,11 +85,11 @@ void IfStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::str
     // Typecheck if-block
     ifBlock->typecheck(env, funcEnv, typeErrors);
     // Typecheck else-block and nested stm (if there are any)
-    if(elseBlock.get() != nullptr)
+    if(elseBlock != nullptr)
     {
         elseBlock->typecheck(env, funcEnv, typeErrors);
     }
-    if(nestedIfStm.get() != nullptr)
+    if(nestedIfStm != nullptr)
     {
         nestedIfStm->typecheck(env, funcEnv, typeErrors);
     }
@@ -177,7 +177,7 @@ ForClauseStm::ForClauseStm(ForClause* forclause, Block* body): forclause{forclau
 void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // We execute the init statement once before evaluating the condition (if there is one)
-    if(forclause->initStm.get() != nullptr)
+    if(forclause->initStm != nullptr)
         forclause->initStm->interp(env, funcEnv);
     
     env.pushScope(false);
@@ -187,7 +187,7 @@ void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         body->interp(env, funcEnv);
 
         // Update condition variable with poststatement (if there is one)
-        if(forclause->postStm.get() != nullptr)
+        if(forclause->postStm != nullptr)
             forclause->postStm->interp(env, funcEnv);
     }
     env.popScope(false);
@@ -196,7 +196,7 @@ void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 void ForClauseStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
     // Typecheck init statement (if there is one)
-    if(forclause->initStm.get() != nullptr)
+    if(forclause->initStm != nullptr)
         forclause->initStm->typecheck(env, funcEnv, typeErrors);
 
     env.pushScope(false);
@@ -209,7 +209,7 @@ void ForClauseStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
     body->typecheck(env, funcEnv, typeErrors);
 
     // Typecheck post statement (if there is one)
-    if(forclause->postStm.get() != nullptr)
+    if(forclause->postStm != nullptr)
         forclause->postStm->typecheck(env, funcEnv, typeErrors);
 
     env.popScope(false);
@@ -261,7 +261,6 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     std::vector<std::shared_ptr<Literal>> returnValues;
 
-    // TODO: Typecheck! Check if type matches return type of function!
     std::string funcName = funcEnv.currentFunc();
     std::shared_ptr<FuncTableEntry> funcDetails = funcEnv.lookupVar(funcName);
 
@@ -283,7 +282,7 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     {
         // 3. If not, return whatever expressionlist is behind the return statement
         // 4. If there isn't anything, return an empty list
-        if(expressionList.get() != nullptr)
+        if(expressionList != nullptr)
         {
             expressionList->interp(env, funcEnv, returnValues);
             funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
@@ -313,11 +312,14 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
             typeErrors.push_back("Type error in ReturnStm: " + std::to_string(returnTypes.size()) + " return values expected for function " + funcName + " but " + std::to_string(returnValueIdentifiers.size()) + " return values found.");
         }
 
+        std::reverse(returnTypes.begin(), returnTypes.end());
+
         int typeCounter = 0;
         for(std::string r : returnValueIdentifiers)
         {
             // Check if return values are defined
-            if(!env.varExists(r))
+            std::pair<int, bool> varExists = env.varExists(r);
+            if(varExists.first == 0)
             {
                 typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + r + "' but '" + r + "' is not defined.");
             }
@@ -331,13 +333,14 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
             {
                 typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + r + "' of type Boolean, but a non-boolean was returned.");
             }
+            typeCounter++;
         }
     }
     else
     {
         // 3. If not, return whatever expressionlist is behind the return statement
         // 4. If there isn't anything, return an empty list
-        if(expressionList.get() != nullptr)
+        if(expressionList != nullptr)
         {   
             std::vector<std::shared_ptr<Type>> expTypes;
             expressionList->typecheck(env, funcEnv, expTypes, typeErrors);
@@ -360,6 +363,7 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
                     {
                         typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + std::to_string(typeCounter) + "' of type Integer, but a non-integer was returned.");
                     }
+                    typeCounter++;
                 }
             }
         } else {
@@ -404,7 +408,6 @@ void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         // Update all variables on the left side with this value
         for(std::string n : operandNames)
         {
-            // TODO: typecheck that the operatorAssign operators are only used on integers!!!
             switch (assignOp)
             {
                 case ASSIGN_OP:
@@ -432,7 +435,6 @@ void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     {
         if (operandNames.size() == newValues.size())
         {
-            // TODO: type checking: Check if every variable exists and has the correct type assigned to them!
             // Update each n'th variable with the n'th value
             for(int i = 0; i < operandNames.size(); i++)
             {
@@ -459,10 +461,6 @@ void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
                 }
             }
         }
-        else
-        {
-            // TODO: ERROR: LENGTH EXPRESSION LIST ON LEFT SIZE DOES NOT MATCH LENGTH ON RIGHT SIDE (or does this need to happen in type checker?)
-        }
     }
 }
 
@@ -486,7 +484,8 @@ void AssignmentStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<
         }
         else{
             // Check if left-hand expressions are defined in this scope
-            if(!env.varExists(n))
+            std::pair<int, bool> varExists = env.varExists(n);
+            if(varExists.first == 0)
             {
                 typeErrors.push_back("Type error in AssignmentStm: variable " + n + " was not defined.");
             }
@@ -601,7 +600,6 @@ void IncDecStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     switch (op)
     {
         case PLUSPLUS:
-            // TODO: check: does this work? 
             std::dynamic_pointer_cast<IntLiteral>(env.lookupVar(varName))->value++;
             break;
             
@@ -626,7 +624,8 @@ void IncDecStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
         }
         else{
             // Check if left-hand expressions are defined in this scope
-            if(!env.varExists(varName))
+            std::pair<int, bool> varExists = env.varExists(varName);
+            if(varExists.first == 0)
             {
                 typeErrors.push_back("Type error in IncDecStm: variable " + varName + " was not defined.");
             }
@@ -658,7 +657,6 @@ void PrintStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     std::vector<std::shared_ptr<Literal>> values;
     expressions->interp(env, funcEnv, values);
-    std::reverse(values.begin(), values.end());
 
     for (std::shared_ptr<Literal> v : values)
     {

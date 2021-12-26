@@ -5,10 +5,6 @@
 // ============= PairVarSpecList =============
 PairVarSpecList::PairVarSpecList(VarSpec* h, VarSpecList* tail): head{h}, tail{tail}{}
 
-int PairVarSpecList::length()
-{
-
-}
 
 void PairVarSpecList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {   
@@ -18,7 +14,7 @@ void PairVarSpecList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
         // Get values from the expression list on the right
         std::vector<std::shared_ptr<Literal>> values;
-        if(head->expList.get() != nullptr)
+        if(head->expList != nullptr)
         {
                 head->expList->interp(env, funcEnv, values);
         }
@@ -58,17 +54,18 @@ void PairVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
     std::vector<std::string> identifiers;
     head->idList->getIdentifierStrings(identifiers);
 
-    // TODO: CHECK IF IDENTIFIERS DIDN'T ALREADY EXIST IN CURRENT/GLOBAL SCOPE!
     for (std::string i : identifiers)
     {
-            if(env.varExists(i))
+            std::pair<int, bool> varExists = env.varExists(i);
+            // Global variables can have an appearance count of 2, local variables only of 1 (because of the prebuilt environment)
+            if((varExists.first >= 2 && varExists.second) || (varExists.first >= 1 && !varExists.second))
                     typeErrors.push_back("Type error in VarDecl: Variable '" + i + "' was already declared in the current scope.");
     }
 
 
     // Get values from the expression list on the right
     std::vector<std::shared_ptr<Type>> types;
-    if(head->expList.get() != nullptr)
+    if(head->expList != nullptr)
     {
             head->expList->typecheck(env, funcEnv, types, typeErrors);
     }
@@ -106,8 +103,13 @@ void PairVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
                 // If we specified a type, make sure we also pass it to the environment
                 env.currentScope()->add(identifiers[i], head->type, nullptr);
             } else {
-                // If we didn't specify any type, we assign the type of the right-hand expression
-                env.currentScope()->add(identifiers[i], types[i], nullptr);
+                if(i < types.size())
+                {
+                        // If we didn't specify any type, we assign the type of the right-hand expression
+                        env.currentScope()->add(identifiers[i], types[i], nullptr);
+                } else {
+                        env.currentScope()->add(identifiers[i], nullptr, nullptr);
+                }
             }
     }
 
@@ -120,7 +122,7 @@ void PairVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
         tail->buildReferenceGraph(referenceGraph);
  }
 
-void PairVarSpecList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+void PairVarSpecList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv)
 {
         // Get variable identifiers on the left
         std::vector<std::string> identifiers;
@@ -128,9 +130,9 @@ void PairVarSpecList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
 
         // Get values from the expression list on the right
         std::vector<std::shared_ptr<Type>> types;
-        if(head->expList.get() != nullptr)
+        if(head->expList != nullptr)
         {
-                head->expList->typecheck(env, funcEnv, types, typeErrors);
+                head->expList->getTypes(preBuiltEnv, funcEnv, types);
         }
 
        // Add variables to the current scope (without values)
@@ -139,21 +141,24 @@ void PairVarSpecList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
                 if(head->type != nullptr)
                 {
                         // If we specified a type, make sure we also pass it to the environment
-                        env.currentScope()->add(identifiers[i], head->type, nullptr);
+                        preBuiltEnv.currentScope()->add(identifiers[i], head->type, nullptr);
                 } else {
-                        // If we didn't specify any type, we assign the type of the right-hand expression
-                        env.currentScope()->add(identifiers[i], types[i], nullptr);
+                        if(i < types.size())
+                        {
+                                // If we didn't specify any type, we assign the type of the right-hand expression
+                                preBuiltEnv.currentScope()->add(identifiers[i], types[i], nullptr);
+                        } else {
+                                preBuiltEnv.currentScope()->add(identifiers[i], nullptr, nullptr);
+                        }
                 }
         }
+
+        tail->preBuildGlobalsEnvironment(preBuiltEnv, funcEnv);
 }
 
 // ============= LastVarSpecList =============
 LastVarSpecList::LastVarSpecList(VarSpec* l): last{l}{}
 
-int LastVarSpecList::length()
-{
-
-}
 
 void LastVarSpecList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
@@ -163,7 +168,7 @@ void LastVarSpecList::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
         // Get values from the expression list on the right
         std::vector<std::shared_ptr<Literal>> values;
-        if(last->expList.get() != nullptr)
+        if(last->expList != nullptr)
         {
                 last->expList->interp(env, funcEnv, values);
         }
@@ -201,24 +206,24 @@ void LastVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
     std::vector<std::string> identifiers;
     last->idList->getIdentifierStrings(identifiers);
 
-    // TODO: CHECK IF IDENTIFIERS DIDN'T ALREADY EXIST IN CURRENT/GLOBAL SCOPE!
     for (std::string i : identifiers)
     {
-            if(env.varExists(i))
+            std::pair<int, bool> varExists = env.varExists(i);
+            if((varExists.first >= 2 && varExists.second) || (varExists.first >= 1 && !varExists.second))
                     typeErrors.push_back("Type error in VarDecl: Variable '" + i + "' was already declared in the current scope.");
     }
 
 
     // Get values from the expression list on the right
     std::vector<std::shared_ptr<Type>> types;
-    if(last->expList.get() != nullptr)
+    if(last->expList != nullptr)
     {
             last->expList->typecheck(env, funcEnv, types, typeErrors);
     }
 
     if(identifiers.size() != types.size() && types.size() != 0)
     {
-            typeErrors.push_back("Type error in VarDecl: The amount of variables on the left side of the assignment operator should be equal to the amount of expressions on the right.");  
+            typeErrors.push_back("Type error in VarDecl: The amount of variables on the left side of the assignment operator should be equal to the amount of expressions on the right. Left size: " + std::to_string(identifiers.size()) + " Right size: " + std::to_string(types.size()));  
     }         
 
     // Check if type in var decl corresponds to types in expression list
@@ -249,8 +254,13 @@ void LastVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
         // If we specified a type, make sure we also pass it to the environment
         env.currentScope()->add(identifiers[i], last->type, nullptr);
         } else {
-        // If we didn't specify any type, we assign the type of the right-hand expression
-        env.currentScope()->add(identifiers[i], types[i], nullptr);
+                if(i < types.size())
+                {
+                        // If we didn't specify any type, we assign the type of the right-hand expression
+                        env.currentScope()->add(identifiers[i], types[i], nullptr);
+                } else {
+                        env.currentScope()->add(identifiers[i], nullptr, nullptr);
+                }
         }
     }
 }
@@ -260,7 +270,34 @@ void LastVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
         last->getReferencePairs(referenceGraph);
  }
 
-void LastVarSpecList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+void LastVarSpecList::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv)
 {
+       // Get variable identifiers on the left
+        std::vector<std::string> identifiers;
+        last->idList->getIdentifierStrings(identifiers);
 
+        // Get values from the expression list on the right
+        std::vector<std::shared_ptr<Type>> types;
+        if(last->expList != nullptr)
+        {
+                last->expList->getTypes(preBuiltEnv, funcEnv, types);
+        }
+
+       // Add variables to the current scope (without values)
+        for (int i = 0; i < identifiers.size(); i++)
+        {
+                if(last->type != nullptr)
+                {
+                        // If we specified a type, make sure we also pass it to the environment
+                        preBuiltEnv.currentScope()->add(identifiers[i], last->type, nullptr);
+                } else {
+                        if(i < types.size())
+                        {
+                                // If we didn't specify any type, we assign the type of the right-hand expression
+                                preBuiltEnv.currentScope()->add(identifiers[i], types[i], nullptr);
+                        } else {
+                                preBuiltEnv.currentScope()->add(identifiers[i], nullptr, nullptr);
+                        }
+                }
+        }
 }

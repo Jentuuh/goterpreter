@@ -17,9 +17,9 @@ void FunctionTable::add(std::string i, std::shared_ptr<FunctionDecl> f)
     std::pair<std::map<std::string,std::shared_ptr<FuncTableEntry>>::iterator,bool> ret;
     ret = entries.insert(std::pair<std::string, std::shared_ptr<FuncTableEntry>>(i,std::make_shared<FuncTableEntry>(f)));
 
-    if (ret.second==false)
+    // Checks if function already existed
+    if (!ret.second)
     {
-        std::cout << "Function " << i << " already existed, increasing appearance count." << std::endl;
         entries.at(i)->count++;
     }
 }

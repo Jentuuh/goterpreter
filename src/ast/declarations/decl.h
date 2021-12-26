@@ -17,14 +17,14 @@ struct TopLevelDecl{
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
     virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
     virtual void preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv) = 0;
-    virtual void preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv) = 0;
+    virtual void preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv) = 0;
 };
 
 struct Decl:TopLevelDecl{
     virtual void interp(ScopedEnv& env, FunctionEnv& funcEnv) = 0;
     virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
     virtual void preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv) = 0;
-    virtual void preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv) = 0;
+    virtual void preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv) = 0;
 };
 
 struct VarDecl:Decl{
@@ -35,7 +35,7 @@ struct VarDecl:Decl{
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     void preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv) override;
-    void preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv) override;
+    void preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv) override;
 };
 
 struct FunctionDecl: TopLevelDecl{
@@ -49,5 +49,5 @@ struct FunctionDecl: TopLevelDecl{
     void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     void preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv) override;
-    void preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv) override;
+    void preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv) override;
 };

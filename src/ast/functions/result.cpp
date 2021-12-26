@@ -4,10 +4,6 @@
 // ============= ParametersResult =============
 ParametersResult::ParametersResult(ParameterList* params): parameters{params}{}
 
-void ParametersResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
-{
-    // TODO: Implement
-}
 
 void ParametersResult::getTypes(std::vector<std::shared_ptr<Type>>& typeContainer)
 {
@@ -23,10 +19,6 @@ void ParametersResult::getTypes(std::vector<std::shared_ptr<Type>>& typeContaine
 // ============= TypeResult =============
 TypeResult::TypeResult(TypeList* typelist): types{typelist}{}
 
-void TypeResult::interp(ScopedEnv& env, FunctionEnv& funcEnv)
-{
-    // TODO: Implement
-}
 
 void TypeResult::getTypes(std::vector<std::shared_ptr<Type>>& typeContainer)
 {

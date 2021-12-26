@@ -33,6 +33,10 @@ func test() (int, int) {
 	return 5, 6;
 }
 
+func diff_return_types() (int, bool) {
+	return 1, true
+}
+
 func for_and_if_test() bool {
 	var i int = 2;
 	i += 2;
@@ -50,8 +54,12 @@ func for_and_if_test() bool {
 }
 
 func main() {
+	print(reee)
 	var i bool = for_and_if_test()
 	print(i);
+
+	var y, h = diff_return_types()
+	print(y, h);
 	
 	var k int = 0;
 	for k; k < 10; k++ {

@@ -15,5 +15,4 @@ struct ForClause{
     std::shared_ptr<Stm> postStm;
 
     ForClause(Stm* init, Exp* cond, Stm* post);
-    void interp(ScopedEnv& env, FunctionEnv& funcEnv);
 };

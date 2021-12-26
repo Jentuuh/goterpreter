@@ -5,11 +5,6 @@
 // ============= VarSpec =============
 VarSpec::VarSpec(IdentifierList* idList, Type* type, ExpList* expList): idList{idList}, type{type}, expList{expList}{}
 
-void VarSpec::interp(ScopedEnv& env, FunctionEnv& funcEnv)
-{
-    // TODO: implement
-}
-
 
 void VarSpec::getReferencePairs(std::vector<std::pair<std::string, std::string>>& referenceGraph)
 {

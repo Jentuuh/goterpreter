@@ -9,11 +9,6 @@ void BoolLiteral::opposite()
     value = !value;
 }
 
-void BoolLiteral::interp(ScopedEnv& env, FunctionEnv& funcEnv)
-{
-    // TODO: interp
-}
-
 void BoolLiteral::printValue()
 {
     if(value)
@@ -35,11 +30,6 @@ void IntLiteral::opposite()
 
 {
     value = -value;
-}
-
-void IntLiteral::interp(ScopedEnv& env, FunctionEnv& funcEnv)
-{
-    // TODO: interp
 }
 
 void IntLiteral::printValue()

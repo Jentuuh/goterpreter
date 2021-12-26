@@ -21,9 +21,9 @@ void VarDecl::preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv)
         return;
 }
 
-void VarDecl::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+void VarDecl::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv)
 {
-      
+      varspecs->preBuildGlobalsEnvironment(preBuiltEnv, funcEnv);
 }
 
 
@@ -93,7 +93,7 @@ void FunctionDecl::preBuildFunctionEnvironment(FunctionEnv& preBuiltEnv)
         preBuiltEnv.declaredFunctions.add(funcName->name, std::make_shared<FunctionDecl>(funcName, funcSign, funcBody));
 }
 
-void FunctionDecl::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv)
+void FunctionDecl::preBuildGlobalsEnvironment(ScopedEnv& preBuiltEnv, FunctionEnv& funcEnv)
 {
         // Do nothing, a function declaration does not contribute to the global variable environment.
         return;

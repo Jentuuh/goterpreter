@@ -14,7 +14,6 @@ std::shared_ptr<Type> LiteralOperand::typecheck(ScopedEnv& env, FunctionEnv& fun
     // Integer literal operand
     if(std::dynamic_pointer_cast<IntLiteral>(literal) != nullptr)
     {
-
         return std::make_shared<IntegerType>();
     }
 
@@ -23,6 +22,7 @@ std::shared_ptr<Type> LiteralOperand::typecheck(ScopedEnv& env, FunctionEnv& fun
     {
         return std::make_shared<BooleanType>();
     }
+    return nullptr;
 }
 
 std::vector<std::shared_ptr<Type>> LiteralOperand::getType(ScopedEnv& env,FunctionEnv& funcEnv)
@@ -31,7 +31,7 @@ std::vector<std::shared_ptr<Type>> LiteralOperand::getType(ScopedEnv& env,Functi
     // Integer literal operand
     if(std::dynamic_pointer_cast<IntLiteral>(literal) != nullptr)
     {
-        result.push_back(std::make_shared<IntegerType>())
+        result.push_back(std::make_shared<IntegerType>());
         return result;
     }
 
@@ -41,6 +41,8 @@ std::vector<std::shared_ptr<Type>> LiteralOperand::getType(ScopedEnv& env,Functi
         result.push_back(std::make_shared<BooleanType>());
         return result;
     }
+
+    return result;
 }
 
 
@@ -54,7 +56,9 @@ std::shared_ptr<Literal> VariableOperand::interp(ScopedEnv& env, FunctionEnv& fu
 
 std::shared_ptr<Type> VariableOperand::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
-    if(!env.varExists(operandName->name))
+
+    std::pair<int, bool> varExists = env.varExists(operandName->name);
+    if(varExists.first == 0)
     {
         typeErrors.push_back("Type error in VariableOperand: Variable " + operandName->name + " is not defined.");
     }
@@ -74,10 +78,11 @@ std::shared_ptr<Type> VariableOperand::typecheck(ScopedEnv& env, FunctionEnv& fu
     // }
 }
 
-std::vector<std::shared_ptr<Type>> VariableOperand::getType(ScopedEnv& env,FunctionEnv& funcEnv)
+std::vector<std::shared_ptr<Type>> VariableOperand::getType(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     std::vector<std::shared_ptr<Type>> result;
-    if(!env.varExists(operandName->name))
+    std::pair<int, bool> varExists = env.varExists(operandName->name);
+    if(varExists.first == 0)
     {
         // Return an empty result if the variable does not exist
         return result;
@@ -102,5 +107,5 @@ std::shared_ptr<Type> ExprOperand::typecheck(ScopedEnv& env, FunctionEnv& funcEn
 
 std::vector<std::shared_ptr<Type>> ExprOperand::getType(ScopedEnv& env,FunctionEnv& funcEnv)
 {
-    return exp->getType(funcEnv);
+    return exp->getType(env, funcEnv);
 }

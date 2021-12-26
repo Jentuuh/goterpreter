@@ -16,16 +16,16 @@ std::shared_ptr<Literal> GlobalEnv::lookupVar(std::string id)
         return nullptr;
 }
 
-bool GlobalEnv::varExists(std::string id)
+std::pair<int, bool>  GlobalEnv::varExists(std::string id)
 {
         // Check if table contains the id we're looking for
         if(globals.entries.count(id))
         {
-            return true;
+            return std::make_pair(1, true);
         }
 
-        // If not, we return false
-        return false;
+        // If not, we return 0
+        return std::make_pair(0, true);
 }
 
 // ============= ScopedEnv =============
@@ -66,7 +66,7 @@ std::shared_ptr<Literal> ScopedEnv::lookupVar(std::string id)
     return nullptr;
 }
 
-bool ScopedEnv::varExists(std::string id)
+std::pair<int, bool> ScopedEnv::varExists(std::string id)
 {
     int scopeDepth = scopeSymbolTables.size();
 
@@ -75,11 +75,19 @@ bool ScopedEnv::varExists(std::string id)
         // We can only look up variables from the same scope level (same function), and globals!
         if(scopeSymbolTables[i]->entries.count(id) && (scopeSymbolTables[i]->localScopeId == scopeLevel || i == 0))
         {
-            return true;
+            if(i == 0)
+            {
+                return std::make_pair(scopeSymbolTables[i]->entries.at(id).count, true);
+            } else {
+                return std::make_pair(scopeSymbolTables[i]->entries.at(id).count, false);
+            }
         }
     }
-    return false;
+    return std::make_pair(0, false);
 }
+
+
+
 
 std::shared_ptr<Type> ScopedEnv::getVarType(std::string id)
 {
