@@ -276,7 +276,11 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
             returnValues.push_back(env.lookupVar(r));
         }
 
-        funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+        // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
+        if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
+        {
+            funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+        }
     }
     else
     {
@@ -285,7 +289,12 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         if(expressionList != nullptr)
         {
             expressionList->interp(env, funcEnv, returnValues);
-            funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+
+            // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
+            if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
+            {
+                funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+            }
         }
     }
 }

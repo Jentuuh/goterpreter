@@ -27,22 +27,9 @@ int main(int argc, char* argv[])
 {
     // Input from file
   FILE * inputFile;
-  inputFile = fopen("testProgram.go", "r");
+  inputFile = fopen("correct_programs.go", "r");
   if (inputFile == NULL) perror ("Error opening file");
   yyrestart(inputFile);
-
-  // int tokenid;
-  // /* If we de not explicitly bind yyin to a file, stdin is assumed. */
-  // while (tokenid=yylex())
-  //   {
-  //     /* Token codes start from 258 */ 
-  //     printf(" %s", tokens[tokenid-258]);
-
-  //     /* Append value */
-  //     if ( (tokenid == IDENTIFIER) || (tokenid == INTEGER) || (tokenid == BOOLEAN) ) 
-  //     printf("=\"%s\"", yytext);
-  //       }
-  //   printf("\n");
 
   yyparse();
   fclose(inputFile);

@@ -29,6 +29,12 @@ void FunctionTable::addReturnValues(std::string i, std::vector<std::shared_ptr<L
     entries.at(i)->returnValues = values;
 }
 
+void FunctionTable::resetReturnValues(std::string i)
+{
+    entries.at(i)->returnValues.clear();
+}
+
+
 void FunctionTable::getReturnTypes(std::string i, std::vector<std::shared_ptr<Type>>& typeContainer)
 {
     for (auto const& [key, val] : entries)

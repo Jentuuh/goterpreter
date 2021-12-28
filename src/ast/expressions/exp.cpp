@@ -1,6 +1,7 @@
 #include "exp.h"
 #include "../../environment/interp/env.h"
 #include <iostream>
+#include <algorithm>
 
 // ============= UnaryExp =============
 UnaryExp::UnaryExp(Exp* unaryExp, UnaryOperator op): unaryExp{unaryExp}, op{op}{}
@@ -126,6 +127,9 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
         funcEnv.lookupVar(funcName)->funcDecl->funcSign->parameters->getIdentifiersWithTypes(argNamesAndTypes);
     }
 
+    // Correct the reversed order of the argument names and types
+    std::reverse(argNamesAndTypes.begin(), argNamesAndTypes.end());
+
     int valueIndex = 0;
     for(int i = 0; i < argNamesAndTypes.size(); i++)
     {
@@ -145,7 +149,11 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
     // Pop scope after the function has been executed
     env.popScope();
 
-    return funcEnv.lookupVar(funcName)->returnValues;
+    std::vector<std::shared_ptr<Literal>> returnVals = funcEnv.lookupVar(funcName)->returnValues;
+
+    // We need to reset the return values, so next function calls can overwrite it again
+    funcEnv.declaredFunctions.resetReturnValues(funcName);
+    return returnVals;
 };
 
 
@@ -222,13 +230,23 @@ std::vector<std::shared_ptr<Type>> FunctionCall::typeCheckFunction(ScopedEnv& en
 std::shared_ptr<Type> FunctionCall::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
     // TODO: This is quite a dirty solution, find something better
-    return this->typeCheckFunction(env, funcEnv, typeErrors)[0];
+    std::vector<std::shared_ptr<Type>> result = this->typeCheckFunction(env, funcEnv, typeErrors);
+    if(result.size() > 0)
+    {
+        return result[0];
+    }
+    return nullptr;
 }
 
 std::shared_ptr<Literal> FunctionCall::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
     // TODO: This is quite a dirty solution, find something better
-    return this->executeFunction(env, funcEnv)[0];
+    std::vector<std::shared_ptr<Literal>> result = this->executeFunction(env, funcEnv);
+    if(result.size() > 0)
+    {
+        return result[0];
+    }
+    return nullptr;
 }
 
 
