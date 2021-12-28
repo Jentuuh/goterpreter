@@ -279,6 +279,7 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
         if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
         {
+            std::reverse(returnValues.begin(), returnValues.end());
             funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
         }
     }
@@ -293,6 +294,7 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
             // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
             if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
             {
+                std::reverse(returnValues.begin(), returnValues.end());
                 funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
             }
         }
@@ -321,7 +323,7 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
             typeErrors.push_back("Type error in ReturnStm: " + std::to_string(returnTypes.size()) + " return values expected for function " + funcName + " but " + std::to_string(returnValueIdentifiers.size()) + " return values found.");
         }
 
-        std::reverse(returnTypes.begin(), returnTypes.end());
+        std::reverse(returnValueIdentifiers.begin(), returnValueIdentifiers.end());
 
         int typeCounter = 0;
         for(std::string r : returnValueIdentifiers)
@@ -359,6 +361,7 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
                 typeErrors.push_back("Type error in ReturnStm: " + std::to_string(returnTypes.size()) + " return values expected for function " + funcName + " but " + std::to_string(expTypes.size()) + " return values found.");
             } else {
 
+                std::reverse(expTypes.begin(), expTypes.end());
                 int typeCounter = 0;
                 // Check if type corresponds with function signature
                 for(auto t : expTypes)

@@ -198,8 +198,9 @@ functionname: IDENTIFIER  {$$ = new Identifier($1); };
 
 functionbody: block  {$$ = $1; }; 
 
-signature: parameters result    { $$ = new Signature($1, $2); }
-         | parameters           { $$ = new Signature($1, nullptr); } 
+signature: parameters LPAREN result RPAREN   { $$ = new Signature($1, $3); }
+         | parameters type                   { $$ = new Signature($1, new TypeResult(new LastTypeList($2))); }
+         | parameters                        { $$ = new Signature($1, nullptr); } 
          ; 
 
 type: typename                  { $$ = $1; }
@@ -207,7 +208,7 @@ type: typename                  { $$ = $1; }
     ;
 
 typelist: type                                   {$$ = new LastTypeList($1); }
-        | LPAREN typename COMMA typelist RPAREN  {$$ = new PairTypeList($2, $4); }
+        | typename COMMA typelist               {$$ = new PairTypeList($1, $3); }
         ;
 
 typename: INTEGER               { $$ = new IntegerType(); } 

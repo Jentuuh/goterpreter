@@ -1,6 +1,9 @@
 package main
 
+// Simple sum function demonstration
 var a int = sum(5, 6);
+// Just to demonstrate return of multiple values + different types
+var x, y, z = multiple_returns()
 
 // AND operator function
 func and(bool1 bool, bool2 bool) bool{
@@ -55,8 +58,12 @@ func num_compare(n1 int, n2 int) int{
 	}
 }
 
+func multiple_returns() (int, int, bool) {
+	return 5, 6, false;
+}
+
 func main() {
-	// AND and OR operation
+	// AND and OR operations.
 	var b1 = true;
 	var b2 = false;
 	print(and(b1, b2));
@@ -65,7 +72,7 @@ func main() {
 	// Check if a certain integer is prime.
 	print(is_prime(7919));
 
-	// Compare 2 integer
+	// Compare 2 integers.
 	print(num_compare(1, 1));
 }
 

@@ -30,9 +30,9 @@ int main(int argc, char* argv[])
   inputFile = fopen("correct_programs.go", "r");
   if (inputFile == NULL) perror ("Error opening file");
   yyrestart(inputFile);
-
   yyparse();
   fclose(inputFile);
+
 
   ScopedEnv scopeTypeEnvironment{};
   FunctionEnv functionTypeEnvironment{};
