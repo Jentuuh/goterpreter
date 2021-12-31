@@ -55,6 +55,16 @@ std::shared_ptr<Literal> UnaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
 std::shared_ptr<Type> UnaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
+    if(std::dynamic_pointer_cast<FunctionCall>(unaryExp) != nullptr) {
+
+        std::vector<std::shared_ptr<Type>> returnTypes = std::dynamic_pointer_cast<FunctionCall>(unaryExp)->typeCheckFunction(env, funcEnv, typeErrors);
+        if(returnTypes.size() > 1 || returnTypes.size() == 0)
+        {
+            typeErrors.push_back("Type error in UnaryExp: The function used in a UnaryExp has 0 or more than 1 return value. Can only use functions with 1 return value in a UnaryExp.");
+            return nullptr;
+        }
+    }
+
     std::shared_ptr<Type> resultType = unaryExp->typecheck(env, funcEnv, typeErrors);
 
     // Typecheck for booleans
@@ -66,7 +76,7 @@ std::shared_ptr<Type> UnaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, 
                 // Everything is fine
                 break;
             default:
-                typeErrors.push_back("Tried to use non-valid unary operator on boolean unary expression!");
+                typeErrors.push_back("Type error in UnaryExp: Tried to use non-valid unary operator on boolean unary expression!");
                 break;
         }
     }
@@ -83,7 +93,7 @@ std::shared_ptr<Type> UnaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, 
             // Everything is fine
             break;
         default:
-            typeErrors.push_back("Tried to use non-valid unary operator on integer unary expression!");
+            typeErrors.push_back("Type error in UnaryExp: Tried to use non-valid unary operator on integer unary expression!");
             break;
         }
     }
@@ -406,7 +416,33 @@ std::shared_ptr<Literal> BinaryExp::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 
 std::shared_ptr<Type> BinaryExp::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
-     // TODO: TYPECHECKING, also check, in case there are functions, that the function doesn't return more than 2 values!!!
+    bool shouldReturn = false;
+    // In case the left and/or right expression is a function, check whether they return exactly 1 value.
+    if(std::dynamic_pointer_cast<FunctionCall>(left) != nullptr) {
+
+        std::vector<std::shared_ptr<Type>> returnTypes = std::dynamic_pointer_cast<FunctionCall>(left)->typeCheckFunction(env, funcEnv, typeErrors);
+        if(returnTypes.size() > 1 || returnTypes.size() == 0)
+        {
+            typeErrors.push_back("Type error in BinaryExp: Multiple-value or zero-value function used in single-value context.");
+            shouldReturn = true;
+        }
+    }
+
+    if(std::dynamic_pointer_cast<FunctionCall>(right) != nullptr) {
+
+        std::vector<std::shared_ptr<Type>> returnTypes = std::dynamic_pointer_cast<FunctionCall>(right)->typeCheckFunction(env, funcEnv, typeErrors);
+        if(returnTypes.size() > 1 || returnTypes.size() == 0)
+        {
+            typeErrors.push_back("Type error in BinaryExp: Multiple-value or zero-value function used in single-value context.");
+            shouldReturn = true;
+        }
+    }
+
+    // If we are trying to use multiple-value functions in a BinaryExp, the next steps will go fatally wrong, so return here.
+    if(shouldReturn)
+        return nullptr;
+
+
     switch (op)
     {
         // EQ_BIN and NE_BIN can be used on both integers and booleans
