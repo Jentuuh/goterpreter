@@ -14,6 +14,8 @@ void DeclStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 void DeclStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
     declaration->typecheck(env, funcEnv, typeErrors);
+    std::cout << "end of decl stm!" << std::endl;
+
 }
 
 
@@ -181,15 +183,30 @@ void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         forclause->initStm->interp(env, funcEnv);
     
     env.pushScope(false);
-    while(std::dynamic_pointer_cast<BoolLiteral>(forclause->condition->interp(env, funcEnv))->value)
+    if(forclause->condition != nullptr)
     {
-        // Execute the body of the for-loop
-        body->interp(env, funcEnv);
+        while(std::dynamic_pointer_cast<BoolLiteral>(forclause->condition->interp(env, funcEnv))->value)
+        {
+            // Execute the body of the for-loop
+            body->interp(env, funcEnv);
 
-        // Update condition variable with poststatement (if there is one)
-        if(forclause->postStm != nullptr)
-            forclause->postStm->interp(env, funcEnv);
+            // Update condition variable with poststatement (if there is one)
+            if(forclause->postStm != nullptr)
+                forclause->postStm->interp(env, funcEnv);
+        }
+    } else {
+        // If condition is nullptr, it is the same as for (true) {...}
+        while(true)
+        {
+            // Execute the body of the for-loop
+            body->interp(env, funcEnv);
+
+            // Update condition variable with poststatement (if there is one)
+            if(forclause->postStm != nullptr)
+                forclause->postStm->interp(env, funcEnv);
+        }
     }
+
     env.popScope(false);
 }
 
@@ -200,10 +217,13 @@ void ForClauseStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
         forclause->initStm->typecheck(env, funcEnv, typeErrors);
 
     env.pushScope(false);
-      // Check if condition has boolean type 
-    if(std::dynamic_pointer_cast<BooleanType>(forclause->condition->typecheck(env, funcEnv, typeErrors)) == nullptr) 
+    // Check if condition has boolean type 
+    if(forclause->condition != nullptr)
     {
-        typeErrors.push_back("Type error in ForCondStm: Condition needs to be a boolean type!");
+        if(std::dynamic_pointer_cast<BooleanType>(forclause->condition->typecheck(env, funcEnv, typeErrors)) == nullptr) 
+        {
+            typeErrors.push_back("Type error in ForCondStm: Condition needs to be a boolean type!");
+        }
     }
 
     body->typecheck(env, funcEnv, typeErrors);
@@ -213,6 +233,7 @@ void ForClauseStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
         forclause->postStm->typecheck(env, funcEnv, typeErrors);
 
     env.popScope(false);
+    std::cout << "end of for clause stm!" << std::endl;
 }
 
 int ForClauseStm::amountPaths()
@@ -267,20 +288,37 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
     if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
     {
-        // 2. If so, retrieve these values from the environment, and return them
         std::vector<std::string> returnValueIdentifiers;
-        std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);
-
-        for(std::string r : returnValueIdentifiers)
+        // 2. If so, retrieve these values from the environment, and return them
+        if(expressionList != nullptr)
         {
-            returnValues.push_back(env.lookupVar(r));
-        }
+            expressionList->getOperandNames(returnValueIdentifiers);
+            for(std::string r : returnValueIdentifiers)
+            {
+                returnValues.push_back(env.lookupVar(r));
+            }
 
-        // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
-        if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
-        {
-            std::reverse(returnValues.begin(), returnValues.end());
-            funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+            // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
+            if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
+            {
+                std::reverse(returnValues.begin(), returnValues.end());
+                funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+            }
+        } else {
+
+            std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);
+
+            for(std::string r : returnValueIdentifiers)
+            {
+                returnValues.push_back(env.lookupVar(r));
+            }
+
+            // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
+            if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
+            {
+                // std::reverse(returnValues.begin(), returnValues.end());
+                funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+            }
         }
     }
     else
@@ -314,38 +352,35 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
     // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
     if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
     {
-        // 2. If so, retrieve these values from the environment, and return them
-        std::vector<std::string> returnValueIdentifiers;
-        std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);
 
-        if(returnValueIdentifiers.size() != returnTypes.size())
-        {
-            typeErrors.push_back("Type error in ReturnStm: " + std::to_string(returnTypes.size()) + " return values expected for function " + funcName + " but " + std::to_string(returnValueIdentifiers.size()) + " return values found.");
+        if(expressionList != nullptr)
+        {   
+            std::vector<std::string> nameContainer;
+            expressionList->getOperandNames(nameContainer);
+
+            // 2. If so, retrieve these values from the environment, and return them
+            std::vector<std::string> returnValueIdentifiers;
+            std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);
+
+            if(returnValueIdentifiers.size() != nameContainer.size() && nameContainer.size() != 0)
+            {
+                typeErrors.push_back("Type error in ReturnStm: " + std::to_string(returnValueIdentifiers.size()) + " return values expected for function " + funcName + " but " + std::to_string(nameContainer.size()) + " return values found.");
+            }
+
+            std::reverse(returnValueIdentifiers.begin(), returnValueIdentifiers.end());
+
+            int typeCounter = 0;
+            for(std::string s : nameContainer)
+            {
+                if(std::find(returnValueIdentifiers.begin(), returnValueIdentifiers.end(), s) != returnValueIdentifiers.end()) {
+                    // The identifier we are returning is indeed one of our ParameterResult parameters!
+                } else {
+                    // The identifier we are returning is not one of the ParameterResult parameters that we have specified
+                    typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was trying to return operand '" + s + ", but this identifier is not specified in the ParameterResult.");
+                }
+            }
         }
 
-        std::reverse(returnValueIdentifiers.begin(), returnValueIdentifiers.end());
-
-        int typeCounter = 0;
-        for(std::string r : returnValueIdentifiers)
-        {
-            // Check if return values are defined
-            std::pair<int, bool> varExists = env.varExists(r);
-            if(varExists.first == 0)
-            {
-                typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + r + "' but '" + r + "' is not defined.");
-            }
-
-            // Check if return values have the correct type 
-            if(std::dynamic_pointer_cast<IntegerType>(returnTypes[typeCounter]) != nullptr && std::dynamic_pointer_cast<IntegerType>(env.getVarType(r)) == nullptr)
-            {
-                typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + r + "' of type Integer, but a non-integer was returned.");
-            }
-            if(std::dynamic_pointer_cast<BooleanType>(returnTypes[typeCounter]) != nullptr && std::dynamic_pointer_cast<BooleanType>(env.getVarType(r)) == nullptr)
-            {
-                typeErrors.push_back("Type error in ReturnStm: Function " + funcName + " was expecting return value '" + r + "' of type Boolean, but a non-boolean was returned.");
-            }
-            typeCounter++;
-        }
     }
     else
     {

@@ -66,25 +66,47 @@ void FunctionDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
         // We are entering the function's scope
         env.pushScope();
 
-        // Add argument types to function scope
         int valueIndex = 0;
+        // If the function has a ParametersResult, we need to add these variables to the current scope (with their type and default value)
+        if(std::dynamic_pointer_cast<ParametersResult>(funcSign->result) != nullptr)
+        {
+                std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> paramResultIdsAndTypes;
+                std::dynamic_pointer_cast<ParametersResult>(funcSign->result)->parameters->getIdentifiersWithTypes(paramResultIdsAndTypes);
+                        
+                std::cout << "Before for loop!" << std::endl;
+                for(int i = 0; i < paramResultIdsAndTypes.size(); i++)
+                {
+                        for(int j = 0; j < paramResultIdsAndTypes.at(i).first.size(); j++)
+                        {
+                                env.currentScope()->add(paramResultIdsAndTypes.at(i).first.at(j), paramResultIdsAndTypes.at(i).second, nullptr);
+                                valueIndex++;
+                        }
+                }
+                std::cout << "After for loop!" << std::endl;
+
+        }
+
+        // Add argument types to function scope
+        valueIndex = 0;
         for(int i = 0; i < idsAndTypes.size(); i++)
         {
                 for(int j = 0; j < idsAndTypes.at(i).first.size(); j++)
                 {
-                env.currentScope()->add(idsAndTypes.at(i).first.at(j), idsAndTypes.at(i).second, nullptr);
-                valueIndex++;
+                        env.currentScope()->add(idsAndTypes.at(i).first.at(j), idsAndTypes.at(i).second, nullptr);
+                        valueIndex++;
                 }
         }
-        
+        std::cout << "END2 " <<  std::endl;   
+
         // We also need to add the function to the declared functions BEFORE typechecking the body (otherwise the typechecker can't find the function's information)
         funcEnv.declaredFunctions.add(funcName->name, std::make_shared<FunctionDecl>(funcName, funcSign, funcBody));
-
+        std::cout << "END1 " <<  std::endl;   
         // Typecheck the function's body
         funcBody->typecheck(env, funcEnv, typeErrors);
 
         env.popScope();
         funcEnv.popFunc();
+        std::cout << "END" <<  std::endl;
 }
 
 

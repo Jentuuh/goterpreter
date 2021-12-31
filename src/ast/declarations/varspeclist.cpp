@@ -58,7 +58,7 @@ void PairVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
     {
             std::pair<int, bool> varExists = env.varExists(i);
             // Global variables can have an appearance count of 2, local variables only of 1 (because of the prebuilt environment)
-            if((varExists.first >= 2 && varExists.second) || (varExists.first >= 1 && !varExists.second))
+            if((varExists.first >= 2 && varExists.second && env.currentScope()->localScopeId == 0) || (varExists.first >= 1 && !varExists.second))
                     typeErrors.push_back("Type error in VarDecl: Variable '" + i + "' was already declared in the current scope.");
     }
 
@@ -209,7 +209,7 @@ void LastVarSpecList::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vecto
     for (std::string i : identifiers)
     {
             std::pair<int, bool> varExists = env.varExists(i);
-            if((varExists.first >= 2 && varExists.second) || (varExists.first >= 1 && !varExists.second))
+            if((varExists.first >= 2 && varExists.second && env.currentScope()->localScopeId == 0) || (varExists.first >= 1 && !varExists.second))
                     typeErrors.push_back("Type error in VarDecl: Variable '" + i + "' was already declared in the current scope.");
     }
 

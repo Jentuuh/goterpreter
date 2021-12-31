@@ -128,7 +128,6 @@
 %left EQ NE GT GE LT LE
 %left PLUS MIN
 %left MUL DIV
-%right RSEMICOL
 %right RCOMMA
 %right UMINUS
 %%
@@ -208,7 +207,7 @@ type: typename                  { $$ = $1; }
     ;
 
 typelist: type                                   {$$ = new LastTypeList($1); }
-        | typename COMMA typelist               {$$ = new PairTypeList($1, $3); }
+        | typename COMMA typelist                {$$ = new PairTypeList($1, $3); }
         ;
 
 typename: INTEGER               { $$ = new IntegerType(); } 
@@ -344,11 +343,12 @@ forstatement: FOR condition block       { $$ = new ForCondStm($2, $3); }
             | FOR block                 { $$ = new ForStm($2); }
             ;
 
-condition: expr                         { $$ = $1; };
+condition: expr                                 { $$ = $1; }
+         |                                      { $$ = nullptr; };
 
-forclause: initstatement SEMICOLON condition SEMICOLON poststatement    { $$ = new ForClause($1, $3, $5); }
-         | initstatement SEMICOLON condition RSEMICOL                   { $$ = new ForClause($1, $3, nullptr); }
-         | RSEMICOL condition RSEMICOL poststatement                    { $$ = new ForClause(nullptr, $2, $4); }
+forclause: initstatement SEMICOLON condition SEMICOLON poststatement       { $$ = new ForClause($1, $3, $5); }
+         /* | initstatement SEMICOLON condition SEMICOLON                     { $$ = new ForClause($1, $3, nullptr); }
+         | SEMICOLON condition SEMICOLON poststatement                     { $$ = new ForClause(nullptr, $2, $4); } */
          ;             
 
 initstatement: simplestatement  { $$ = $1; };

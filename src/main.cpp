@@ -33,7 +33,6 @@ int main(int argc, char* argv[])
   yyparse();
   fclose(inputFile);
 
-
   ScopedEnv scopeTypeEnvironment{};
   FunctionEnv functionTypeEnvironment{};
   std::vector<std::string> typeErrors{};

@@ -62,12 +62,49 @@ func multiple_returns() (int, int, bool) {
 	return 5, 6, false;
 }
 
+func test_param_results() ((a, b bool, c int)){
+	return
+}	
+
+func test_for_loops(){
+	var i = 0;
+
+	// With post statement
+	for i;i < 3;i++{
+	
+		print(i)
+	}
+
+	// No post statement
+	i = 0;
+	for i;i < 3; {
+		i++
+		print(i)
+	}
+
+	// No init and post statement
+	i = 0;
+	for ;i < 3; {
+		i++
+		print(i)
+	}
+
+	return
+}
+
 func main() {
 	// AND and OR operations.
 	var b1 = true;
 	var b2 = false;
 	print(and(b1, b2));
 	print(or(b1, b2));
+
+	// ParameterResult demonstration
+	var x, y, z = test_param_results()
+	print(x, y, z)
+
+	// Different kind of for loops
+	test_for_loops();
 
 	// Check if a certain integer is prime.
 	print(is_prime(7919));

@@ -137,10 +137,35 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
         funcEnv.lookupVar(funcName)->funcDecl->funcSign->parameters->getIdentifiersWithTypes(argNamesAndTypes);
     }
 
+    int valueIndex = 0;
+
+    // If the function has a ParametersResult, we need to add these variables to the current scope (with their type and default value)
+    if(std::dynamic_pointer_cast<ParametersResult>(funcEnv.lookupVar(funcName)->funcDecl->funcSign->result) != nullptr)
+    {
+        std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> paramResultNamesAndTypes;
+        std::dynamic_pointer_cast<ParametersResult>(funcEnv.lookupVar(funcName)->funcDecl->funcSign->result)->parameters->getIdentifiersWithTypes(paramResultNamesAndTypes);
+
+        for(int i = 0; i < paramResultNamesAndTypes.size(); i++)
+        {
+            for(int j = 0; j < paramResultNamesAndTypes.at(i).first.size(); j++)
+            {   
+                if(std::dynamic_pointer_cast<IntegerType>(paramResultNamesAndTypes.at(i).second) != nullptr)
+                {
+                    env.currentScope()->add(paramResultNamesAndTypes.at(i).first.at(j), paramResultNamesAndTypes.at(i).second, std::make_shared<IntLiteral>(0));
+                } else if(std::dynamic_pointer_cast<BooleanType>(paramResultNamesAndTypes.at(i).second) != nullptr)
+                {
+                    env.currentScope()->add(paramResultNamesAndTypes.at(i).first.at(j), paramResultNamesAndTypes.at(i).second, std::make_shared<BoolLiteral>(false));
+                }
+
+                valueIndex++;
+            }
+        }
+    }
+
     // Correct the reversed order of the argument names and types
     std::reverse(argNamesAndTypes.begin(), argNamesAndTypes.end());
 
-    int valueIndex = 0;
+    valueIndex = 0;
     for(int i = 0; i < argNamesAndTypes.size(); i++)
     {
         for(int j = 0; j < argNamesAndTypes.at(i).first.size(); j++)

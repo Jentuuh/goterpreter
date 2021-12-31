@@ -12,7 +12,10 @@ void ParametersResult::getTypes(std::vector<std::shared_ptr<Type>>& typeContaine
 
     for(auto it : idsAndTypes)
     {
-        typeContainer.push_back(it.second);
+        for(auto id : it.first)
+        {
+            typeContainer.push_back(it.second);
+        }
     }
 }
 
