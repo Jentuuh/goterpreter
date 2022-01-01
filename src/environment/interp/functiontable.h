@@ -11,6 +11,7 @@ struct FuncTableEntry{
     std::shared_ptr<FunctionDecl> funcDecl;
     std::vector<std::shared_ptr<Literal>> returnValues;
     int count;
+    bool hasReturned;
 
     FuncTableEntry(std::shared_ptr<FunctionDecl> f);
 };

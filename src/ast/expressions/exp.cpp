@@ -120,6 +120,9 @@ std::vector<std::shared_ptr<Literal>> FunctionCall::executeFunction(ScopedEnv& e
     // Push function on the call stack
     funcEnv.pushFunc(funcName);
 
+    // Reset function's `hasReturned` boolean
+    funcEnv.lookupVar(funcName)->hasReturned = false;
+
     // Evaluate the parameters
     std::vector<std::shared_ptr<Literal>> argValues;
     if(arguments != nullptr)

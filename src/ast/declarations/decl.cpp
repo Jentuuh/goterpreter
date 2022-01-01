@@ -73,7 +73,6 @@ void FunctionDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
                 std::vector<std::pair<std::vector<std::string>, std::shared_ptr<Type>>> paramResultIdsAndTypes;
                 std::dynamic_pointer_cast<ParametersResult>(funcSign->result)->parameters->getIdentifiersWithTypes(paramResultIdsAndTypes);
                         
-                std::cout << "Before for loop!" << std::endl;
                 for(int i = 0; i < paramResultIdsAndTypes.size(); i++)
                 {
                         for(int j = 0; j < paramResultIdsAndTypes.at(i).first.size(); j++)
@@ -82,8 +81,6 @@ void FunctionDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
                                 valueIndex++;
                         }
                 }
-                std::cout << "After for loop!" << std::endl;
-
         }
 
         // Add argument types to function scope
@@ -96,17 +93,14 @@ void FunctionDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
                         valueIndex++;
                 }
         }
-        std::cout << "END2 " <<  std::endl;   
 
         // We also need to add the function to the declared functions BEFORE typechecking the body (otherwise the typechecker can't find the function's information)
         funcEnv.declaredFunctions.add(funcName->name, std::make_shared<FunctionDecl>(funcName, funcSign, funcBody));
-        std::cout << "END1 " <<  std::endl;   
         // Typecheck the function's body
         funcBody->typecheck(env, funcEnv, typeErrors);
 
         env.popScope();
         funcEnv.popFunc();
-        std::cout << "END" <<  std::endl;
 }
 
 

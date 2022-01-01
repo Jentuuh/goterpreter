@@ -107,11 +107,12 @@ extern int yydebug;
     ELSE = 294,                    /* ELSE  */
     SHORTVARASSIGN = 295,          /* SHORTVARASSIGN  */
     PRINT = 296,                   /* PRINT  */
-    IDENTIFIER = 297,              /* IDENTIFIER  */
-    BOOLLITERAL = 298,             /* BOOLLITERAL  */
-    INTLITERAL = 299,              /* INTLITERAL  */
-    RCOMMA = 300,                  /* RCOMMA  */
-    UMINUS = 301                   /* UMINUS  */
+    PRINTLN = 297,                 /* PRINTLN  */
+    IDENTIFIER = 298,              /* IDENTIFIER  */
+    BOOLLITERAL = 299,             /* BOOLLITERAL  */
+    INTLITERAL = 300,              /* INTLITERAL  */
+    RCOMMA = 301,                  /* RCOMMA  */
+    UMINUS = 302                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -165,7 +166,7 @@ union YYSTYPE
 
         PackageClause* packageclause;
 
-#line 169 "./parser/parser.hpp"
+#line 170 "./parser/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

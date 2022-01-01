@@ -147,3 +147,10 @@ struct PrintStm:Stm{
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
 };
 
+struct PrintLnStm:Stm{
+    std::shared_ptr<ExpList> expressions; 
+
+    PrintLnStm(ExpList* expList);
+    void interp(ScopedEnv& env, FunctionEnv& funcEnv) override;
+    void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
+};

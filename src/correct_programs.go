@@ -68,28 +68,41 @@ func test_param_results() ((a, b bool, c int)){
 
 func test_for_loops(){
 	var i = 0;
-
+	
+	println()
 	// With post statement
 	for i;i < 3;i++{
 	
 		print(i)
 	}
-
+	println()
 	// No post statement
 	i = 0;
 	for i;i < 3; {
 		i++
 		print(i)
 	}
-
+	println()
 	// No init and post statement
 	i = 0;
 	for ;i < 3; {
 		i++
 		print(i)
 	}
-
+	println()
 	return
+}
+
+func test_return_stm() int{
+	var i = 0
+	for true{
+		i++
+		if i == 5{
+			return i;
+			i = 6
+			return i;
+		}
+	}
 }
 
 func main() {
@@ -111,6 +124,8 @@ func main() {
 
 	// Compare 2 integers.
 	print(num_compare(1, 1));
+
+	println(test_return_stm());
 }
 
 // Shows which default values are assigned to integer and boolean literals

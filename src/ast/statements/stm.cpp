@@ -8,14 +8,16 @@ DeclStm::DeclStm(TopLevelDecl* decl): declaration{decl}{}
 
 void DeclStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
     declaration->interp(env, funcEnv);
 }
 
 void DeclStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
     declaration->typecheck(env, funcEnv, typeErrors);
-    std::cout << "end of decl stm!" << std::endl;
-
 }
 
 
@@ -24,6 +26,10 @@ BlockStm::BlockStm(Block* block): block{block}{}
 
 void BlockStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
     env.pushScope(false);
     block->interp(env, funcEnv);
     env.popScope(false);
@@ -41,6 +47,10 @@ IfStm::IfStm(Stm* simpleStm, Exp* cond, Block* ifBlock, Block* elseBlock, Stm* n
 
 void IfStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
     // First, execute simple statement if there is any
     if(simpleStm != nullptr)
     {
@@ -146,6 +156,10 @@ void ForCondStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     // The for-loop can be executed as long as the condition evaluates to true
     while(std::dynamic_pointer_cast<BoolLiteral>(condition->interp(env, funcEnv))->value)
     {
+        if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+            if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+                return;
+        } 
         body->interp(env, funcEnv);
     }
     env.popScope(false);
@@ -187,6 +201,10 @@ void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     {
         while(std::dynamic_pointer_cast<BoolLiteral>(forclause->condition->interp(env, funcEnv))->value)
         {
+            if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+                if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+                    return;
+            } 
             // Execute the body of the for-loop
             body->interp(env, funcEnv);
 
@@ -198,6 +216,10 @@ void ForClauseStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         // If condition is nullptr, it is the same as for (true) {...}
         while(true)
         {
+            if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+                if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+                    return;
+            } 
             // Execute the body of the for-loop
             body->interp(env, funcEnv);
 
@@ -233,7 +255,6 @@ void ForClauseStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
         forclause->postStm->typecheck(env, funcEnv, typeErrors);
 
     env.popScope(false);
-    std::cout << "end of for clause stm!" << std::endl;
 }
 
 int ForClauseStm::amountPaths()
@@ -254,6 +275,10 @@ void ForStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     env.pushScope(false);
     while(true)
     {
+        if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+            if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+                return;
+        } 
         body->interp(env, funcEnv);
     }
     env.popScope(false);
@@ -285,6 +310,13 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
     std::string funcName = funcEnv.currentFunc();
     std::shared_ptr<FuncTableEntry> funcDetails = funcEnv.lookupVar(funcName);
 
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
+    // Set function's `hasReturned` to true, so no more statements will be evaluated.
+    funcEnv.lookupVar(funcName)->hasReturned = true;
+
     // 1. Check if func signature has any return values specified (This means there should be a ParametersResult)
     if(std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result) != nullptr)
     {
@@ -297,13 +329,9 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
             {
                 returnValues.push_back(env.lookupVar(r));
             }
-
-            // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
-            if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
-            {
-                std::reverse(returnValues.begin(), returnValues.end());
-                funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
-            }
+            std::reverse(returnValues.begin(), returnValues.end());
+            funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+            
         } else {
 
             std::dynamic_pointer_cast<ParametersResult>(funcDetails->funcDecl->funcSign->result)->parameters->getIdentifiers(returnValueIdentifiers);
@@ -312,13 +340,9 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
             {
                 returnValues.push_back(env.lookupVar(r));
             }
-
-            // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
-            if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
-            {
                 // std::reverse(returnValues.begin(), returnValues.end());
-                funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
-            }
+            funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+            
         }
     }
     else
@@ -329,12 +353,9 @@ void ReturnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
         {
             expressionList->interp(env, funcEnv, returnValues);
 
-            // Make sure we only add return values to a function's environment if another return statement has not already filled in these values, otherwise we would overwrite them.
-            if(funcEnv.lookupVar(funcName)->returnValues.size() == 0)
-            {
-                std::reverse(returnValues.begin(), returnValues.end());
-                funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
-            }
+            std::reverse(returnValues.begin(), returnValues.end());
+            funcEnv.declaredFunctions.addReturnValues(funcName, returnValues);
+           
         }
     }
 }
@@ -442,6 +463,10 @@ AssignmentStm::AssignmentStm(ExpList* left, ExpList* right, AssignOperator assig
 
 void AssignmentStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
     // Evaluate the right side of the assignment to get the values that we will assign
     std::vector<std::shared_ptr<Literal>> newValues;
     rightExpList->interp(env, funcEnv, newValues);
@@ -642,6 +667,11 @@ IncDecStm::IncDecStm(Exp* exp, IncDecOperator op): exp{exp}, op{op}{}
 
 void IncDecStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
+
     std::string varName = exp->getOperandName();
 
     switch (op)
@@ -689,6 +719,10 @@ ExprStm::ExprStm(Exp* exp): exp{exp}{}
 
 void ExprStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
     exp->interp(env, funcEnv);
 }
 
@@ -702,37 +736,99 @@ PrintStm::PrintStm(ExpList* expList): expressions{expList}{}
 
 void PrintStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    std::vector<std::shared_ptr<Literal>> values;
-    expressions->interp(env, funcEnv, values);
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
 
-    for (std::shared_ptr<Literal> v : values)
+    if(expressions != nullptr)
     {
-        // Booleans
-        if(std::dynamic_pointer_cast<BoolLiteral>(v) != nullptr)
-        {
-            if(std::dynamic_pointer_cast<BoolLiteral>(v)->value)
-            {
-                std::cout << "true ";
-            }
-            else
-            {
-                std::cout << "false ";
-            }
-        }
+        std::vector<std::shared_ptr<Literal>> values;
+        expressions->interp(env, funcEnv, values);
 
-        // Integers
-        if(std::dynamic_pointer_cast<IntLiteral>(v) != nullptr)
+        for (std::shared_ptr<Literal> v : values)
         {
-            std::cout << std::dynamic_pointer_cast<IntLiteral>(v)->value << " ";
+            // Booleans
+            if(std::dynamic_pointer_cast<BoolLiteral>(v) != nullptr)
+            {
+                if(std::dynamic_pointer_cast<BoolLiteral>(v)->value)
+                {
+                    std::cout << "true ";
+                }
+                else
+                {
+                    std::cout << "false ";
+                }
+            }
+
+            // Integers
+            if(std::dynamic_pointer_cast<IntLiteral>(v) != nullptr)
+            {
+                std::cout << std::dynamic_pointer_cast<IntLiteral>(v)->value << " ";
+            }
         }
     }
+    
 }
 
 void PrintStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
-    std::vector<std::shared_ptr<Type>> types;
-    expressions->typecheck(env, funcEnv, types, typeErrors);
+    if(expressions != nullptr)
+    {
+        std::vector<std::shared_ptr<Type>> types;
+        expressions->typecheck(env, funcEnv, types, typeErrors);
+    }
+    // TODO: check if type is supported for printing (for now all types can be printed)
+}
 
+// ============= PrintLnStm =============
+PrintLnStm::PrintLnStm(ExpList* expList): expressions{expList}{}
+
+void PrintLnStm::interp(ScopedEnv& env, FunctionEnv& funcEnv)
+{
+    if(funcEnv.lookupVar(funcEnv.currentFunc()) != nullptr){
+        if(funcEnv.lookupVar(funcEnv.currentFunc())->hasReturned)
+            return;
+    } 
+
+    if(expressions != nullptr)
+    {
+        std::vector<std::shared_ptr<Literal>> values;
+        expressions->interp(env, funcEnv, values);
+
+        for (std::shared_ptr<Literal> v : values)
+        {
+            // Booleans
+            if(std::dynamic_pointer_cast<BoolLiteral>(v) != nullptr)
+            {
+                if(std::dynamic_pointer_cast<BoolLiteral>(v)->value)
+                {
+                    std::cout << "true ";
+                }
+                else
+                {
+                    std::cout << "false ";
+                }
+            }
+
+            // Integers
+            if(std::dynamic_pointer_cast<IntLiteral>(v) != nullptr)
+            {
+                std::cout << std::dynamic_pointer_cast<IntLiteral>(v)->value << " ";
+            }
+        }
+    }
+    
+    std::cout << std::endl;
+}
+
+void PrintLnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
+{
+    if(expressions != nullptr)
+    {
+        std::vector<std::shared_ptr<Type>> types;
+        expressions->typecheck(env, funcEnv, types, typeErrors);
+    }
     // TODO: check if type is supported for printing (for now all types can be printed)
 }
 

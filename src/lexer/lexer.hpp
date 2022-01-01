@@ -466,7 +466,7 @@ extern int yylex (void);
 #undef yyTABLES_NAME
 #endif
 
-#line 151 "./lexer/go.lex"
+#line 153 "./lexer/go.lex"
 
 
 #line 473 "./lexer/lexer.hpp"

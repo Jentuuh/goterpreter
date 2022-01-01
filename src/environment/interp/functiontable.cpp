@@ -4,6 +4,7 @@
 FuncTableEntry::FuncTableEntry(std::shared_ptr<FunctionDecl> f): funcDecl{f}
 { 
     count = 1; 
+    hasReturned = false;
 }
 
 FunctionTable::FunctionTable()

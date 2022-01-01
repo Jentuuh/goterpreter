@@ -61,7 +61,7 @@
     PLUSASSIGN MINASSIGN MULASSIGN DIVASSIGN
     AND OR NOT INC DEC GT GE LT LE EQ NE
     ASSIGN FUNC NEWLINE IMPORT COMMA ELSE 
-    SHORTVARASSIGN PRINT
+    SHORTVARASSIGN PRINT PRINTLN
 
 %token <id> IDENTIFIER
 %token <boollit> BOOLLITERAL
@@ -101,6 +101,7 @@
 %type <stm> incdecstatement
 %type <stm> returnstatement
 %type <stm> printstatement
+%type <stm> printlnstatement
 %type <forclause> forclause
 %type <exp> condition
 %type <assignoperator> assign_op
@@ -303,7 +304,8 @@ statement: declaration                   { $$ = new DeclStm($1); }
         | forstatement                   { $$ = $1; }
         | returnstatement                { $$ = $1; }
         | simplestatement                { $$ = $1; }  
-        | printstatement                 { $$ = $1; }                 
+        | printstatement                 { $$ = $1; }     
+        | printlnstatement               { $$ = $1; }            
         ;
 
 simplestatement: expressionstatement     { $$ = $1; }
@@ -347,8 +349,6 @@ condition: expr                                 { $$ = $1; }
          |                                      { $$ = nullptr; };
 
 forclause: initstatement SEMICOLON condition SEMICOLON poststatement       { $$ = new ForClause($1, $3, $5); }
-         /* | initstatement SEMICOLON condition SEMICOLON                     { $$ = new ForClause($1, $3, nullptr); }
-         | SEMICOLON condition SEMICOLON poststatement                     { $$ = new ForClause(nullptr, $2, $4); } */
          ;             
 
 initstatement: simplestatement  { $$ = $1; };
@@ -356,7 +356,11 @@ initstatement: simplestatement  { $$ = $1; };
 poststatement: simplestatement   { $$ = $1; };
 
 printstatement: PRINT LPAREN expressionlist RPAREN { $$ = new PrintStm($3); }
+              | PRINT LPAREN RPAREN                { $$ = new PrintStm(nullptr); }
               ;
+printlnstatement: PRINTLN LPAREN expressionlist RPAREN { $$ = new PrintLnStm($3); }
+                | PRINTLN LPAREN RPAREN                { $$ = new PrintLnStm(nullptr); }
+                ;
 
 
 returnstatement: RETURN expressionlist   { $$ = new ReturnStm($2); }

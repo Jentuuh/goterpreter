@@ -25,7 +25,7 @@ char *tokens[] = {
 
 int main(int argc, char* argv[])
 {
-    // Input from file
+  // File lexing and parsing
   FILE * inputFile;
   inputFile = fopen("correct_programs.go", "r");
   if (inputFile == NULL) perror ("Error opening file");
@@ -33,11 +33,12 @@ int main(int argc, char* argv[])
   yyparse();
   fclose(inputFile);
 
+  // Environment creation + typechecking
   ScopedEnv scopeTypeEnvironment{};
   FunctionEnv functionTypeEnvironment{};
   std::vector<std::string> typeErrors{};
-
   ast->typecheck(scopeTypeEnvironment, functionTypeEnvironment, typeErrors);
+
   // If there were type errors, print them out
   if(!typeErrors.empty())
   {
@@ -48,11 +49,14 @@ int main(int argc, char* argv[])
     }
   } else {
     std::cout << "Typecheck succeeded!" << std::endl;
+
+    // If there were no type errors, we can interpret the program
     ScopedEnv scopeEnvironment{};
     FunctionEnv functionEnvironment{};
-    // If there were no type errors, we can interpret the program
+
     ast->interp(scopeEnvironment, functionEnvironment);
 
+    // Shows global scope and declared functions, for debugging purposes
     scopeEnvironment.printScopes();
     functionEnvironment.declaredFunctions.printValues();
   }
