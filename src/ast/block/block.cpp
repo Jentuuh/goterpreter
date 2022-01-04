@@ -7,21 +7,41 @@ Block::Block(StmList* stmList): statements{stmList}{};
 
 void Block::interp(ScopedEnv& env, FunctionEnv& funcEnv)
 {
-    statements->interp(env, funcEnv);
+    if(statements != nullptr)
+    {
+        statements->interp(env, funcEnv);
+    }
 };
 
 void Block::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors)
 {
-    statements->typecheck(env, funcEnv, typeErrors);
+    if(statements != nullptr)
+    {
+        statements->typecheck(env, funcEnv, typeErrors);
+    }
 }
 
 int Block::amountPaths()
 {
-    return statements->amountPaths();
+    if(statements != nullptr){
+        return statements->amountPaths();
+    }
+    return 0;
 }
 
 int Block::countReturnStatements()
 {
-    return statements->countReturnStatements();
+    if(statements != nullptr){
+        return statements->countReturnStatements();
+    }
+    return 0;
+}
+
+bool Block::hasBaseReturnStatement()
+{
+    if(statements != nullptr){
+        return statements->hasBaseReturnStatement();
+    }
+    return false;
 }
 

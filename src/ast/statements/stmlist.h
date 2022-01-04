@@ -16,6 +16,8 @@ struct StmList{
     virtual void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) = 0;
     virtual int amountPaths() = 0;
     virtual int countReturnStatements() = 0;
+    virtual bool hasBaseReturnStatement() = 0;
+
 };
 
 struct LastStmList:StmList{
@@ -27,6 +29,7 @@ struct LastStmList:StmList{
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     int amountPaths() override;
     int countReturnStatements() override;
+    bool hasBaseReturnStatement() override;
 };
 
 struct PairStmList:StmList{
@@ -39,4 +42,5 @@ struct PairStmList:StmList{
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     int amountPaths() override;
     int countReturnStatements() override;
+    bool hasBaseReturnStatement() override;
 };

@@ -56,6 +56,13 @@ int LastStmList::countReturnStatements()
     return 0;
 }
 
+bool LastStmList::hasBaseReturnStatement()
+{
+    if(std::dynamic_pointer_cast<ReturnStm>(last) != nullptr)
+        return true;
+    return false;
+}
+
 
 // ============= PairStmList =============
 PairStmList::PairStmList(Stm* head, StmList* tail): head{head}, tail{tail}{};
@@ -95,7 +102,9 @@ int PairStmList::amountPaths()
 int PairStmList::countReturnStatements()
 {
     if(std::dynamic_pointer_cast<ReturnStm>(head) != nullptr)
-            return 1 + tail->countReturnStatements();
+            // Make sure we don't double count return statements in the same scope level
+            if(!tail->hasBaseReturnStatement())
+                return 1 + tail->countReturnStatements();
 
       if(std::dynamic_pointer_cast<BlockStm>(head) != nullptr)
         return tail->countReturnStatements() + std::dynamic_pointer_cast<BlockStm>(head)->block->countReturnStatements();
@@ -114,3 +123,9 @@ int PairStmList::countReturnStatements()
 
     return 0 + tail->countReturnStatements();
 }
+
+bool PairStmList::hasBaseReturnStatement()
+{
+    return std::dynamic_pointer_cast<ReturnStm>(head) != nullptr || tail->hasBaseReturnStatement();
+}
+

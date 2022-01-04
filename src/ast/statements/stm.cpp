@@ -114,13 +114,13 @@ int IfStm::amountPaths()
 {
     if(elseBlock != nullptr)
     {
-        return 1;
+        return 2;
     } else {
 
         if(nestedIfStm != nullptr)
-            return std::dynamic_pointer_cast<IfStm>(nestedIfStm)->amountPaths();
+            return 1 + std::dynamic_pointer_cast<IfStm>(nestedIfStm)->amountPaths();
     }
-    return 0;
+    return 1;
 }
 
 int IfStm::countReturnStatements()
@@ -128,19 +128,22 @@ int IfStm::countReturnStatements()
     if(elseBlock != nullptr)
     {
         // If the if-else blocks do not both contain return statements, return 0 (because they both should)
-        if(ifBlock->countReturnStatements() < 1 || elseBlock->countReturnStatements() < 1 )
+        if(ifBlock->countReturnStatements() < 1 && elseBlock->countReturnStatements() < 1 )
             return 0;
+        if(ifBlock->countReturnStatements() < 1 || elseBlock->countReturnStatements() < 1 )
+            return 1;
+        if(ifBlock->countReturnStatements() >= 1 && elseBlock->countReturnStatements() >= 1 )
+            return 2;
 
         return ifBlock->countReturnStatements() + elseBlock->countReturnStatements();
     } else {
 
         if(nestedIfStm != nullptr){
             // If the nested if statements do not pass the test, let the whole if statement fail
-            if(std::dynamic_pointer_cast<IfStm>(nestedIfStm)->countReturnStatements() < std::dynamic_pointer_cast<IfStm>(nestedIfStm)->amountPaths())
-                return 0;
+            // if(std::dynamic_pointer_cast<IfStm>(nestedIfStm)->countReturnStatements() < std::dynamic_pointer_cast<IfStm>(nestedIfStm)->amountPaths() || ifBlock->countReturnStatements() < 1)
+            //     return 0;
 
-
-            return  ifBlock->countReturnStatements() + std::dynamic_pointer_cast<IfStm>(nestedIfStm)->countReturnStatements();
+            return ifBlock->countReturnStatements() + std::dynamic_pointer_cast<IfStm>(nestedIfStm)->countReturnStatements();
         }
     }
     return ifBlock->countReturnStatements();
@@ -417,7 +420,8 @@ void ReturnStm::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std:
                 typeErrors.push_back("Type error in ReturnStm: " + std::to_string(returnTypes.size()) + " return values expected for function " + funcName + " but " + std::to_string(expTypes.size()) + " return values found.");
             } else {
 
-                std::reverse(expTypes.begin(), expTypes.end());
+                // std::reverse(expTypes.begin(), expTypes.end());
+                std::reverse(returnTypes.begin(), returnTypes.end());
                 int typeCounter = 0;
                 // Check if type corresponds with function signature
                 for(auto t : expTypes)

@@ -16,4 +16,5 @@ struct Block
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors);
     int amountPaths();
     int countReturnStatements();
+    bool hasBaseReturnStatement();
 };

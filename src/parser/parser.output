@@ -6,8 +6,8 @@ Terminals unused in grammar
 
 
 State 92 conflicts: 1 shift/reduce
-State 112 conflicts: 1 shift/reduce
-State 156 conflicts: 1 shift/reduce
+State 113 conflicts: 1 shift/reduce
+State 157 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -119,112 +119,113 @@ Grammar
    72          | LPAREN expressionlist RCOMMA RPAREN
 
    73 block: LBRACE statementlist RBRACE
+   74      | LBRACE RBRACE
 
-   74 statementlist: statement SEMICOLON
-   75              | statement SEMICOLON statementlist
+   75 statementlist: statement SEMICOLON
+   76              | statement SEMICOLON statementlist
 
-   76 statement: declaration
-   77          | block
-   78          | ifstatement
-   79          | forstatement
-   80          | returnstatement
-   81          | simplestatement
-   82          | printstatement
-   83          | printlnstatement
+   77 statement: declaration
+   78          | block
+   79          | ifstatement
+   80          | forstatement
+   81          | returnstatement
+   82          | simplestatement
+   83          | printstatement
+   84          | printlnstatement
 
-   84 simplestatement: expressionstatement
-   85                | assignment
-   86                | incdecstatement
-   87                | emptystatement
+   85 simplestatement: expressionstatement
+   86                | assignment
+   87                | incdecstatement
+   88                | emptystatement
 
-   88 emptystatement: ε
+   89 emptystatement: ε
 
-   89 expressionstatement: expr
+   90 expressionstatement: expr
 
-   90 assignment: expressionlist assign_op expressionlist
+   91 assignment: expressionlist assign_op expressionlist
 
-   91 assign_op: ASSIGN
-   92          | PLUSASSIGN
-   93          | MINASSIGN
-   94          | MULASSIGN
-   95          | DIVASSIGN
+   92 assign_op: ASSIGN
+   93          | PLUSASSIGN
+   94          | MINASSIGN
+   95          | MULASSIGN
+   96          | DIVASSIGN
 
-   96 incdecstatement: expr INC
-   97                | expr DEC
+   97 incdecstatement: expr INC
+   98                | expr DEC
 
-   98 ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement
-   99            | IF simplestatement SEMICOLON expr block ELSE block
-  100            | IF expr block ELSE ifstatement
-  101            | IF expr block ELSE block
-  102            | IF expr block
+   99 ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement
+  100            | IF simplestatement SEMICOLON expr block ELSE block
+  101            | IF expr block ELSE ifstatement
+  102            | IF expr block ELSE block
+  103            | IF expr block
 
-  103 forstatement: FOR condition block
-  104             | FOR forclause block
-  105             | FOR block
+  104 forstatement: FOR condition block
+  105             | FOR forclause block
+  106             | FOR block
 
-  106 condition: expr
-  107          | ε
+  107 condition: expr
+  108          | ε
 
-  108 forclause: initstatement SEMICOLON condition SEMICOLON poststatement
+  109 forclause: initstatement SEMICOLON condition SEMICOLON poststatement
 
-  109 initstatement: simplestatement
+  110 initstatement: simplestatement
 
-  110 poststatement: simplestatement
+  111 poststatement: simplestatement
 
-  111 printstatement: PRINT LPAREN expressionlist RPAREN
-  112               | PRINT LPAREN RPAREN
+  112 printstatement: PRINT LPAREN expressionlist RPAREN
+  113               | PRINT LPAREN RPAREN
 
-  113 printlnstatement: PRINTLN LPAREN expressionlist RPAREN
-  114                 | PRINTLN LPAREN RPAREN
+  114 printlnstatement: PRINTLN LPAREN expressionlist RPAREN
+  115                 | PRINTLN LPAREN RPAREN
 
-  115 returnstatement: RETURN expressionlist
-  116                | RETURN
+  116 returnstatement: RETURN expressionlist
+  117                | RETURN
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    SEMICOLON (258) 1 2 3 4 13 74 75 98 99 108
+    SEMICOLON (258) 1 2 3 4 13 75 76 99 100 109
     INTEGER (259) 27
     BOOLEAN (260) 28
     PACKAGE (261) 5
-    RETURN (262) 115 116
+    RETURN (262) 116 117
     VAR (263) 10 11
-    IF (264) 98 99 100 101 102
-    FOR (265) 103 104 105
-    LPAREN (266) 10 20 24 31 32 33 63 70 71 72 111 112 113 114
-    RPAREN (267) 10 20 24 31 32 33 63 70 71 72 111 112 113 114
-    LBRACE (268) 73
-    RBRACE (269) 73
+    IF (264) 99 100 101 102 103
+    FOR (265) 104 105 106
+    LPAREN (266) 10 20 24 31 32 33 63 70 71 72 112 113 114 115
+    RPAREN (267) 10 20 24 31 32 33 63 70 71 72 112 113 114 115
+    LBRACE (268) 73 74
+    RBRACE (269) 73 74
     PLUS (270) 47 58
     MIN (271) 48 59
     MUL (272) 45
     DIV (273) 46
-    PLUSASSIGN (274) 92
-    MINASSIGN (275) 93
-    MULASSIGN (276) 94
-    DIVASSIGN (277) 95
+    PLUSASSIGN (274) 93
+    MINASSIGN (275) 94
+    MULASSIGN (276) 95
+    DIVASSIGN (277) 96
     AND (278) 50
     OR (279) 49
     NOT (280) 60
-    INC (281) 96
-    DEC (282) 97
+    INC (281) 97
+    DEC (282) 98
     GT (283) 43
     GE (284) 44
     LT (285) 41
     LE (286) 42
     EQ (287) 39
     NE (288) 40
-    ASSIGN (289) 14 16 91
+    ASSIGN (289) 14 16 92
     FUNC (290) 17
     NEWLINE (291)
     IMPORT (292)
     COMMA (293) 26 32 34 51 53
-    ELSE (294) 98 99 100 101
+    ELSE (294) 99 100 101 102
     SHORTVARASSIGN (295)
-    PRINT (296) 111 112
-    PRINTLN (297) 113 114
+    PRINT (296) 112 113
+    PRINTLN (297) 114 115
     IDENTIFIER <id> (298) 6 18 55 67
     BOOLLITERAL <boollit> (299) 66
     INTLITERAL <intlit> (300) 65
@@ -253,7 +254,7 @@ Nonterminals, with rules where they appear
         on right: 3 4
     declaration <toplvldecl> (54)
         on left: 9
-        on right: 7 76
+        on right: 7 77
     vardecl <toplvldecl> (55)
         on left: 10 11
         on right: 9
@@ -298,10 +299,10 @@ Nonterminals, with rules where they appear
         on right: 34 35
     expr <exp> (69)
         on left: 38 39 40 41 42 43 44 45 46 47 48 49 50
-        on right: 39 40 41 42 43 44 45 46 47 48 49 50 51 52 63 89 96 97 98 99 100 101 102 106
+        on right: 39 40 41 42 43 44 45 46 47 48 49 50 51 52 63 90 97 98 99 100 101 102 103 107
     expressionlist <explist> (70)
         on left: 51 52
-        on right: 14 16 51 71 72 90 111 113 115
+        on right: 14 16 51 71 72 91 112 114 116
     identifierlist <identifierlist> (71)
         on left: 53 54
         on right: 14 15 16 36 53
@@ -333,59 +334,59 @@ Nonterminals, with rules where they appear
         on left: 70 71 72
         on right: 69
     block <block> (81)
-        on left: 73
-        on right: 19 77 98 99 100 101 102 103 104 105
+        on left: 73 74
+        on right: 19 78 99 100 101 102 103 104 105 106
     statementlist <stmlist> (82)
-        on left: 74 75
-        on right: 73 75
+        on left: 75 76
+        on right: 73 76
     statement <stm> (83)
-        on left: 76 77 78 79 80 81 82 83
-        on right: 74 75
+        on left: 77 78 79 80 81 82 83 84
+        on right: 75 76
     simplestatement <stm> (84)
-        on left: 84 85 86 87
-        on right: 81 98 99 109 110
+        on left: 85 86 87 88
+        on right: 82 99 100 110 111
     emptystatement <stm> (85)
-        on left: 88
-        on right: 87
-    expressionstatement <stm> (86)
         on left: 89
-        on right: 84
-    assignment <stm> (87)
+        on right: 88
+    expressionstatement <stm> (86)
         on left: 90
         on right: 85
-    assign_op <assignoperator> (88)
-        on left: 91 92 93 94 95
-        on right: 90
-    incdecstatement <stm> (89)
-        on left: 96 97
+    assignment <stm> (87)
+        on left: 91
         on right: 86
+    assign_op <assignoperator> (88)
+        on left: 92 93 94 95 96
+        on right: 91
+    incdecstatement <stm> (89)
+        on left: 97 98
+        on right: 87
     ifstatement <stm> (90)
-        on left: 98 99 100 101 102
-        on right: 78 98 100
+        on left: 99 100 101 102 103
+        on right: 79 99 101
     forstatement <stm> (91)
-        on left: 103 104 105
-        on right: 79
-    condition <exp> (92)
-        on left: 106 107
-        on right: 103 108
-    forclause <forclause> (93)
-        on left: 108
-        on right: 104
-    initstatement <stm> (94)
-        on left: 109
-        on right: 108
-    poststatement <stm> (95)
-        on left: 110
-        on right: 108
-    printstatement <stm> (96)
-        on left: 111 112
-        on right: 82
-    printlnstatement <stm> (97)
-        on left: 113 114
-        on right: 83
-    returnstatement <stm> (98)
-        on left: 115 116
+        on left: 104 105 106
         on right: 80
+    condition <exp> (92)
+        on left: 107 108
+        on right: 104 109
+    forclause <forclause> (93)
+        on left: 109
+        on right: 105
+    initstatement <stm> (94)
+        on left: 110
+        on right: 109
+    poststatement <stm> (95)
+        on left: 111
+        on right: 109
+    printstatement <stm> (96)
+        on left: 112 113
+        on right: 83
+    printlnstatement <stm> (97)
+        on left: 114 115
+        on right: 84
+    returnstatement <stm> (98)
+        on left: 116 117
+        on right: 81
 
 
 State 0
@@ -1025,6 +1026,7 @@ State 61
 State 62
 
    73 block: LBRACE • statementlist RBRACE
+   74      | LBRACE • RBRACE
 
     RETURN       shift, and go to state 90
     VAR          shift, and go to state 8
@@ -1032,21 +1034,22 @@ State 62
     FOR          shift, and go to state 92
     LPAREN       shift, and go to state 39
     LBRACE       shift, and go to state 62
+    RBRACE       shift, and go to state 93
     PLUS         shift, and go to state 40
     MIN          shift, and go to state 41
     NOT          shift, and go to state 42
-    PRINT        shift, and go to state 93
-    PRINTLN      shift, and go to state 94
+    PRINT        shift, and go to state 94
+    PRINTLN      shift, and go to state 95
     IDENTIFIER   shift, and go to state 43
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    $default  reduce using rule 88 (emptystatement)
+    $default  reduce using rule 89 (emptystatement)
 
-    declaration          go to state 95
+    declaration          go to state 96
     vardecl              go to state 13
-    expr                 go to state 96
-    expressionlist       go to state 97
+    expr                 go to state 97
+    expressionlist       go to state 98
     unaryexpr            go to state 48
     unary_op             go to state 49
     operand              go to state 50
@@ -1054,19 +1057,19 @@ State 62
     basiclit             go to state 52
     operandname          go to state 53
     primaryexpr          go to state 54
-    block                go to state 98
-    statementlist        go to state 99
-    statement            go to state 100
-    simplestatement      go to state 101
-    emptystatement       go to state 102
-    expressionstatement  go to state 103
-    assignment           go to state 104
-    incdecstatement      go to state 105
-    ifstatement          go to state 106
-    forstatement         go to state 107
-    printstatement       go to state 108
-    printlnstatement     go to state 109
-    returnstatement      go to state 110
+    block                go to state 99
+    statementlist        go to state 100
+    statement            go to state 101
+    simplestatement      go to state 102
+    emptystatement       go to state 103
+    expressionstatement  go to state 104
+    assignment           go to state 105
+    incdecstatement      go to state 106
+    ifstatement          go to state 107
+    forstatement         go to state 108
+    printstatement       go to state 109
+    printlnstatement     go to state 110
+    returnstatement      go to state 111
 
 
 State 63
@@ -1090,13 +1093,13 @@ State 65
 
     INTEGER  shift, and go to state 25
     BOOLEAN  shift, and go to state 26
-    LPAREN   shift, and go to state 111
+    LPAREN   shift, and go to state 112
 
-    type        go to state 112
-    typelist    go to state 113
-    typename    go to state 114
-    result      go to state 115
-    parameters  go to state 116
+    type        go to state 113
+    typelist    go to state 114
+    typename    go to state 115
+    result      go to state 116
+    parameters  go to state 117
 
 
 State 66
@@ -1136,7 +1139,7 @@ State 69
    50     | expr • AND expr
    63 operand: LPAREN expr • RPAREN
 
-    RPAREN  shift, and go to state 117
+    RPAREN  shift, and go to state 118
     PLUS    shift, and go to state 70
     MIN     shift, and go to state 71
     MUL     shift, and go to state 72
@@ -1163,7 +1166,7 @@ State 70
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 118
+    expr         go to state 119
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1185,7 +1188,7 @@ State 71
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 119
+    expr         go to state 120
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1207,7 +1210,7 @@ State 72
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 120
+    expr         go to state 121
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1229,7 +1232,7 @@ State 73
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 121
+    expr         go to state 122
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1251,7 +1254,7 @@ State 74
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 122
+    expr         go to state 123
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1273,7 +1276,7 @@ State 75
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 123
+    expr         go to state 124
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1295,7 +1298,7 @@ State 76
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 124
+    expr         go to state 125
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1317,7 +1320,7 @@ State 77
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 125
+    expr         go to state 126
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1339,7 +1342,7 @@ State 78
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 126
+    expr         go to state 127
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1361,7 +1364,7 @@ State 79
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 127
+    expr         go to state 128
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1383,7 +1386,7 @@ State 80
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 128
+    expr         go to state 129
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1405,7 +1408,7 @@ State 81
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 129
+    expr         go to state 130
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1427,7 +1430,7 @@ State 82
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    expr         go to state 130
+    expr         go to state 131
     unaryexpr    go to state 48
     unary_op     go to state 49
     operand      go to state 50
@@ -1451,7 +1454,7 @@ State 84
    72          | LPAREN • expressionlist RCOMMA RPAREN
 
     LPAREN       shift, and go to state 39
-    RPAREN       shift, and go to state 131
+    RPAREN       shift, and go to state 132
     PLUS         shift, and go to state 40
     MIN          shift, and go to state 41
     NOT          shift, and go to state 42
@@ -1460,7 +1463,7 @@ State 84
     INTLITERAL   shift, and go to state 45
 
     expr            go to state 46
-    expressionlist  go to state 132
+    expressionlist  go to state 133
     unaryexpr       go to state 48
     unary_op        go to state 49
     operand         go to state 50
@@ -1502,12 +1505,12 @@ State 88
     INTEGER     shift, and go to state 25
     BOOLEAN     shift, and go to state 26
     LPAREN      shift, and go to state 27
-    RPAREN      shift, and go to state 133
+    RPAREN      shift, and go to state 134
     IDENTIFIER  shift, and go to state 16
 
     type            go to state 58
     typename        go to state 30
-    parameterdecl   go to state 134
+    parameterdecl   go to state 135
     identifierlist  go to state 61
     identifier      go to state 19
 
@@ -1521,8 +1524,8 @@ State 89
 
 State 90
 
-  115 returnstatement: RETURN • expressionlist
-  116                | RETURN •
+  116 returnstatement: RETURN • expressionlist
+  117                | RETURN •
 
     LPAREN       shift, and go to state 39
     PLUS         shift, and go to state 40
@@ -1532,10 +1535,10 @@ State 90
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    $default  reduce using rule 116 (returnstatement)
+    $default  reduce using rule 117 (returnstatement)
 
     expr            go to state 46
-    expressionlist  go to state 135
+    expressionlist  go to state 136
     unaryexpr       go to state 48
     unary_op        go to state 49
     operand         go to state 50
@@ -1547,11 +1550,11 @@ State 90
 
 State 91
 
-   98 ifstatement: IF • simplestatement SEMICOLON expr block ELSE ifstatement
-   99            | IF • simplestatement SEMICOLON expr block ELSE block
-  100            | IF • expr block ELSE ifstatement
-  101            | IF • expr block ELSE block
-  102            | IF • expr block
+   99 ifstatement: IF • simplestatement SEMICOLON expr block ELSE ifstatement
+  100            | IF • simplestatement SEMICOLON expr block ELSE block
+  101            | IF • expr block ELSE ifstatement
+  102            | IF • expr block ELSE block
+  103            | IF • expr block
 
     LPAREN       shift, and go to state 39
     PLUS         shift, and go to state 40
@@ -1561,10 +1564,10 @@ State 91
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    $default  reduce using rule 88 (emptystatement)
+    $default  reduce using rule 89 (emptystatement)
 
-    expr                 go to state 136
-    expressionlist       go to state 97
+    expr                 go to state 137
+    expressionlist       go to state 98
     unaryexpr            go to state 48
     unary_op             go to state 49
     operand              go to state 50
@@ -1572,18 +1575,18 @@ State 91
     basiclit             go to state 52
     operandname          go to state 53
     primaryexpr          go to state 54
-    simplestatement      go to state 137
-    emptystatement       go to state 102
-    expressionstatement  go to state 103
-    assignment           go to state 104
-    incdecstatement      go to state 105
+    simplestatement      go to state 138
+    emptystatement       go to state 103
+    expressionstatement  go to state 104
+    assignment           go to state 105
+    incdecstatement      go to state 106
 
 
 State 92
 
-  103 forstatement: FOR • condition block
-  104             | FOR • forclause block
-  105             | FOR • block
+  104 forstatement: FOR • condition block
+  105             | FOR • forclause block
+  106             | FOR • block
 
     LPAREN       shift, and go to state 39
     LBRACE       shift, and go to state 62
@@ -1594,11 +1597,11 @@ State 92
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    LBRACE    [reduce using rule 107 (condition)]
-    $default  reduce using rule 88 (emptystatement)
+    LBRACE    [reduce using rule 108 (condition)]
+    $default  reduce using rule 89 (emptystatement)
 
-    expr                 go to state 138
-    expressionlist       go to state 97
+    expr                 go to state 139
+    expressionlist       go to state 98
     unaryexpr            go to state 48
     unary_op             go to state 49
     operand              go to state 50
@@ -1606,41 +1609,48 @@ State 92
     basiclit             go to state 52
     operandname          go to state 53
     primaryexpr          go to state 54
-    block                go to state 139
-    simplestatement      go to state 140
-    emptystatement       go to state 102
-    expressionstatement  go to state 103
-    assignment           go to state 104
-    incdecstatement      go to state 105
-    condition            go to state 141
-    forclause            go to state 142
-    initstatement        go to state 143
+    block                go to state 140
+    simplestatement      go to state 141
+    emptystatement       go to state 103
+    expressionstatement  go to state 104
+    assignment           go to state 105
+    incdecstatement      go to state 106
+    condition            go to state 142
+    forclause            go to state 143
+    initstatement        go to state 144
 
 
 State 93
 
-  111 printstatement: PRINT • LPAREN expressionlist RPAREN
-  112               | PRINT • LPAREN RPAREN
+   74 block: LBRACE RBRACE •
 
-    LPAREN  shift, and go to state 144
+    $default  reduce using rule 74 (block)
 
 
 State 94
 
-  113 printlnstatement: PRINTLN • LPAREN expressionlist RPAREN
-  114                 | PRINTLN • LPAREN RPAREN
+  112 printstatement: PRINT • LPAREN expressionlist RPAREN
+  113               | PRINT • LPAREN RPAREN
 
     LPAREN  shift, and go to state 145
 
 
 State 95
 
-   76 statement: declaration •
+  114 printlnstatement: PRINTLN • LPAREN expressionlist RPAREN
+  115                 | PRINTLN • LPAREN RPAREN
 
-    $default  reduce using rule 76 (statement)
+    LPAREN  shift, and go to state 146
 
 
 State 96
+
+   77 statement: declaration •
+
+    $default  reduce using rule 77 (statement)
+
+
+State 97
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -1655,9 +1665,9 @@ State 96
    49     | expr • OR expr
    50     | expr • AND expr
    52 expressionlist: expr •
-   89 expressionstatement: expr •
-   96 incdecstatement: expr • INC
-   97                | expr • DEC
+   90 expressionstatement: expr •
+   97 incdecstatement: expr • INC
+   98                | expr • DEC
 
     PLUS  shift, and go to state 70
     MIN   shift, and go to state 71
@@ -1665,8 +1675,8 @@ State 96
     DIV   shift, and go to state 73
     AND   shift, and go to state 74
     OR    shift, and go to state 75
-    INC   shift, and go to state 146
-    DEC   shift, and go to state 147
+    INC   shift, and go to state 147
+    DEC   shift, and go to state 148
     GT    shift, and go to state 76
     GE    shift, and go to state 77
     LT    shift, and go to state 78
@@ -1674,119 +1684,119 @@ State 96
     EQ    shift, and go to state 80
     NE    shift, and go to state 81
 
-    SEMICOLON  reduce using rule 89 (expressionstatement)
-    LBRACE     reduce using rule 89 (expressionstatement)
+    SEMICOLON  reduce using rule 90 (expressionstatement)
+    LBRACE     reduce using rule 90 (expressionstatement)
     $default   reduce using rule 52 (expressionlist)
-
-
-State 97
-
-   51 expressionlist: expressionlist • COMMA expr
-   90 assignment: expressionlist • assign_op expressionlist
-
-    PLUSASSIGN  shift, and go to state 148
-    MINASSIGN   shift, and go to state 149
-    MULASSIGN   shift, and go to state 150
-    DIVASSIGN   shift, and go to state 151
-    ASSIGN      shift, and go to state 152
-    COMMA       shift, and go to state 82
-
-    assign_op  go to state 153
 
 
 State 98
 
-   77 statement: block •
+   51 expressionlist: expressionlist • COMMA expr
+   91 assignment: expressionlist • assign_op expressionlist
 
-    $default  reduce using rule 77 (statement)
+    PLUSASSIGN  shift, and go to state 149
+    MINASSIGN   shift, and go to state 150
+    MULASSIGN   shift, and go to state 151
+    DIVASSIGN   shift, and go to state 152
+    ASSIGN      shift, and go to state 153
+    COMMA       shift, and go to state 82
+
+    assign_op  go to state 154
 
 
 State 99
 
-   73 block: LBRACE statementlist • RBRACE
+   78 statement: block •
 
-    RBRACE  shift, and go to state 154
+    $default  reduce using rule 78 (statement)
 
 
 State 100
 
-   74 statementlist: statement • SEMICOLON
-   75              | statement • SEMICOLON statementlist
+   73 block: LBRACE statementlist • RBRACE
 
-    SEMICOLON  shift, and go to state 155
+    RBRACE  shift, and go to state 155
 
 
 State 101
 
-   81 statement: simplestatement •
+   75 statementlist: statement • SEMICOLON
+   76              | statement • SEMICOLON statementlist
 
-    $default  reduce using rule 81 (statement)
+    SEMICOLON  shift, and go to state 156
 
 
 State 102
 
-   87 simplestatement: emptystatement •
+   82 statement: simplestatement •
 
-    $default  reduce using rule 87 (simplestatement)
+    $default  reduce using rule 82 (statement)
 
 
 State 103
 
-   84 simplestatement: expressionstatement •
+   88 simplestatement: emptystatement •
 
-    $default  reduce using rule 84 (simplestatement)
+    $default  reduce using rule 88 (simplestatement)
 
 
 State 104
 
-   85 simplestatement: assignment •
+   85 simplestatement: expressionstatement •
 
     $default  reduce using rule 85 (simplestatement)
 
 
 State 105
 
-   86 simplestatement: incdecstatement •
+   86 simplestatement: assignment •
 
     $default  reduce using rule 86 (simplestatement)
 
 
 State 106
 
-   78 statement: ifstatement •
+   87 simplestatement: incdecstatement •
 
-    $default  reduce using rule 78 (statement)
+    $default  reduce using rule 87 (simplestatement)
 
 
 State 107
 
-   79 statement: forstatement •
+   79 statement: ifstatement •
 
     $default  reduce using rule 79 (statement)
 
 
 State 108
 
-   82 statement: printstatement •
+   80 statement: forstatement •
 
-    $default  reduce using rule 82 (statement)
+    $default  reduce using rule 80 (statement)
 
 
 State 109
 
-   83 statement: printlnstatement •
+   83 statement: printstatement •
 
     $default  reduce using rule 83 (statement)
 
 
 State 110
 
-   80 statement: returnstatement •
+   84 statement: printlnstatement •
 
-    $default  reduce using rule 80 (statement)
+    $default  reduce using rule 84 (statement)
 
 
 State 111
+
+   81 statement: returnstatement •
+
+    $default  reduce using rule 81 (statement)
+
+
+State 112
 
    24 type: LPAREN • type RPAREN
    31 parameters: LPAREN • RPAREN
@@ -1799,7 +1809,7 @@ State 111
     RPAREN      shift, and go to state 57
     IDENTIFIER  shift, and go to state 16
 
-    type            go to state 156
+    type            go to state 157
     typename        go to state 30
     parameterlist   go to state 59
     parameterdecl   go to state 60
@@ -1807,7 +1817,7 @@ State 111
     identifier      go to state 19
 
 
-State 112
+State 113
 
    24 type: LPAREN type • RPAREN
    25 typelist: type •
@@ -1817,45 +1827,45 @@ State 112
     RPAREN  [reduce using rule 25 (typelist)]
 
 
-State 113
+State 114
 
    30 result: typelist •
 
     $default  reduce using rule 30 (result)
 
 
-State 114
+State 115
 
    23 type: typename •
    26 typelist: typename • COMMA typelist
 
-    COMMA  shift, and go to state 157
+    COMMA  shift, and go to state 158
 
     $default  reduce using rule 23 (type)
 
 
-State 115
+State 116
 
    20 signature: parameters LPAREN result • RPAREN
 
-    RPAREN  shift, and go to state 158
+    RPAREN  shift, and go to state 159
 
 
-State 116
+State 117
 
    29 result: parameters •
 
     $default  reduce using rule 29 (result)
 
 
-State 117
+State 118
 
    63 operand: LPAREN expr RPAREN •
 
     $default  reduce using rule 63 (operand)
 
 
-State 118
+State 119
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -1877,7 +1887,7 @@ State 118
     $default  reduce using rule 47 (expr)
 
 
-State 119
+State 120
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -1899,7 +1909,7 @@ State 119
     $default  reduce using rule 48 (expr)
 
 
-State 120
+State 121
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -1918,7 +1928,7 @@ State 120
     $default  reduce using rule 45 (expr)
 
 
-State 121
+State 122
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -1937,7 +1947,7 @@ State 121
     $default  reduce using rule 46 (expr)
 
 
-State 122
+State 123
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -1967,7 +1977,7 @@ State 122
     $default  reduce using rule 50 (expr)
 
 
-State 123
+State 124
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -1998,7 +2008,7 @@ State 123
     $default  reduce using rule 49 (expr)
 
 
-State 124
+State 125
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -2022,7 +2032,7 @@ State 124
     $default  reduce using rule 43 (expr)
 
 
-State 125
+State 126
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -2046,7 +2056,7 @@ State 125
     $default  reduce using rule 44 (expr)
 
 
-State 126
+State 127
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -2070,7 +2080,7 @@ State 126
     $default  reduce using rule 41 (expr)
 
 
-State 127
+State 128
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -2094,7 +2104,7 @@ State 127
     $default  reduce using rule 42 (expr)
 
 
-State 128
+State 129
 
    39 expr: expr • EQ expr
    39     | expr EQ expr •
@@ -2118,7 +2128,7 @@ State 128
     $default  reduce using rule 39 (expr)
 
 
-State 129
+State 130
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -2142,7 +2152,7 @@ State 129
     $default  reduce using rule 40 (expr)
 
 
-State 130
+State 131
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -2174,49 +2184,49 @@ State 130
     $default  reduce using rule 51 (expressionlist)
 
 
-State 131
+State 132
 
    70 arguments: LPAREN RPAREN •
 
     $default  reduce using rule 70 (arguments)
 
 
-State 132
+State 133
 
    51 expressionlist: expressionlist • COMMA expr
    71 arguments: LPAREN expressionlist • RPAREN
    72          | LPAREN expressionlist • RCOMMA RPAREN
 
-    RPAREN  shift, and go to state 159
+    RPAREN  shift, and go to state 160
     COMMA   shift, and go to state 82
-    RCOMMA  shift, and go to state 160
+    RCOMMA  shift, and go to state 161
 
 
-State 133
+State 134
 
    32 parameters: LPAREN parameterlist COMMA RPAREN •
 
     $default  reduce using rule 32 (parameters)
 
 
-State 134
+State 135
 
    34 parameterlist: parameterlist COMMA parameterdecl •
 
     $default  reduce using rule 34 (parameterlist)
 
 
-State 135
+State 136
 
    51 expressionlist: expressionlist • COMMA expr
-  115 returnstatement: RETURN expressionlist •
+  116 returnstatement: RETURN expressionlist •
 
     COMMA  shift, and go to state 82
 
-    $default  reduce using rule 115 (returnstatement)
+    $default  reduce using rule 116 (returnstatement)
 
 
-State 136
+State 137
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -2231,12 +2241,12 @@ State 136
    49     | expr • OR expr
    50     | expr • AND expr
    52 expressionlist: expr •
-   89 expressionstatement: expr •
-   96 incdecstatement: expr • INC
-   97                | expr • DEC
-  100 ifstatement: IF expr • block ELSE ifstatement
-  101            | IF expr • block ELSE block
-  102            | IF expr • block
+   90 expressionstatement: expr •
+   97 incdecstatement: expr • INC
+   98                | expr • DEC
+  101 ifstatement: IF expr • block ELSE ifstatement
+  102            | IF expr • block ELSE block
+  103            | IF expr • block
 
     LBRACE  shift, and go to state 62
     PLUS    shift, and go to state 70
@@ -2245,8 +2255,8 @@ State 136
     DIV     shift, and go to state 73
     AND     shift, and go to state 74
     OR      shift, and go to state 75
-    INC     shift, and go to state 146
-    DEC     shift, and go to state 147
+    INC     shift, and go to state 147
+    DEC     shift, and go to state 148
     GT      shift, and go to state 76
     GE      shift, and go to state 77
     LT      shift, and go to state 78
@@ -2254,21 +2264,21 @@ State 136
     EQ      shift, and go to state 80
     NE      shift, and go to state 81
 
-    SEMICOLON  reduce using rule 89 (expressionstatement)
+    SEMICOLON  reduce using rule 90 (expressionstatement)
     $default   reduce using rule 52 (expressionlist)
 
-    block  go to state 161
-
-
-State 137
-
-   98 ifstatement: IF simplestatement • SEMICOLON expr block ELSE ifstatement
-   99            | IF simplestatement • SEMICOLON expr block ELSE block
-
-    SEMICOLON  shift, and go to state 162
+    block  go to state 162
 
 
 State 138
+
+   99 ifstatement: IF simplestatement • SEMICOLON expr block ELSE ifstatement
+  100            | IF simplestatement • SEMICOLON expr block ELSE block
+
+    SEMICOLON  shift, and go to state 163
+
+
+State 139
 
    39 expr: expr • EQ expr
    40     | expr • NE expr
@@ -2283,10 +2293,10 @@ State 138
    49     | expr • OR expr
    50     | expr • AND expr
    52 expressionlist: expr •
-   89 expressionstatement: expr •
-   96 incdecstatement: expr • INC
-   97                | expr • DEC
-  106 condition: expr •
+   90 expressionstatement: expr •
+   97 incdecstatement: expr • INC
+   98                | expr • DEC
+  107 condition: expr •
 
     PLUS  shift, and go to state 70
     MIN   shift, and go to state 71
@@ -2294,8 +2304,8 @@ State 138
     DIV   shift, and go to state 73
     AND   shift, and go to state 74
     OR    shift, and go to state 75
-    INC   shift, and go to state 146
-    DEC   shift, and go to state 147
+    INC   shift, and go to state 147
+    DEC   shift, and go to state 148
     GT    shift, and go to state 76
     GE    shift, and go to state 77
     LT    shift, and go to state 78
@@ -2303,37 +2313,28 @@ State 138
     EQ    shift, and go to state 80
     NE    shift, and go to state 81
 
-    SEMICOLON  reduce using rule 89 (expressionstatement)
-    LBRACE     reduce using rule 106 (condition)
+    SEMICOLON  reduce using rule 90 (expressionstatement)
+    LBRACE     reduce using rule 107 (condition)
     $default   reduce using rule 52 (expressionlist)
-
-
-State 139
-
-  105 forstatement: FOR block •
-
-    $default  reduce using rule 105 (forstatement)
 
 
 State 140
 
-  109 initstatement: simplestatement •
+  106 forstatement: FOR block •
 
-    $default  reduce using rule 109 (initstatement)
+    $default  reduce using rule 106 (forstatement)
 
 
 State 141
 
-  103 forstatement: FOR condition • block
+  110 initstatement: simplestatement •
 
-    LBRACE  shift, and go to state 62
-
-    block  go to state 163
+    $default  reduce using rule 110 (initstatement)
 
 
 State 142
 
-  104 forstatement: FOR forclause • block
+  104 forstatement: FOR condition • block
 
     LBRACE  shift, and go to state 62
 
@@ -2342,43 +2343,27 @@ State 142
 
 State 143
 
-  108 forclause: initstatement • SEMICOLON condition SEMICOLON poststatement
+  105 forstatement: FOR forclause • block
 
-    SEMICOLON  shift, and go to state 165
+    LBRACE  shift, and go to state 62
+
+    block  go to state 165
 
 
 State 144
 
-  111 printstatement: PRINT LPAREN • expressionlist RPAREN
-  112               | PRINT LPAREN • RPAREN
+  109 forclause: initstatement • SEMICOLON condition SEMICOLON poststatement
 
-    LPAREN       shift, and go to state 39
-    RPAREN       shift, and go to state 166
-    PLUS         shift, and go to state 40
-    MIN          shift, and go to state 41
-    NOT          shift, and go to state 42
-    IDENTIFIER   shift, and go to state 43
-    BOOLLITERAL  shift, and go to state 44
-    INTLITERAL   shift, and go to state 45
-
-    expr            go to state 46
-    expressionlist  go to state 167
-    unaryexpr       go to state 48
-    unary_op        go to state 49
-    operand         go to state 50
-    literal         go to state 51
-    basiclit        go to state 52
-    operandname     go to state 53
-    primaryexpr     go to state 54
+    SEMICOLON  shift, and go to state 166
 
 
 State 145
 
-  113 printlnstatement: PRINTLN LPAREN • expressionlist RPAREN
-  114                 | PRINTLN LPAREN • RPAREN
+  112 printstatement: PRINT LPAREN • expressionlist RPAREN
+  113               | PRINT LPAREN • RPAREN
 
     LPAREN       shift, and go to state 39
-    RPAREN       shift, and go to state 168
+    RPAREN       shift, and go to state 167
     PLUS         shift, and go to state 40
     MIN          shift, and go to state 41
     NOT          shift, and go to state 42
@@ -2387,7 +2372,7 @@ State 145
     INTLITERAL   shift, and go to state 45
 
     expr            go to state 46
-    expressionlist  go to state 169
+    expressionlist  go to state 168
     unaryexpr       go to state 48
     unary_op        go to state 49
     operand         go to state 50
@@ -2399,58 +2384,11 @@ State 145
 
 State 146
 
-   96 incdecstatement: expr INC •
-
-    $default  reduce using rule 96 (incdecstatement)
-
-
-State 147
-
-   97 incdecstatement: expr DEC •
-
-    $default  reduce using rule 97 (incdecstatement)
-
-
-State 148
-
-   92 assign_op: PLUSASSIGN •
-
-    $default  reduce using rule 92 (assign_op)
-
-
-State 149
-
-   93 assign_op: MINASSIGN •
-
-    $default  reduce using rule 93 (assign_op)
-
-
-State 150
-
-   94 assign_op: MULASSIGN •
-
-    $default  reduce using rule 94 (assign_op)
-
-
-State 151
-
-   95 assign_op: DIVASSIGN •
-
-    $default  reduce using rule 95 (assign_op)
-
-
-State 152
-
-   91 assign_op: ASSIGN •
-
-    $default  reduce using rule 91 (assign_op)
-
-
-State 153
-
-   90 assignment: expressionlist assign_op • expressionlist
+  114 printlnstatement: PRINTLN LPAREN • expressionlist RPAREN
+  115                 | PRINTLN LPAREN • RPAREN
 
     LPAREN       shift, and go to state 39
+    RPAREN       shift, and go to state 169
     PLUS         shift, and go to state 40
     MIN          shift, and go to state 41
     NOT          shift, and go to state 42
@@ -2469,17 +2407,89 @@ State 153
     primaryexpr     go to state 54
 
 
+State 147
+
+   97 incdecstatement: expr INC •
+
+    $default  reduce using rule 97 (incdecstatement)
+
+
+State 148
+
+   98 incdecstatement: expr DEC •
+
+    $default  reduce using rule 98 (incdecstatement)
+
+
+State 149
+
+   93 assign_op: PLUSASSIGN •
+
+    $default  reduce using rule 93 (assign_op)
+
+
+State 150
+
+   94 assign_op: MINASSIGN •
+
+    $default  reduce using rule 94 (assign_op)
+
+
+State 151
+
+   95 assign_op: MULASSIGN •
+
+    $default  reduce using rule 95 (assign_op)
+
+
+State 152
+
+   96 assign_op: DIVASSIGN •
+
+    $default  reduce using rule 96 (assign_op)
+
+
+State 153
+
+   92 assign_op: ASSIGN •
+
+    $default  reduce using rule 92 (assign_op)
+
+
 State 154
+
+   91 assignment: expressionlist assign_op • expressionlist
+
+    LPAREN       shift, and go to state 39
+    PLUS         shift, and go to state 40
+    MIN          shift, and go to state 41
+    NOT          shift, and go to state 42
+    IDENTIFIER   shift, and go to state 43
+    BOOLLITERAL  shift, and go to state 44
+    INTLITERAL   shift, and go to state 45
+
+    expr            go to state 46
+    expressionlist  go to state 171
+    unaryexpr       go to state 48
+    unary_op        go to state 49
+    operand         go to state 50
+    literal         go to state 51
+    basiclit        go to state 52
+    operandname     go to state 53
+    primaryexpr     go to state 54
+
+
+State 155
 
    73 block: LBRACE statementlist RBRACE •
 
     $default  reduce using rule 73 (block)
 
 
-State 155
+State 156
 
-   74 statementlist: statement SEMICOLON •
-   75              | statement SEMICOLON • statementlist
+   75 statementlist: statement SEMICOLON •
+   76              | statement SEMICOLON • statementlist
 
     RETURN       shift, and go to state 90
     VAR          shift, and go to state 8
@@ -2490,19 +2500,19 @@ State 155
     PLUS         shift, and go to state 40
     MIN          shift, and go to state 41
     NOT          shift, and go to state 42
-    PRINT        shift, and go to state 93
-    PRINTLN      shift, and go to state 94
+    PRINT        shift, and go to state 94
+    PRINTLN      shift, and go to state 95
     IDENTIFIER   shift, and go to state 43
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    SEMICOLON  reduce using rule 88 (emptystatement)
-    $default   reduce using rule 74 (statementlist)
+    SEMICOLON  reduce using rule 89 (emptystatement)
+    $default   reduce using rule 75 (statementlist)
 
-    declaration          go to state 95
+    declaration          go to state 96
     vardecl              go to state 13
-    expr                 go to state 96
-    expressionlist       go to state 97
+    expr                 go to state 97
+    expressionlist       go to state 98
     unaryexpr            go to state 48
     unary_op             go to state 49
     operand              go to state 50
@@ -2510,22 +2520,22 @@ State 155
     basiclit             go to state 52
     operandname          go to state 53
     primaryexpr          go to state 54
-    block                go to state 98
-    statementlist        go to state 171
-    statement            go to state 100
-    simplestatement      go to state 101
-    emptystatement       go to state 102
-    expressionstatement  go to state 103
-    assignment           go to state 104
-    incdecstatement      go to state 105
-    ifstatement          go to state 106
-    forstatement         go to state 107
-    printstatement       go to state 108
-    printlnstatement     go to state 109
-    returnstatement      go to state 110
+    block                go to state 99
+    statementlist        go to state 172
+    statement            go to state 101
+    simplestatement      go to state 102
+    emptystatement       go to state 103
+    expressionstatement  go to state 104
+    assignment           go to state 105
+    incdecstatement      go to state 106
+    ifstatement          go to state 107
+    forstatement         go to state 108
+    printstatement       go to state 109
+    printlnstatement     go to state 110
+    returnstatement      go to state 111
 
 
-State 156
+State 157
 
    24 type: LPAREN type • RPAREN
    37 parameterdecl: type •
@@ -2536,7 +2546,7 @@ State 156
     $default  reduce using rule 37 (parameterdecl)
 
 
-State 157
+State 158
 
    26 typelist: typename COMMA • typelist
 
@@ -2544,83 +2554,47 @@ State 157
     BOOLEAN  shift, and go to state 26
     LPAREN   shift, and go to state 27
 
-    type      go to state 172
-    typelist  go to state 173
-    typename  go to state 114
+    type      go to state 173
+    typelist  go to state 174
+    typename  go to state 115
 
 
-State 158
+State 159
 
    20 signature: parameters LPAREN result RPAREN •
 
     $default  reduce using rule 20 (signature)
 
 
-State 159
+State 160
 
    71 arguments: LPAREN expressionlist RPAREN •
 
     $default  reduce using rule 71 (arguments)
 
 
-State 160
+State 161
 
    72 arguments: LPAREN expressionlist RCOMMA • RPAREN
 
-    RPAREN  shift, and go to state 174
-
-
-State 161
-
-  100 ifstatement: IF expr block • ELSE ifstatement
-  101            | IF expr block • ELSE block
-  102            | IF expr block •
-
-    ELSE  shift, and go to state 175
-
-    $default  reduce using rule 102 (ifstatement)
+    RPAREN  shift, and go to state 175
 
 
 State 162
 
-   98 ifstatement: IF simplestatement SEMICOLON • expr block ELSE ifstatement
-   99            | IF simplestatement SEMICOLON • expr block ELSE block
+  101 ifstatement: IF expr block • ELSE ifstatement
+  102            | IF expr block • ELSE block
+  103            | IF expr block •
 
-    LPAREN       shift, and go to state 39
-    PLUS         shift, and go to state 40
-    MIN          shift, and go to state 41
-    NOT          shift, and go to state 42
-    IDENTIFIER   shift, and go to state 43
-    BOOLLITERAL  shift, and go to state 44
-    INTLITERAL   shift, and go to state 45
+    ELSE  shift, and go to state 176
 
-    expr         go to state 176
-    unaryexpr    go to state 48
-    unary_op     go to state 49
-    operand      go to state 50
-    literal      go to state 51
-    basiclit     go to state 52
-    operandname  go to state 53
-    primaryexpr  go to state 54
+    $default  reduce using rule 103 (ifstatement)
 
 
 State 163
 
-  103 forstatement: FOR condition block •
-
-    $default  reduce using rule 103 (forstatement)
-
-
-State 164
-
-  104 forstatement: FOR forclause block •
-
-    $default  reduce using rule 104 (forstatement)
-
-
-State 165
-
-  108 forclause: initstatement SEMICOLON • condition SEMICOLON poststatement
+   99 ifstatement: IF simplestatement SEMICOLON • expr block ELSE ifstatement
+  100            | IF simplestatement SEMICOLON • expr block ELSE block
 
     LPAREN       shift, and go to state 39
     PLUS         shift, and go to state 40
@@ -2629,8 +2603,6 @@ State 165
     IDENTIFIER   shift, and go to state 43
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
-
-    $default  reduce using rule 107 (condition)
 
     expr         go to state 177
     unaryexpr    go to state 48
@@ -2640,123 +2612,127 @@ State 165
     basiclit     go to state 52
     operandname  go to state 53
     primaryexpr  go to state 54
-    condition    go to state 178
+
+
+State 164
+
+  104 forstatement: FOR condition block •
+
+    $default  reduce using rule 104 (forstatement)
+
+
+State 165
+
+  105 forstatement: FOR forclause block •
+
+    $default  reduce using rule 105 (forstatement)
 
 
 State 166
 
-  112 printstatement: PRINT LPAREN RPAREN •
+  109 forclause: initstatement SEMICOLON • condition SEMICOLON poststatement
 
-    $default  reduce using rule 112 (printstatement)
+    LPAREN       shift, and go to state 39
+    PLUS         shift, and go to state 40
+    MIN          shift, and go to state 41
+    NOT          shift, and go to state 42
+    IDENTIFIER   shift, and go to state 43
+    BOOLLITERAL  shift, and go to state 44
+    INTLITERAL   shift, and go to state 45
+
+    $default  reduce using rule 108 (condition)
+
+    expr         go to state 178
+    unaryexpr    go to state 48
+    unary_op     go to state 49
+    operand      go to state 50
+    literal      go to state 51
+    basiclit     go to state 52
+    operandname  go to state 53
+    primaryexpr  go to state 54
+    condition    go to state 179
 
 
 State 167
 
-   51 expressionlist: expressionlist • COMMA expr
-  111 printstatement: PRINT LPAREN expressionlist • RPAREN
+  113 printstatement: PRINT LPAREN RPAREN •
 
-    RPAREN  shift, and go to state 179
-    COMMA   shift, and go to state 82
+    $default  reduce using rule 113 (printstatement)
 
 
 State 168
 
-  114 printlnstatement: PRINTLN LPAREN RPAREN •
-
-    $default  reduce using rule 114 (printlnstatement)
-
-
-State 169
-
    51 expressionlist: expressionlist • COMMA expr
-  113 printlnstatement: PRINTLN LPAREN expressionlist • RPAREN
+  112 printstatement: PRINT LPAREN expressionlist • RPAREN
 
     RPAREN  shift, and go to state 180
     COMMA   shift, and go to state 82
 
 
+State 169
+
+  115 printlnstatement: PRINTLN LPAREN RPAREN •
+
+    $default  reduce using rule 115 (printlnstatement)
+
+
 State 170
 
    51 expressionlist: expressionlist • COMMA expr
-   90 assignment: expressionlist assign_op expressionlist •
+  114 printlnstatement: PRINTLN LPAREN expressionlist • RPAREN
 
-    COMMA  shift, and go to state 82
-
-    $default  reduce using rule 90 (assignment)
+    RPAREN  shift, and go to state 181
+    COMMA   shift, and go to state 82
 
 
 State 171
 
-   75 statementlist: statement SEMICOLON statementlist •
+   51 expressionlist: expressionlist • COMMA expr
+   91 assignment: expressionlist assign_op expressionlist •
 
-    $default  reduce using rule 75 (statementlist)
+    COMMA  shift, and go to state 82
+
+    $default  reduce using rule 91 (assignment)
 
 
 State 172
+
+   76 statementlist: statement SEMICOLON statementlist •
+
+    $default  reduce using rule 76 (statementlist)
+
+
+State 173
 
    25 typelist: type •
 
     $default  reduce using rule 25 (typelist)
 
 
-State 173
+State 174
 
    26 typelist: typename COMMA typelist •
 
     $default  reduce using rule 26 (typelist)
 
 
-State 174
+State 175
 
    72 arguments: LPAREN expressionlist RCOMMA RPAREN •
 
     $default  reduce using rule 72 (arguments)
 
 
-State 175
+State 176
 
-  100 ifstatement: IF expr block ELSE • ifstatement
-  101            | IF expr block ELSE • block
+  101 ifstatement: IF expr block ELSE • ifstatement
+  102            | IF expr block ELSE • block
 
     IF      shift, and go to state 91
     LBRACE  shift, and go to state 62
 
-    block        go to state 181
-    ifstatement  go to state 182
-
-
-State 176
-
-   39 expr: expr • EQ expr
-   40     | expr • NE expr
-   41     | expr • LT expr
-   42     | expr • LE expr
-   43     | expr • GT expr
-   44     | expr • GE expr
-   45     | expr • MUL expr
-   46     | expr • DIV expr
-   47     | expr • PLUS expr
-   48     | expr • MIN expr
-   49     | expr • OR expr
-   50     | expr • AND expr
-   98 ifstatement: IF simplestatement SEMICOLON expr • block ELSE ifstatement
-   99            | IF simplestatement SEMICOLON expr • block ELSE block
-
-    LBRACE  shift, and go to state 62
-    PLUS    shift, and go to state 70
-    MIN     shift, and go to state 71
-    MUL     shift, and go to state 72
-    DIV     shift, and go to state 73
-    AND     shift, and go to state 74
-    OR      shift, and go to state 75
-    GT      shift, and go to state 76
-    GE      shift, and go to state 77
-    LT      shift, and go to state 78
-    LE      shift, and go to state 79
-    EQ      shift, and go to state 80
-    NE      shift, and go to state 81
-
-    block  go to state 183
+    block        go to state 182
+    ifstatement  go to state 183
 
 
 State 177
@@ -2773,7 +2749,41 @@ State 177
    48     | expr • MIN expr
    49     | expr • OR expr
    50     | expr • AND expr
-  106 condition: expr •
+   99 ifstatement: IF simplestatement SEMICOLON expr • block ELSE ifstatement
+  100            | IF simplestatement SEMICOLON expr • block ELSE block
+
+    LBRACE  shift, and go to state 62
+    PLUS    shift, and go to state 70
+    MIN     shift, and go to state 71
+    MUL     shift, and go to state 72
+    DIV     shift, and go to state 73
+    AND     shift, and go to state 74
+    OR      shift, and go to state 75
+    GT      shift, and go to state 76
+    GE      shift, and go to state 77
+    LT      shift, and go to state 78
+    LE      shift, and go to state 79
+    EQ      shift, and go to state 80
+    NE      shift, and go to state 81
+
+    block  go to state 184
+
+
+State 178
+
+   39 expr: expr • EQ expr
+   40     | expr • NE expr
+   41     | expr • LT expr
+   42     | expr • LE expr
+   43     | expr • GT expr
+   44     | expr • GE expr
+   45     | expr • MUL expr
+   46     | expr • DIV expr
+   47     | expr • PLUS expr
+   48     | expr • MIN expr
+   49     | expr • OR expr
+   50     | expr • AND expr
+  107 condition: expr •
 
     PLUS  shift, and go to state 70
     MIN   shift, and go to state 71
@@ -2788,55 +2798,55 @@ State 177
     EQ    shift, and go to state 80
     NE    shift, and go to state 81
 
-    $default  reduce using rule 106 (condition)
-
-
-State 178
-
-  108 forclause: initstatement SEMICOLON condition • SEMICOLON poststatement
-
-    SEMICOLON  shift, and go to state 184
+    $default  reduce using rule 107 (condition)
 
 
 State 179
 
-  111 printstatement: PRINT LPAREN expressionlist RPAREN •
+  109 forclause: initstatement SEMICOLON condition • SEMICOLON poststatement
 
-    $default  reduce using rule 111 (printstatement)
+    SEMICOLON  shift, and go to state 185
 
 
 State 180
 
-  113 printlnstatement: PRINTLN LPAREN expressionlist RPAREN •
+  112 printstatement: PRINT LPAREN expressionlist RPAREN •
 
-    $default  reduce using rule 113 (printlnstatement)
+    $default  reduce using rule 112 (printstatement)
 
 
 State 181
 
-  101 ifstatement: IF expr block ELSE block •
+  114 printlnstatement: PRINTLN LPAREN expressionlist RPAREN •
 
-    $default  reduce using rule 101 (ifstatement)
+    $default  reduce using rule 114 (printlnstatement)
 
 
 State 182
 
-  100 ifstatement: IF expr block ELSE ifstatement •
+  102 ifstatement: IF expr block ELSE block •
 
-    $default  reduce using rule 100 (ifstatement)
+    $default  reduce using rule 102 (ifstatement)
 
 
 State 183
 
-   98 ifstatement: IF simplestatement SEMICOLON expr block • ELSE ifstatement
-   99            | IF simplestatement SEMICOLON expr block • ELSE block
+  101 ifstatement: IF expr block ELSE ifstatement •
 
-    ELSE  shift, and go to state 185
+    $default  reduce using rule 101 (ifstatement)
 
 
 State 184
 
-  108 forclause: initstatement SEMICOLON condition SEMICOLON • poststatement
+   99 ifstatement: IF simplestatement SEMICOLON expr block • ELSE ifstatement
+  100            | IF simplestatement SEMICOLON expr block • ELSE block
+
+    ELSE  shift, and go to state 186
+
+
+State 185
+
+  109 forclause: initstatement SEMICOLON condition SEMICOLON • poststatement
 
     LPAREN       shift, and go to state 39
     PLUS         shift, and go to state 40
@@ -2846,10 +2856,10 @@ State 184
     BOOLLITERAL  shift, and go to state 44
     INTLITERAL   shift, and go to state 45
 
-    $default  reduce using rule 88 (emptystatement)
+    $default  reduce using rule 89 (emptystatement)
 
-    expr                 go to state 96
-    expressionlist       go to state 97
+    expr                 go to state 97
+    expressionlist       go to state 98
     unaryexpr            go to state 48
     unary_op             go to state 49
     operand              go to state 50
@@ -2857,49 +2867,49 @@ State 184
     basiclit             go to state 52
     operandname          go to state 53
     primaryexpr          go to state 54
-    simplestatement      go to state 186
-    emptystatement       go to state 102
-    expressionstatement  go to state 103
-    assignment           go to state 104
-    incdecstatement      go to state 105
-    poststatement        go to state 187
-
-
-State 185
-
-   98 ifstatement: IF simplestatement SEMICOLON expr block ELSE • ifstatement
-   99            | IF simplestatement SEMICOLON expr block ELSE • block
-
-    IF      shift, and go to state 91
-    LBRACE  shift, and go to state 62
-
-    block        go to state 188
-    ifstatement  go to state 189
+    simplestatement      go to state 187
+    emptystatement       go to state 103
+    expressionstatement  go to state 104
+    assignment           go to state 105
+    incdecstatement      go to state 106
+    poststatement        go to state 188
 
 
 State 186
 
-  110 poststatement: simplestatement •
+   99 ifstatement: IF simplestatement SEMICOLON expr block ELSE • ifstatement
+  100            | IF simplestatement SEMICOLON expr block ELSE • block
 
-    $default  reduce using rule 110 (poststatement)
+    IF      shift, and go to state 91
+    LBRACE  shift, and go to state 62
+
+    block        go to state 189
+    ifstatement  go to state 190
 
 
 State 187
 
-  108 forclause: initstatement SEMICOLON condition SEMICOLON poststatement •
+  111 poststatement: simplestatement •
 
-    $default  reduce using rule 108 (forclause)
+    $default  reduce using rule 111 (poststatement)
 
 
 State 188
 
-   99 ifstatement: IF simplestatement SEMICOLON expr block ELSE block •
+  109 forclause: initstatement SEMICOLON condition SEMICOLON poststatement •
 
-    $default  reduce using rule 99 (ifstatement)
+    $default  reduce using rule 109 (forclause)
 
 
 State 189
 
-   98 ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement •
+  100 ifstatement: IF simplestatement SEMICOLON expr block ELSE block •
 
-    $default  reduce using rule 98 (ifstatement)
+    $default  reduce using rule 100 (ifstatement)
+
+
+State 190
+
+   99 ifstatement: IF simplestatement SEMICOLON expr block ELSE ifstatement •
+
+    $default  reduce using rule 99 (ifstatement)

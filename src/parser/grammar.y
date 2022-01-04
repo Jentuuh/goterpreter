@@ -292,6 +292,7 @@ arguments: LPAREN RPAREN                                          { $$ = nullptr
          
 
 block: LBRACE statementlist RBRACE      { $$ = new Block($2); }
+       | LBRACE RBRACE                   { $$ = new Block(nullptr); }
        ;
 
 statementlist: statement SEMICOLON                      { $$ = new LastStmList($1); }
