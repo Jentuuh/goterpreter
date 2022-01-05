@@ -99,8 +99,8 @@ func test_return_stm() int{
 		if i == 5{
 			return i;
 			i = 6
-			return i;
 		}
+		return i;
 	}
 }
 

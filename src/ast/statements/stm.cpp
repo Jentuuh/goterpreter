@@ -151,15 +151,16 @@ int IfStm::countReturnStatements()
 
 bool IfStm::checkReturnPaths(bool isOkay)
 {
+        // if(nestedIfStm != nullptr)
+        // {
+        //     return isOkay || (ifBlock->checkReturnPaths(isOkay) && elseBlock->checkReturnPaths(isOkay) && std::dynamic_pointer_cast<IfStm>(nestedIfStm)->checkReturnPaths(isOkay));
+        // } else {
+        //     return isOkay || (ifBlock->checkReturnPaths(isOkay) && elseBlock->checkReturnPaths(isOkay));
+        // }
 
     if(elseBlock != nullptr)
     {
-        if(nestedIfStm != nullptr)
-        {
-            return isOkay || (ifBlock->checkReturnPaths(false) && elseBlock->checkReturnPaths(false) && std::dynamic_pointer_cast<IfStm>(nestedIfStm)->checkReturnPaths(false));
-        } else {
-            return isOkay || (ifBlock->checkReturnPaths(false) && elseBlock->checkReturnPaths(false));
-        }
+        return isOkay || (ifBlock->checkReturnPaths(isOkay) && elseBlock->checkReturnPaths(isOkay));
     }
 
     if(elseBlock == nullptr && nestedIfStm == nullptr)
@@ -169,7 +170,7 @@ bool IfStm::checkReturnPaths(bool isOkay)
 
     if(elseBlock == nullptr && nestedIfStm != nullptr)
     {
-        return isOkay;
+        return isOkay || (ifBlock->checkReturnPaths(isOkay) && std::dynamic_pointer_cast<IfStm>(nestedIfStm)->checkReturnPaths(isOkay));
     }
 }
 
@@ -214,6 +215,12 @@ int ForCondStm::countReturnStatements()
 {
     return body->countReturnStatements();
 }
+
+bool ForCondStm::checkReturnPaths(bool isOkay)
+{
+    return body->checkReturnPaths(isOkay);
+}
+
 
 // ============= ForClauseStm =============
 ForClauseStm::ForClauseStm(ForClause* forclause, Block* body): forclause{forclause}, body{body}{}
@@ -295,6 +302,11 @@ int ForClauseStm::countReturnStatements()
     return body->countReturnStatements();
 }
 
+bool ForClauseStm::checkReturnPaths(bool isOkay)
+{
+    return body->checkReturnPaths(isOkay);
+}
+
 // ============= ForStm =============
 ForStm::ForStm(Block* body): body{body}{}
 
@@ -328,6 +340,14 @@ int ForStm::countReturnStatements()
 {
     return body->countReturnStatements();
 }
+
+bool ForStm::checkReturnPaths(bool isOkay)
+{
+    std::cout << "TEST" << std::endl;
+    std::cout << std::to_string(body->checkReturnPaths(isOkay)) << std::endl;
+    return body->checkReturnPaths(isOkay);
+}
+
 // ============= ReturnStm =============
 ReturnStm::ReturnStm(ExpList* expList): expressionList{expList}{}
 

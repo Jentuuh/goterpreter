@@ -76,6 +76,7 @@ struct ForCondStm:Stm{
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     int amountPaths();
     int countReturnStatements();
+    bool checkReturnPaths(bool isOkay);
 };
 
 struct ForClauseStm:Stm{
@@ -87,6 +88,7 @@ struct ForClauseStm:Stm{
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     int amountPaths();
     int countReturnStatements();
+    bool checkReturnPaths(bool isOkay);
 };
 
 struct ForStm:Stm{
@@ -97,6 +99,7 @@ struct ForStm:Stm{
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     int amountPaths();
     int countReturnStatements();
+    bool checkReturnPaths(bool isOkay);
 };
 
 struct ReturnStm:Stm{

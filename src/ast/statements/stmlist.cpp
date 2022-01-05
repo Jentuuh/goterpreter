@@ -69,6 +69,15 @@ bool LastStmList::checkReturnPaths(bool isOkay)
     if (std::dynamic_pointer_cast<IfStm>(last) != nullptr)
     {
        return isOkay || std::dynamic_pointer_cast<IfStm>(last)->checkReturnPaths(isOkay);
+    } else if (std::dynamic_pointer_cast<ForStm>(last) != nullptr)
+    {
+        return isOkay || std::dynamic_pointer_cast<ForStm>(last)->checkReturnPaths(isOkay);
+    } else if (std::dynamic_pointer_cast<ForClauseStm>(last) != nullptr)
+    {
+        return isOkay || std::dynamic_pointer_cast<ForClauseStm>(last)->checkReturnPaths(isOkay);
+    } else if (std::dynamic_pointer_cast<ForCondStm>(last) != nullptr)
+    {
+        return isOkay || std::dynamic_pointer_cast<ForCondStm>(last)->checkReturnPaths(isOkay);
     }
     return isOkay || hasBaseReturnStatement();
 }
@@ -150,6 +159,15 @@ bool PairStmList::checkReturnPaths(bool isOkay)
     if (std::dynamic_pointer_cast<IfStm>(head) != nullptr)
     {
         return std::dynamic_pointer_cast<IfStm>(head)->checkReturnPaths(isOkay) && tail->checkReturnPaths(isOkay);
+    } else if (std::dynamic_pointer_cast<ForStm>(head) != nullptr)
+    {
+        return std::dynamic_pointer_cast<ForStm>(head)->checkReturnPaths(isOkay) && tail->checkReturnPaths(isOkay) ;
+    } else if (std::dynamic_pointer_cast<ForClauseStm>(head) != nullptr)
+    {
+        return std::dynamic_pointer_cast<ForClauseStm>(head)->checkReturnPaths(isOkay) && tail->checkReturnPaths(isOkay);
+    } else if (std::dynamic_pointer_cast<ForCondStm>(head) != nullptr)
+    {
+        return std::dynamic_pointer_cast<ForCondStm>(head)->checkReturnPaths(isOkay) && tail->checkReturnPaths(isOkay);
     }
 
     return tail->checkReturnPaths(isOkay);

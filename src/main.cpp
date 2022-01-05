@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 {
   // File lexing and parsing
   FILE * inputFile;
-  inputFile = fopen("incorrect_programs.go", "r");
+  inputFile = fopen("correct_programs.go", "r");
   if (inputFile == NULL) perror ("Error opening file");
   yyrestart(inputFile);
   yyparse();
