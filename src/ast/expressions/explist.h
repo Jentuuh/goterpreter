@@ -28,7 +28,7 @@ struct LastExpList:ExpList{
 
     LastExpList(Exp* l);
 
-    void getOperandNames(std::vector<std::string>& names);
+    void getOperandNames(std::vector<std::string>& names) override;
     void getRefNames(std::vector<std::vector<std::string>>& refContainer) override;
     void interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer, std::vector<std::string>& typeErrors) override;
@@ -41,7 +41,7 @@ struct PairExpList:ExpList{
 
     PairExpList(Exp* h, ExpList* t);
 
-    void getOperandNames(std::vector<std::string>& names);
+    void getOperandNames(std::vector<std::string>& names) override;
     void getRefNames(std::vector<std::vector<std::string>>& refContainer) override;
     void interp(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Literal>>& valueContainer) override;
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::shared_ptr<Type>>& typeContainer, std::vector<std::string>& typeErrors) override;

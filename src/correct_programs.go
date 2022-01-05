@@ -69,7 +69,6 @@ func test_param_results() ((a, b bool, c int)){
 func test_for_loops(){
 	var i = 0;
 	
-	println()
 	// With post statement
 	for i;i < 3;i++{
 	
@@ -111,20 +110,32 @@ func main() {
 	var b2 = false;
 	print(and(b1, b2));
 	print(or(b1, b2));
+	println()
 
 	// ParameterResult demonstration
 	var x, y, z = test_param_results()
 	print(x, y, z)
+	println()
+
+	// First 10 Fibonacci numbers
+	var i = 0;
+	for i; i < 10; i++{
+		print(recursive_fibonacci(i))
+	}
+	println()
 
 	// Different kind of for loops
 	test_for_loops();
 
 	// Check if a certain integer is prime.
 	print(is_prime(7919));
+	println()
 
 	// Compare 2 integers.
 	print(num_compare(1, 1));
+	println()
 
+	// Demonstration that after a return statement no more statements are being executed within a function.
 	println(test_return_stm());
 }
 
