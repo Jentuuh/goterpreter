@@ -48,7 +48,7 @@ void FunctionDecl::typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<s
         }
 
         // Check whether function should return something, and if every path of the function returns something if that's the case
-        if(funcBody->amountPaths() > funcBody->countReturnStatements() && funcSign->result != nullptr && !funcBody->hasBaseReturnStatement())
+        if(!funcBody->checkReturnPaths(false) && funcSign->result != nullptr)
         {
                 typeErrors.push_back("Type error in FunctionDecl: Function " + funcName->name + " expects return value(s), but not all paths return a value.");
         }

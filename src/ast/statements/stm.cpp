@@ -149,6 +149,31 @@ int IfStm::countReturnStatements()
     return ifBlock->countReturnStatements();
 }
 
+bool IfStm::checkReturnPaths(bool isOkay)
+{
+
+    if(elseBlock != nullptr)
+    {
+        if(nestedIfStm != nullptr)
+        {
+            return isOkay || (ifBlock->checkReturnPaths(false) && elseBlock->checkReturnPaths(false) && std::dynamic_pointer_cast<IfStm>(nestedIfStm)->checkReturnPaths(false));
+        } else {
+            return isOkay || (ifBlock->checkReturnPaths(false) && elseBlock->checkReturnPaths(false));
+        }
+    }
+
+    if(elseBlock == nullptr && nestedIfStm == nullptr)
+    {
+        return isOkay;
+    }
+
+    if(elseBlock == nullptr && nestedIfStm != nullptr)
+    {
+        return isOkay;
+    }
+}
+
+
 
 // ============= ForCondStm =============
 ForCondStm::ForCondStm(Exp* cond, Block* body): condition{cond}, body{body}{}

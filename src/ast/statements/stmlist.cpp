@@ -1,4 +1,5 @@
 #include "stmlist.h"
+#include <iostream>
 
 // ============= LastStmList =============
 LastStmList::LastStmList(Stm* last):last{last}{};
@@ -62,6 +63,16 @@ bool LastStmList::hasBaseReturnStatement()
         return true;
     return false;
 }
+
+bool LastStmList::checkReturnPaths(bool isOkay) 
+{
+    if (std::dynamic_pointer_cast<IfStm>(last) != nullptr)
+    {
+       return isOkay || std::dynamic_pointer_cast<IfStm>(last)->checkReturnPaths(isOkay);
+    }
+    return isOkay || hasBaseReturnStatement();
+}
+
 
 
 // ============= PairStmList =============
@@ -127,5 +138,20 @@ int PairStmList::countReturnStatements()
 bool PairStmList::hasBaseReturnStatement()
 {
     return std::dynamic_pointer_cast<ReturnStm>(head) != nullptr || tail->hasBaseReturnStatement();
+}
+
+bool PairStmList::checkReturnPaths(bool isOkay) 
+{
+    if(!isOkay)
+    {
+        isOkay = hasBaseReturnStatement();
+    }
+
+    if (std::dynamic_pointer_cast<IfStm>(head) != nullptr)
+    {
+        return std::dynamic_pointer_cast<IfStm>(head)->checkReturnPaths(isOkay) && tail->checkReturnPaths(isOkay);
+    }
+
+    return tail->checkReturnPaths(isOkay);
 }
 

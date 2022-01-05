@@ -45,3 +45,12 @@ bool Block::hasBaseReturnStatement()
     return false;
 }
 
+bool Block::checkReturnPaths(bool isOkay)
+{
+    if(statements != nullptr){
+        return statements->checkReturnPaths(isOkay);
+    }
+    return false;
+}
+
+

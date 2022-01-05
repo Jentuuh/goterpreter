@@ -17,6 +17,7 @@ struct StmList{
     virtual int amountPaths() = 0;
     virtual int countReturnStatements() = 0;
     virtual bool hasBaseReturnStatement() = 0;
+    virtual bool checkReturnPaths(bool isOkay) = 0;
 
 };
 
@@ -30,6 +31,7 @@ struct LastStmList:StmList{
     int amountPaths() override;
     int countReturnStatements() override;
     bool hasBaseReturnStatement() override;
+    bool checkReturnPaths(bool isOkay) override;
 };
 
 struct PairStmList:StmList{
@@ -43,4 +45,5 @@ struct PairStmList:StmList{
     int amountPaths() override;
     int countReturnStatements() override;
     bool hasBaseReturnStatement() override;
+    bool checkReturnPaths(bool isOkay) override;
 };

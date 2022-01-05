@@ -12,25 +12,15 @@ func moreThan1ReturnValue() (int, int){
 	return 1, 1
 }
 
-func returnPathsDoNotMatch() int {
+func notAllPathsReturn() int {
 	if true {
 		return 1
 	} else {
-		return 1
-	}
-
-	if false {
-		return 1
-	} else if true{
-		return 1;
-	} else if true {
-		// We return nothing in this execution path, which would lead to undefined behaviour
-	}
-
-	if true{
-		return 1
-	} else {
-		return 1;
+		if true{
+			// We return nothing in this execution path (base level), which would lead to undefined behaviour
+		} else {
+			return 1
+		}
 	}
 }
 

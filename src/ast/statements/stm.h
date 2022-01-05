@@ -64,6 +64,7 @@ struct IfStm:Stm{
     void typecheck(ScopedEnv& env, FunctionEnv& funcEnv, std::vector<std::string>& typeErrors) override;
     int amountPaths();
     int countReturnStatements();
+    bool checkReturnPaths(bool isOkay);
 };
 
 struct ForCondStm:Stm{

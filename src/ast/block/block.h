@@ -17,4 +17,5 @@ struct Block
     int amountPaths();
     int countReturnStatements();
     bool hasBaseReturnStatement();
+    bool checkReturnPaths(bool isOkay);
 };
