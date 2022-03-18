@@ -8,7 +8,7 @@ FLAGS=-O3 -DNDEBUG -std=c++17
 # Settings for a debug build
 #FLAGS=-g -std=c++17
 
-all: interpreter_test
+all: goterpreter
 
 clean:
 	rm -f lexer_test
@@ -22,5 +22,5 @@ bison: parser/grammar.y
 bison_counter: parser/grammar.y
 	bison -o ./parser/parser.cpp ./parser/grammar.y -dv -Wcounterexamples
 
-interpreter_test: main.cpp ast/*/*.cpp environment/*/*.cpp
-	$(CXX) $(FLAGS) -o interpreter_test main.cpp lexer/lexer.cpp parser/parser.cpp ast/*/*.cpp environment/*/*.cpp
+goterpreter: main.cpp ast/*/*.cpp environment/*/*.cpp
+	$(CXX) $(FLAGS) -o goterpreter main.cpp lexer/lexer.cpp parser/parser.cpp ast/*/*.cpp environment/*/*.cpp
